@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="ClassUP.API/ClassUP.API.csproj" />
+  <Project Path="ClassUP.ApplicationCore/ClassUP.ApplicationCore.csproj" />
+  <Project Path="ClassUP.Domain/ClassUP.Domain.csproj" />
+  <Project Path="ClassUP.Infrastructure/ClassUP.Infrastructure.csproj" />
+</Solution>
