@@ -4,9 +4,9 @@ using System.Text;
 
 namespace ClassUP.ApplicationCore.IRepository
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
-        IBaseRepository<T> Repository<T>() where T : class;
+        ICourseRepository Courses { get; }
 
         Task<int> SaveChangesAsync();
     }
