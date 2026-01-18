@@ -9,6 +9,10 @@ using System.Text;
 
 namespace ClassUP.Infrastructure.Repository
 {
+    // not use lazy loading for repositories.
+    // All repositories are added as properties in the Uow 
+    // and initial directly in the ctor.
+
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _db;

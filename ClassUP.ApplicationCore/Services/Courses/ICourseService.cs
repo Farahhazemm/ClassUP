@@ -9,6 +9,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
 {
     public interface ICourseService
     {
+        Task<IEnumerable<Course>> GetAllCourses(FilterOptions filter); // made for test
         Task<IEnumerable<Course>> GetInstructorCoursesAsync(int instructorId,FilterOptions filter );
         Task<Course> GetByIdAsync(int id);
     }

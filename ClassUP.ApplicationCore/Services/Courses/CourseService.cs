@@ -16,6 +16,12 @@ namespace ClassUP.ApplicationCore.Services.Courses
             _unitOfWork = unitOfWork;
         }
 
+        public async Task<IEnumerable<Course>> GetAllCourses(FilterOptions filter)
+        {
+            var Courses = await _unitOfWork.Courses.GetAllAsync(filter);
+            return  Courses.ToList(); 
+        }
+
         public async Task<Course> GetByIdAsync(int id)
         {
            return await _unitOfWork.Courses.GetByIdAsync(id);
