@@ -86,5 +86,46 @@ namespace ClassUP.API.Controllers
         new { courseId = course.Id},course);
         }
 
+        [HttpPut("{courseId}")]
+        // userId passed from query until Auth is implemented
+        public async Task<IActionResult> UpdateCourse( [FromRoute] int courseId,  [FromForm] UpdateCourseRequest request,[FromQuery] int UserId)
+        {
+            // Enum Check
+            if (!Enum.TryParse<CourseLevel>(request.Level, true, out var level))
+            {
+                return BadRequest("Invalid course level");
+            }
+
+            // Map request to DTO
+            var courseDTO = new UpdateCourseDTO
+            {
+                Title = request.Title,
+                Description = request.Description,
+                Price = request.Price,
+                Level = level,
+                Language = request.Language,
+                IsActive = request.IsActive
+            };
+
+            ThumbnailDTO? thumbnailDTO = null;
+
+            // Map Thumbnail if provided
+            if (request.Thumbnail != null)
+            {
+                thumbnailDTO = new ThumbnailDTO
+                {
+                    FileStream = request.Thumbnail.OpenReadStream(),
+                    MimeType = request.Thumbnail.ContentType,
+                    FileSize = request.Thumbnail.Length
+                };
+            }
+
+            // acc service 
+
+            await _courseService.UpdateCourse(courseId, courseDTO, UserId , thumbnailDTO);
+            return NoContent();
+
+        }
+
     }
 }

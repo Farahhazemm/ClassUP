@@ -56,6 +56,11 @@ namespace ClassUP.ApplicationCore.Services.Courses
 
         }
 
+        public Task DeleteCourse(int courseId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IEnumerable<Course>> GetAllCourses(FilterOptions filter)
         {
             var Courses = await _unitOfWork.Courses.GetAllAsync(filter);
@@ -74,6 +79,52 @@ namespace ClassUP.ApplicationCore.Services.Courses
             return await _unitOfWork.Courses.GetInstructorCoursesAsync(instructorId, filter);
         }
 
-       
+        public async Task UpdateCourse(int courseId, UpdateCourseDTO courseDTO, ThumbnailDTO? thumbnailDTO, int userId)
+        {
+            if (courseDTO == null && thumbnailDTO == null)
+                return; //or make badrequest
+
+
+            //get old course
+            var course = await _unitOfWork.Courses.GetByIdAsync(courseId);
+            if (course == null)
+            {
+                //Make an Exeption
+            }
+            string? oldThumbnail = course.ThumbnailUrl;
+            if (thumbnailDTO != null)
+            {
+                //validate Thumbnail not for now
+
+                course.ThumbnailUrl = await _thumbnailService
+                    .SaveAsync(thumbnailDTO, "courses");
+            }
+                // Op updates
+                course.Title = courseDTO.Title ?? course.Title;
+                course.Description = courseDTO.Description ?? course.Description;
+                course.Price = courseDTO.Price ?? course.Price;
+                course.Level = courseDTO.Level ?? course.Level;
+                course.Language = courseDTO.Language ?? course.Language;
+                course.IsActive = courseDTO.IsActive ?? course.IsActive;
+
+                await _unitOfWork.Courses.UpdateAsync(course);
+
+                // Del old thumbnail if replace
+                if (oldThumbnail != course.ThumbnailUrl && oldThumbnail != null)
+                {
+                    await _thumbnailService.DeleteAsync(oldThumbnail);
+                }
+
+               
+                await _unitOfWork.SaveChangesAsync();
+
+            }
+
+        public Task UpdateCourse(int courseId, UpdateCourseDTO courseDTO, int userId, ThumbnailDTO? thumbnailDTO = null)
+        {
+            throw new NotImplementedException();
+        }
     }
-}
+
+    }
+
