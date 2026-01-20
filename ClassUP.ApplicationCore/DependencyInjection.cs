@@ -1,6 +1,7 @@
 ﻿using ClassUP.ApplicationCore.Services.Courses;
-using System.Reflection;
+using ClassUP.ApplicationCore.Services.Thumbnail;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace ClassUP.ApplicationCore
 {
@@ -10,6 +11,7 @@ namespace ClassUP.ApplicationCore
             this IServiceCollection services)
         {
             services.AddScoped<ICourseService, CourseService>();
+            services.AddScoped<IThumbnailService, ThumbnailService>();
 
             return services;
         }

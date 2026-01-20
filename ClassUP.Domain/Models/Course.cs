@@ -23,6 +23,8 @@ namespace ClassUP.Domain.Models
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public bool IsActive { get; set; }
+        public string Language { get; set; }
         public CourseLevel Level { get; set; }
         public decimal Price { get; set; }
         public string ThumbnailUrl { get; set; }
