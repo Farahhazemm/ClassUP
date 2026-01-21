@@ -10,11 +10,12 @@ namespace ClassUP.API.Requests
 
         
         [StringLength(2000, MinimumLength = 30)]
-        public string? Description { get; set; } 
+        public string? Description { get; set; }
 
-        
-        [Range(0, double.MaxValue)]
-        public Decimal? Price { get; set; }
+
+        [Range(0, 10000, ErrorMessage = "Price must be between 0 and 10000")]
+
+        public Decimal? Price { get; set; } 
 
         
         [StringLength(50)]

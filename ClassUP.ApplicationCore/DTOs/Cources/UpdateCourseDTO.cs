@@ -14,22 +14,23 @@ namespace ClassUP.ApplicationCore.DTOs.Cources
 
         
         [StringLength(2000, MinimumLength = 30)]
-        public string? Description { get; set; } 
+        public string? Description { get; set; }
 
-       
+
         // 0 for free courses 
-        [Range(0, double.MaxValue)]
-        public Decimal? Price { get; set; }
+        [Range(0.00, 10000)]
+        public Decimal? Price { get; set; } 
 
         
         [StringLength(50)]
         public string? Language { get; set; } = null!;
         
         [StringLength(50)]
-       
-        public CourseLevel? Level { get; set; }
 
-        
+        // must match CourseLevel
+        public string? Level { get; set; }
+
+
         public bool? IsActive { get; set; }
     }
 }

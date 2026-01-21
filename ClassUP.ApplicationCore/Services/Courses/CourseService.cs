@@ -2,6 +2,7 @@
 using ClassUP.ApplicationCore.DTOs.Cources;
 using ClassUP.ApplicationCore.IRepository;
 using ClassUP.ApplicationCore.Services.Thumbnail;
+using ClassUP.Domain.Enums;
 using ClassUP.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
             _thumbnailService = thumbnailService;
         }
 
+        #region Create
         public async Task<CourseResponseDTO> CreateCourse(CreateCourseDTO courseDTO, ThumbnailDTO thumbnailDTO, int userId)
         {
             var thumbnailUrl = await _thumbnailService.SaveAsync(thumbnailDTO, "courses");
@@ -50,81 +52,99 @@ namespace ClassUP.ApplicationCore.Services.Courses
                 IsActive = course.IsActive,
                 InstructorId = course.InstructorId,
                 ThumbnailUrl = course.ThumbnailUrl,
-                
+
             };
             return response;
 
         }
 
-        public Task DeleteCourse(int courseId)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
 
+        #region Delete
+        public async Task DeleteCourse(int courseId)
+        {
+            var course = await _unitOfWork.Courses.GetByIdAsync(courseId);
+            if (course == null)
+            {
+                // Run an Exeption
+                throw new KeyNotFoundException($"Course with id {courseId} not found");
+            }
+            await _unitOfWork.Courses.DeleteAsync(course);
+            await _thumbnailService.DeleteAsync(course.ThumbnailUrl);
+            await _unitOfWork.SaveChangesAsync();
+
+        } 
+        #endregion
+
+        #region GetAll
         public async Task<IEnumerable<Course>> GetAllCourses(FilterOptions filter)
         {
             var Courses = await _unitOfWork.Courses.GetAllAsync(filter);
-            return  Courses.ToList(); 
+            return Courses.ToList();
         }
+        #endregion
 
+        #region GetById
         public async Task<Course> GetByIdAsync(int id)
         {
-           return await _unitOfWork.Courses.GetByIdAsync(id);
+            return await _unitOfWork.Courses.GetByIdAsync(id);
         }
+        #endregion
 
-       
 
+
+        #region GetCorsesByInstractor
         public async Task<IEnumerable<Course>> GetInstructorCoursesAsync(int instructorId, FilterOptions filter)
         {
             return await _unitOfWork.Courses.GetInstructorCoursesAsync(instructorId, filter);
         }
+        #endregion
 
-        public async Task UpdateCourse(int courseId, UpdateCourseDTO courseDTO, ThumbnailDTO? thumbnailDTO, int userId)
+        #region UpdateCourse
+        public async Task UpdateCourse(int courseId, UpdateCourseDTO courseDTO, int userId, ThumbnailDTO? thumbnailDTO)
         {
             if (courseDTO == null && thumbnailDTO == null)
-                return; //or make badrequest
+                throw new ArgumentException("Nothing to update");
 
-
-            //get old course
+            
             var course = await _unitOfWork.Courses.GetByIdAsync(courseId);
             if (course == null)
+                throw new KeyNotFoundException($"Course with id {courseId} not found");
+
+
+            if (courseDTO.Level != null)
             {
-                //Make an Exeption
+                if (!Enum.TryParse<CourseLevel>(courseDTO.Level, true, out var level))
+                    throw new ArgumentException("Invalid course level");
+
+                course.Level = level;
             }
-            string? oldThumbnail = course.ThumbnailUrl;
+
+            // Op update
+            course.Title = courseDTO.Title ?? course.Title;
+            course.Description = courseDTO.Description ?? course.Description;
+            course.Price = courseDTO.Price ?? course.Price;
+            course.Language = courseDTO.Language ?? course.Language;
+            course.IsActive = courseDTO.IsActive ?? course.IsActive;
+
+            // Thumb
             if (thumbnailDTO != null)
             {
-                //validate Thumbnail not for now
-
-                course.ThumbnailUrl = await _thumbnailService
-                    .SaveAsync(thumbnailDTO, "courses");
-            }
-                // Op updates
-                course.Title = courseDTO.Title ?? course.Title;
-                course.Description = courseDTO.Description ?? course.Description;
-                course.Price = courseDTO.Price ?? course.Price;
-                course.Level = courseDTO.Level ?? course.Level;
-                course.Language = courseDTO.Language ?? course.Language;
-                course.IsActive = courseDTO.IsActive ?? course.IsActive;
-
-                await _unitOfWork.Courses.UpdateAsync(course);
-
-                // Del old thumbnail if replace
-                if (oldThumbnail != course.ThumbnailUrl && oldThumbnail != null)
-                {
+                var oldThumbnail = course.ThumbnailUrl;
+                course.ThumbnailUrl = await _thumbnailService.SaveAsync(thumbnailDTO, "courses");
+                if (oldThumbnail != null && oldThumbnail != course.ThumbnailUrl)
                     await _thumbnailService.DeleteAsync(oldThumbnail);
-                }
-
-               
-                await _unitOfWork.SaveChangesAsync();
-
             }
 
-        public Task UpdateCourse(int courseId, UpdateCourseDTO courseDTO, int userId, ThumbnailDTO? thumbnailDTO = null)
-        {
-            throw new NotImplementedException();
+            await _unitOfWork.Courses.UpdateAsync(course);
+            await _unitOfWork.SaveChangesAsync();
         }
-    }
+
+
+
+        #endregion
 
     }
+
+}
 

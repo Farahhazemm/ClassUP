@@ -88,28 +88,19 @@ namespace ClassUP.API.Controllers
 
         [HttpPut("{courseId}")]
         // userId passed from query until Auth is implemented
-        public async Task<IActionResult> UpdateCourse( [FromRoute] int courseId,  [FromForm] UpdateCourseRequest request,[FromQuery] int UserId)
+        public async Task<IActionResult> UpdateCourse([FromRoute] int courseId, [FromForm] UpdateCourseRequest request, [FromQuery] int userId)
         {
-            // Enum Check
-            if (!Enum.TryParse<CourseLevel>(request.Level, true, out var level))
-            {
-                return BadRequest("Invalid course level");
-            }
-
-            // Map request to DTO
             var courseDTO = new UpdateCourseDTO
             {
                 Title = request.Title,
                 Description = request.Description,
                 Price = request.Price,
-                Level = level,
+                Level = request.Level,
                 Language = request.Language,
                 IsActive = request.IsActive
             };
 
             ThumbnailDTO? thumbnailDTO = null;
-
-            // Map Thumbnail if provided
             if (request.Thumbnail != null)
             {
                 thumbnailDTO = new ThumbnailDTO
@@ -120,11 +111,15 @@ namespace ClassUP.API.Controllers
                 };
             }
 
-            // acc service 
-
-            await _courseService.UpdateCourse(courseId, courseDTO, UserId , thumbnailDTO);
+            await _courseService.UpdateCourse(courseId, courseDTO, userId, thumbnailDTO);
             return NoContent();
+        }
 
+        [HttpDelete("{courseId}")]
+        public async Task<IActionResult> DeleteCourse([FromRoute] int courseId)
+        {
+            await _courseService.DeleteCourse(courseId);
+            return NoContent();
         }
 
     }
