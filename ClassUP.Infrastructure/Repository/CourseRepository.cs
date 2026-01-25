@@ -19,7 +19,7 @@ namespace ClassUP.Infrastructure.Repository
         }
         public async Task<IEnumerable<Course>> GetInstructorCoursesAsync(int instructorId, FilterOptions filter)
         {
-            var query = _db.Courses.Where(q => q.InstructorId == instructorId);
+            var query = _db.Courses.Where(q => q.UserId == instructorId);
 
             if (filter != null && filter.PageNumber > 0 && filter.PageSize > 0)
             {

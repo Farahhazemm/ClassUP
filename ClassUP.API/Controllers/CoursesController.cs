@@ -1,6 +1,6 @@
-﻿using ClassUP.API.Requests;
-using ClassUP.ApplicationCore.Common.Filters;
-using ClassUP.ApplicationCore.DTOs.Cources;
+﻿using ClassUP.ApplicationCore.Common.Filters;
+using ClassUP.ApplicationCore.DTOs.Responses.Cources;
+using ClassUP.ApplicationCore.DTOs.Requests;
 using ClassUP.ApplicationCore.Services.Courses;
 using ClassUP.Domain.Enums;
 using ClassUP.Domain.Models;
@@ -30,6 +30,8 @@ namespace ClassUP.API.Controllers
             var Courses = await _courseService.GetAllCourses(filter);
             return Ok(Courses);
         }
+
+
         [HttpGet("GetInstructorCourses/{instructorId}")]
         public async Task<IActionResult> GetInstructorCoursesAsync(int instructorId, [FromQuery] FilterOptions filter)
         {
@@ -40,87 +42,46 @@ namespace ClassUP.API.Controllers
 
             return Ok(courses);
         }
-
+      
         [HttpGet("{courseId}")]
         public async Task<IActionResult> GetCourseById(int courseId)
         {
             var Course = await _courseService.GetByIdAsync(courseId);
-            if (Course == null)
-                return NotFound($"Course not found, {courseId}");
+            
             return Ok(Course);
         }
         #endregion
 
+        #region Create
         [HttpPost]
         //userId passed from query until Auth is implemented
-        public async Task<IActionResult> CreateCourse([FromForm] CreateCourseRequest request, [FromQuery]  int UserId)
+        public async Task<IActionResult> CreateCourse([FromForm] CreateCourseRequest request, [FromQuery] int UserId)
         {
-            //Enum Check
-            if (!Enum.TryParse<CourseLevel>(request.Level, true, out var level))
-            {
-                return BadRequest("Invalid course level");
-            }
-            // map req To DTO
-            var courseDTO = new CreateCourseDTO
-            {
-                Title = request.Title,
-                Description = request.Description,
-                Price = request.Price,
-                Level = level,
-                Language = request.Language,
-                IsActive = request.IsActive
-            };
-            // Map Thumb to DTO
-            var thumbnailDTO = new ThumbnailDTO
-            {
-                FileStream = request.Thumbnail.OpenReadStream(),
-                MimeType = request.Thumbnail.ContentType,
-                FileSize = request.Thumbnail.Length
-            };
-
-            var course = await _courseService.CreateCourse(courseDTO, thumbnailDTO, UserId);
 
 
-            return CreatedAtAction(
-        "GetCourseById",
-        new { courseId = course.Id},course);
-        }
+            var course = await _courseService.CreateCourse(request, UserId);
 
-        [HttpPut("{courseId}")]
-        // userId passed from query until Auth is implemented
-        public async Task<IActionResult> UpdateCourse([FromRoute] int courseId, [FromForm] UpdateCourseRequest request, [FromQuery] int userId)
-        {
-            var courseDTO = new UpdateCourseDTO
-            {
-                Title = request.Title,
-                Description = request.Description,
-                Price = request.Price,
-                Level = request.Level,
-                Language = request.Language,
-                IsActive = request.IsActive
-            };
+            return CreatedAtAction("GetCourseById", new { courseId = course.Id }, course);
+        } 
+        #endregion
 
-            ThumbnailDTO? thumbnailDTO = null;
-            if (request.Thumbnail != null)
-            {
-                thumbnailDTO = new ThumbnailDTO
-                {
-                    FileStream = request.Thumbnail.OpenReadStream(),
-                    MimeType = request.Thumbnail.ContentType,
-                    FileSize = request.Thumbnail.Length
-                };
-            }
 
-            await _courseService.UpdateCourse(courseId, courseDTO, userId, thumbnailDTO);
-            return NoContent();
-        }
+         [HttpPatch("{courseId}")]
+         public async Task<IActionResult> UpdateCourse([FromForm] UpdateCourseRequest request,[FromQuery] int userId,[FromRoute]int courseId)
+         {
+             request.courseId=courseId;  
+             await _courseService.UpdateCourse(userId,request);
+             return NoContent();
+         }
 
+        #region Delete
         [HttpDelete("{courseId}")]
         public async Task<IActionResult> DeleteCourse([FromRoute] int courseId)
         {
             await _courseService.DeleteCourse(courseId);
             return NoContent();
-        }
+        } 
+        #endregion
 
     }
 }

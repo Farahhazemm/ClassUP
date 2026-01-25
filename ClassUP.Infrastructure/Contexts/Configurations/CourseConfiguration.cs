@@ -51,7 +51,7 @@ namespace ClassUP.Infrastructure.Contexts.Configurations
 
             #region Map FK
            
-            builder.Property(c => c.InstructorId)
+            builder.Property(c => c.UserId)
                 .IsRequired();
 
             builder.Property(c => c.CategoryId)

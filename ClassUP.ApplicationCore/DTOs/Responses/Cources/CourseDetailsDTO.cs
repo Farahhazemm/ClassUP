@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ClassUP.ApplicationCore.DTOs.Cources
+namespace ClassUP.ApplicationCore.DTOs.Responses.Cources
 {
-    public class CourseDto
+    public class CourseDetailsDTO
     {
         #region Main Prop
         public int Id { get; set; }
@@ -22,7 +22,6 @@ namespace ClassUP.ApplicationCore.DTOs.Cources
         #region Instructor Info
 
         public int InstructorId { get; set; }
-        public string InstructorName { get; set; } = string.Empty;
         #endregion
 
         #region  Category Info

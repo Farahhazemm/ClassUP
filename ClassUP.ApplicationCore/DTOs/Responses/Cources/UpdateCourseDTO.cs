@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace ClassUP.ApplicationCore.DTOs.Cources
+namespace ClassUP.ApplicationCore.DTOs.Responses.Cources
 {
     public class UpdateCourseDTO
     {
@@ -32,5 +32,6 @@ namespace ClassUP.ApplicationCore.DTOs.Cources
 
 
         public bool? IsActive { get; set; }
+        public ThumbnailDTO? Thumbnail { get; set; }
     }
 }

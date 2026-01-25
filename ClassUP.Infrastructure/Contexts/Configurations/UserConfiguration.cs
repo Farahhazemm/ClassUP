@@ -48,8 +48,8 @@ namespace ClassUP.Infrastructure.Contexts.Configurations
       
             
             builder.HasMany(u => u.Courses)
-                .WithOne(c => c.Instructor) 
-                .HasForeignKey(c => c.InstructorId) 
+                .WithOne(c => c.user) 
+                .HasForeignKey(c => c.UserId) 
                 .OnDelete(DeleteBehavior.Restrict); 
 
             builder.HasMany(u => u.Enrollments)

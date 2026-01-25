@@ -1,4 +1,4 @@
-﻿using ClassUP.ApplicationCore.DTOs.Cources;
+﻿using ClassUP.ApplicationCore.DTOs.Responses.Cources;
 using System.IO;
 using System.Threading.Tasks;
 

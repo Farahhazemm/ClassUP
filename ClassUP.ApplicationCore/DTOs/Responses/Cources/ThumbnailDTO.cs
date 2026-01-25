@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ClassUP.ApplicationCore.DTOs.Cources
+namespace ClassUP.ApplicationCore.DTOs.Responses.Cources
 {
     public class ThumbnailDTO
     {

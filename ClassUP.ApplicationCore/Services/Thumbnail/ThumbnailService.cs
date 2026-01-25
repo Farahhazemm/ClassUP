@@ -1,4 +1,4 @@
-﻿using ClassUP.ApplicationCore.DTOs.Cources;
+﻿using ClassUP.ApplicationCore.DTOs.Responses.Cources;
 
 namespace ClassUP.ApplicationCore.Services.Thumbnail
 {
@@ -13,6 +13,7 @@ namespace ClassUP.ApplicationCore.Services.Thumbnail
                     Directory.CreateDirectory(uploadsPath);
 
                 // get extension from mime type
+                //search on signetuer by bytes
                 var extension = image.MimeType switch
                 {
                     "image/jpeg" => ".jpg",

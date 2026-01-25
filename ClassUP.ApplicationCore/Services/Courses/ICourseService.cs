@@ -3,17 +3,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ClassUP.Domain.Models;
-using ClassUP.ApplicationCore.DTOs.Cources;
+using ClassUP.ApplicationCore.DTOs.Requests;
+using ClassUP.ApplicationCore.DTOs.Responses.Cources;
 namespace ClassUP.ApplicationCore.Services.Courses
 
 {
     public interface ICourseService
     {
-        Task<IEnumerable<Course>> GetAllCourses(FilterOptions filter); // made for test
-        Task<IEnumerable<Course>> GetInstructorCoursesAsync(int instructorId,FilterOptions filter );
-        Task<Course> GetByIdAsync(int id);
-        Task<CourseResponseDTO> CreateCourse(CreateCourseDTO courseDTO, ThumbnailDTO thumbnailDTO, int userId);
-        Task UpdateCourse(int courseId, UpdateCourseDTO courseDTO ,int userId, ThumbnailDTO? thumbnailDTO=null);
+        Task<IEnumerable<AllCoursesDTO>> GetAllCourses(FilterOptions filter); // made for test
+        Task<IEnumerable<AllCoursesDTO>> GetInstructorCoursesAsync(int instructorId,FilterOptions filter );
+       Task<CourseDetailsDTO> GetByIdAsync(int id);
+       Task<CreateCourseDTO> CreateCourse(CreateCourseRequest request, int userId);
+        Task UpdateCourse(int userId, UpdateCourseRequest request);
 
         Task DeleteCourse(int courseId);
     }
