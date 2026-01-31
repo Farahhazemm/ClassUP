@@ -1,4 +1,5 @@
 ﻿using ClassUP.ApplicationCore.Common.Filters;
+using ClassUP.ApplicationCore.DTOs.Responses;
 using ClassUP.ApplicationCore.IRepository;
 using ClassUP.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,7 @@ namespace ClassUP.Infrastructure.Repositories
         }
 
         #region Read OP
-        public async Task<IEnumerable<T>> GetAllAsync(FilterOptions?filter = null)
+public async Task<IEnumerable<T>> GetAllAsync(FilterOptions?filter = null)
         {
             filter ??= new FilterOptions();
 
@@ -46,10 +47,12 @@ namespace ClassUP.Infrastructure.Repositories
             return await query.ToListAsync();
         }
 
+
         public async Task<T?> GetByIdAsync(int id)
         {
             return await _dbSet.FindAsync(id);
         }
+
 
 
         public async Task<bool> ExistsAsync(Expression<Func<T, bool>> condition)

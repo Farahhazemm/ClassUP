@@ -21,8 +21,10 @@ namespace ClassUP.Infrastructure.Repository
         {
             _db = db;
             Courses = new CourseRepository(_db);
+            Lectures = new LectureRepository(_db);
         }
         public ICourseRepository Courses { get; }
+        public ILectureRepository Lectures { get; }
 
         public async Task<int> SaveChangesAsync()
         {

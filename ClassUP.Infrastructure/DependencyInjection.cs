@@ -23,7 +23,7 @@ namespace ClassUP.Infrastructure
 
             
             services.AddScoped<ICourseRepository, CourseRepository>();
-
+            services.AddScoped<ILectureRepository, LectureRepository>();
            
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

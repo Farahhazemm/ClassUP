@@ -7,7 +7,7 @@ namespace ClassUP.ApplicationCore.IRepository
     public interface IUnitOfWork : IDisposable
     {
         ICourseRepository Courses { get; }
-
+        ILectureRepository Lectures { get; }
         Task<int> SaveChangesAsync();
     }
 }
