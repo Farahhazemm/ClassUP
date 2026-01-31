@@ -10,6 +10,7 @@ namespace ClassUP.ApplicationCore.IRepository
 {
     public interface ILectureRepository : IBaseRepository<Lecture>
     {
-       
+        Task<Lecture?> GetByIdWithDetailsAsync(int id);
+
     }
 }

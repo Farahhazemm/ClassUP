@@ -19,6 +19,13 @@ namespace ClassUP.Infrastructure.Repository
             _dbSet = dbSet;
         }
 
-      
+        public async Task<Lecture?> GetByIdWithDetailsAsync(int id)
+        {
+            return await _dbSet.Lectures
+           .Include(l => l.VideoContent)
+           .Include(l => l.ArticleContent)
+           .Include(l => l.LectureProgresses)
+           .FirstOrDefaultAsync(l => l.Id == id);
+        }
     }
 }

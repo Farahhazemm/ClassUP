@@ -16,12 +16,20 @@ namespace ClassUP.API.Controllers
             _lectureService = lectureService;
 
         }
-            [HttpGet("GetAllLectures")]
-            public async Task<IActionResult> GetAllLectures([FromQuery] FilterOptions filter)
-            {
-                var Courses = await _lectureService.GetLecturesAsync(filter);
-                return Ok(Courses);
-            }
+        [HttpGet("GetAllLectures")]
+        public async Task<IActionResult> GetAllLectures([FromQuery] FilterOptions filter)
+        {
+            var Courses = await _lectureService.GetLecturesAsync(filter);
+            return Ok(Courses);
+        }
+
+        [HttpGet("{LectureId}")]
+        public async Task<IActionResult> GetByIdAsync(int LectureId)
+        {
+            var lecture = await _lectureService.GetByIdAsync(LectureId);
+            return Ok(lecture);
+
+        }
 
         }
     }

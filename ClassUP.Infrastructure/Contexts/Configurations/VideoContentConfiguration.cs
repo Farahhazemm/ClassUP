@@ -18,34 +18,11 @@ namespace ClassUP.Infrastructure.Data.Configurations
 
             builder.HasKey(v => v.Id);
 
-            builder.Property(v => v.FileName)
-                   .IsRequired()
-                   .HasMaxLength(200);
-
-            builder.Property(v => v.FilePath)
-                   .IsRequired()
-                   .HasMaxLength(500);
-
-            builder.Property(v => v.VideoUrl)
-                   .IsRequired()
-                   .HasMaxLength(500);
-
-            builder.Property(v => v.Duration)
-                   .IsRequired();
-
-            builder.Property(v => v.FileSize)
-                   .IsRequired();
-
-            builder.Property(v => v.Quality)
-                   .IsRequired()
-                   .HasMaxLength(50);
 
             builder.Property(v => v.ThumbnailUrl)
                    .HasMaxLength(500)
                    .IsRequired(false);
 
-            builder.Property(v => v.UploadedBy)
-                   .IsRequired();
 
             builder.Property(v => v.UploadedAt)
                    .IsRequired();

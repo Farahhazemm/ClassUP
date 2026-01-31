@@ -10,5 +10,6 @@ namespace ClassUP.ApplicationCore.Services.Lectures
     public interface ILectureService
     {
         Task<IEnumerable<LectureDto>> GetLecturesAsync(FilterOptions filterOptions );
+        Task<LectureDetailDto?> GetByIdAsync(int id);
     }
 }
