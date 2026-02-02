@@ -1,6 +1,8 @@
 ﻿using ClassUP.ApplicationCore.Common.Filters;
+using ClassUP.ApplicationCore.DTOs.Requests.Lectures;
 using ClassUP.ApplicationCore.Services.Courses;
 using ClassUP.ApplicationCore.Services.Lectures;
+using ClassUP.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,6 +32,7 @@ namespace ClassUP.API.Controllers
             return Ok(lecture);
 
         }
+       
 
         }
     }

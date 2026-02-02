@@ -12,12 +12,10 @@ namespace ClassUP.Domain.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string IconUrl { get; set; }
         #endregion
 
         #region Navigation properties
-        public List<SubCategory> SubCategories { get; set; }
-        public List<Course> Courses { get; set; } 
+        public List<Course>? Courses { get; set; } 
         #endregion
 
     }

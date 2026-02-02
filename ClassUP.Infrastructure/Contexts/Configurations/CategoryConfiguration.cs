@@ -33,22 +33,12 @@ namespace ClassUP.Infrastructure.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(500);
 
-            builder.Property(c => c.IconUrl)
-                .IsRequired()
-                .HasMaxLength(500);
+           
 
             #endregion
 
 
             #region Relationships
-
-            if (typeof(Category).GetProperty("SubCategories") != null)
-            {
-                builder.HasMany(c => c.SubCategories)
-                    .WithOne(s => s.Category) 
-                    .HasForeignKey(s => s.CategoryId)
-                    .OnDelete(DeleteBehavior.Cascade); 
-            }
 
             
             if (typeof(Category).GetProperty("Courses") != null)

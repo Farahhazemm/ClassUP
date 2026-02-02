@@ -22,10 +22,12 @@ namespace ClassUP.Infrastructure.Repository
             _db = db;
             Courses = new CourseRepository(_db);
             Lectures = new LectureRepository(_db);
+            Categorises = new CategoryRepository(_db);
         }
         public ICourseRepository Courses { get; }
         public ILectureRepository Lectures { get; }
 
+        public ICategoryRepository Categorises { get; }
         public async Task<int> SaveChangesAsync()
         {
             return await _db.SaveChangesAsync();

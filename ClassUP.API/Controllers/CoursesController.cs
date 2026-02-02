@@ -62,17 +62,20 @@ namespace ClassUP.API.Controllers
             var course = await _courseService.CreateCourse(request, UserId);
 
             return CreatedAtAction("GetCourseById", new { courseId = course.Id }, course);
-        } 
+        }
         #endregion
 
 
-         [HttpPatch("{courseId}")]
-         public async Task<IActionResult> UpdateCourse([FromForm] UpdateCourseRequest request,[FromQuery] int userId,[FromRoute]int courseId)
-         {
-             request.courseId=courseId;  
-             await _courseService.UpdateCourse(userId,request);
-             return NoContent();
-         }
+        #region Update
+        [HttpPatch("{courseId}")]
+        public async Task<IActionResult> UpdateCourse([FromForm] UpdateCourseRequest request, [FromQuery] int userId, [FromRoute] int courseId)
+        {
+            request.courseId = courseId;
+            await _courseService.UpdateCourse(userId, request);
+            return NoContent();
+        }
+
+        #endregion
 
         #region Delete
         [HttpDelete("{courseId}")]

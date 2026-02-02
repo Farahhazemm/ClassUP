@@ -14,8 +14,6 @@ namespace ClassUP.Infrastructure.Contexts
         public DbSet<User> Users { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<SubCategory> SubCategories { get; set; }
-        public DbSet<CourseSubCategory> CourseSubCategories { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<CourseTag> CourseTags { get; set; }
         public DbSet<Section> Sections { get; set; }
@@ -37,8 +35,6 @@ namespace ClassUP.Infrastructure.Contexts
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new CourseConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
-            modelBuilder.ApplyConfiguration(new SubCategoryConfiguration());
-            modelBuilder.ApplyConfiguration(new CourseSubCategoryConfiguration());
             modelBuilder.ApplyConfiguration(new TagConfiguration());
             modelBuilder.ApplyConfiguration(new CourseTagConfiguration());
             modelBuilder.ApplyConfiguration(new SectionConfiguration());

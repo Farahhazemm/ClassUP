@@ -102,10 +102,7 @@ namespace ClassUP.Infrastructure.Contexts.Configurations
                 .OnDelete(DeleteBehavior.Cascade);
 
             
-            builder.HasMany(c => c.CourseSubCategories)
-                .WithOne(csc => csc.Course)
-                .HasForeignKey(csc => csc.CourseId)
-                .OnDelete(DeleteBehavior.Cascade); 
+        
             #endregion
         }
     }

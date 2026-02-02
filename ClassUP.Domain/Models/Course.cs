@@ -17,7 +17,7 @@ namespace ClassUP.Domain.Models
             CourseTags = new List<CourseTag>();
             Reviews = new List<Review>();
             Enrollments = new List<Enrollment>();
-            CourseSubCategories = new List<CourseSubCategory>();
+            
         }
         #region MY Properties
         public int Id { get; set; }
@@ -46,7 +46,7 @@ namespace ClassUP.Domain.Models
         public List<CourseTag> CourseTags { get; set; }
         public List<Review> Reviews { get; set; }
         public List<Enrollment> Enrollments { get; set; }
-        public List<CourseSubCategory> CourseSubCategories { get; set; }
+       
         public List<Wishlist> CourseWishlists { get; set; } = new();
 
         #endregion

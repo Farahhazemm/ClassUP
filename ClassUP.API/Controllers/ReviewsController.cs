@@ -1,0 +1,15 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace ClassUP.API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ReviewsController : ControllerBase
+    {
+        public ReviewsController()
+        {
+            
+        }
+    }
+}
