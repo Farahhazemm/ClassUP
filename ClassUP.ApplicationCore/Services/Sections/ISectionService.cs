@@ -10,5 +10,6 @@ namespace ClassUP.ApplicationCore.Services.Sections
     public interface ISectionService
     {
         Task<SectionDTO> CreateAsync(int courseId, CreateSectionRequest request);
+        Task UpdateAsync(int id, UpdateSectionRequest request);
     }
 }

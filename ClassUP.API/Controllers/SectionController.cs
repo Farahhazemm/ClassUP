@@ -20,13 +20,24 @@ namespace ClassUP.API.Controllers
             _sectionService = sectionService;
         }
 
-       [HttpPost("courses/{courseId}/sections")]
-        public async Task<IActionResult>Create(int courseId, [FromBody] CreateSectionRequest request)
+        #region Create
+        [HttpPost("courses/{courseId}/sections")]
+        public async Task<IActionResult> Create(int courseId, [FromBody] CreateSectionRequest request)
         {
             var section = await _sectionService.CreateAsync(courseId, request);
             return NoContent();
-           // return CreatedAtAction("GetById", new { sectionId = section.Id }, section);
+            // return CreatedAtAction("GetById", new { sectionId = section.Id }, section);
         }
+        #endregion
+
+        #region Update
+        [HttpPut("sections/{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateSectionRequest request)
+        {
+            await _sectionService.UpdateAsync(id, request);
+            return NoContent();
+        } 
+        #endregion
 
     }
 }

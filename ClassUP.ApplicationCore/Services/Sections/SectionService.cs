@@ -16,6 +16,7 @@ namespace ClassUP.ApplicationCore.Services.Sections
         {
             _unitOfWork = unitOfWork;   
         }
+        #region Create
         public async Task<SectionDTO> CreateAsync(int courseId, CreateSectionRequest request)
         {
             var course = await _unitOfWork.Courses.GetByIdAsync(courseId);
@@ -34,11 +35,27 @@ namespace ClassUP.ApplicationCore.Services.Sections
 
             return new SectionDTO
             {
-                Id=section.Id,
-                Title= section.Title,   
+                Id = section.Id,
+                Title = section.Title,
                 OrderIndex = section.OrderIndex,
 
             };
         }
+        #endregion
+
+        #region Update
+        public async Task UpdateAsync(int id, UpdateSectionRequest request)
+        {
+            var section = await _unitOfWork.Sections.GetByIdAsync(id);
+            if (section == null)
+                throw new KeyNotFoundException($"Section with id {id} not found");
+            if (request.Title != null)
+                section.Title = request.Title.Trim();
+            if (request.OrderIndex.HasValue)
+                section.OrderIndex = request.OrderIndex.Value;
+            _unitOfWork.Sections.UpdateAsync(section);
+            await _unitOfWork.SaveChangesAsync();
+        } 
+        #endregion
     }
 }
