@@ -22,9 +22,7 @@ namespace ClassUP.Infrastructure.Data.Configurations
                    .IsRequired()
                    .HasMaxLength(200);
 
-            builder.Property(s => s.Description)
-                   .IsRequired()
-                   .HasMaxLength(2000);
+           
 
             builder.Property(s => s.OrderIndex)
                    .IsRequired();

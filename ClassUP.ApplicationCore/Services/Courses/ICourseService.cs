@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ClassUP.Domain.Models;
-using ClassUP.ApplicationCore.DTOs.Requests;
 using ClassUP.ApplicationCore.DTOs.Responses.Cources;
+using ClassUP.ApplicationCore.DTOs.Requests.Courses;
 namespace ClassUP.ApplicationCore.Services.Courses
 
 {

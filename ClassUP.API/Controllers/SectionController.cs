@@ -1,4 +1,5 @@
-﻿using ClassUP.ApplicationCore.Services.Section;
+﻿using ClassUP.ApplicationCore.DTOs.Requests.Section;
+using ClassUP.ApplicationCore.Services.Sections;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 // Endpoints for Sections
@@ -18,5 +19,14 @@ namespace ClassUP.API.Controllers
         {
             _sectionService = sectionService;
         }
+
+       [HttpPost("courses/{courseId}/sections")]
+        public async Task<IActionResult>Create(int courseId, [FromBody] CreateSectionRequest request)
+        {
+            var section = await _sectionService.CreateAsync(courseId, request);
+            return NoContent();
+           // return CreatedAtAction("GetById", new { sectionId = section.Id }, section);
+        }
+
     }
 }

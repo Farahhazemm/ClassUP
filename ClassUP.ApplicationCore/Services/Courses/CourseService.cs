@@ -1,5 +1,5 @@
 ﻿using ClassUP.ApplicationCore.Common.Filters;
-using ClassUP.ApplicationCore.DTOs.Requests;
+using ClassUP.ApplicationCore.DTOs.Requests.Courses;
 using ClassUP.ApplicationCore.DTOs.Responses.Cources;
 using ClassUP.ApplicationCore.IRepository;
 using ClassUP.ApplicationCore.Services.Thumbnail;

@@ -19,10 +19,6 @@ namespace ClassUP.Infrastructure.Data.Configurations
             builder.HasKey(v => v.Id);
 
 
-            builder.Property(v => v.ThumbnailUrl)
-                   .HasMaxLength(500)
-                   .IsRequired(false);
-
 
             builder.Property(v => v.UploadedAt)
                    .IsRequired();

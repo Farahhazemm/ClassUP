@@ -9,7 +9,8 @@ namespace ClassUP.ApplicationCore.IRepository
         ICourseRepository Courses { get; }
         ILectureRepository Lectures { get; }
         ICategoryRepository Categorises { get; }
-     
+
+        ISectionRepository Sections { get; }
         Task<int> SaveChangesAsync();
     }
 }

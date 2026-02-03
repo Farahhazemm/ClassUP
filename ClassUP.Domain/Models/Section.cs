@@ -11,7 +11,6 @@ namespace ClassUP.Domain.Models
         #region My properties
         public int Id { get; set; }
         public string Title { get; set; }
-        public string Description { get; set; }
         public int CourseId { get; set; }
         public int OrderIndex { get; set; }
         #endregion

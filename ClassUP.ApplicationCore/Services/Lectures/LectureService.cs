@@ -1,9 +1,11 @@
 ﻿using ClassUP.ApplicationCore.Common.Filters;
+using ClassUP.ApplicationCore.DTOs.Requests.Lectures;
 using ClassUP.ApplicationCore.DTOs.Responses.Lectures;
 using ClassUP.ApplicationCore.IRepository;
 using ClassUP.Domain.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace ClassUP.ApplicationCore.Services.Lectures
@@ -56,7 +58,6 @@ namespace ClassUP.ApplicationCore.Services.Lectures
     {
         Id = lecture.VideoContent.Id,
         VideoUrl = lecture.VideoContent.VideoUrl,
-        ThumbnailUrl = lecture.VideoContent.ThumbnailUrl,
 
     }
     : null,
@@ -99,10 +100,57 @@ namespace ClassUP.ApplicationCore.Services.Lectures
                 SectionId = lecture.SectionId,
                 IsFree = lecture.IsFree
             };
-        } 
+        }
+
+
         #endregion
 
+        public async Task AddAsync(int userId, CreateLectureRequest request)
+        {
+            var section = await _unitOfWork.Sections.GetByIdAsync(request.SectionId);
+            if (section == null)
+                throw new ArgumentException("Section not found");
 
+            if (request.Type != "video" && request.Type != "article")
+                throw new ValidationException("Lecture type must be Video or Article");
+
+            if (request.Type == "Video" && string.IsNullOrWhiteSpace(request.VideoUrl))
+                throw new ValidationException("VideoUrl is required for Video lectures");
+
+            if (request.Type == "Article" && string.IsNullOrWhiteSpace(request.ArticleContent))
+                throw new ValidationException("ArticleContent is required for Article lectures");
+
+          //  var orderIndex = await _unitOfWork.Lectures.CountAsync(l => l.SectionId == request.SectionId) + 1;
+
+            var lecture = new Lecture
+            {
+                Title = request.Title,
+                Description = request.Description,
+                Type = request.Type,
+                Duration = request.Duration ?? 0,
+                IsFree = request.IsFree,
+                SectionId = request.SectionId,
+               // OrderIndex = orderIndex,
+
+                VideoContent = request.Type == "Video"
+            ? new VideoContent
+            {
+                VideoUrl = request.VideoUrl!
+            }
+            : null,
+
+                ArticleContent = request.Type == "Article"
+            ? new ArticleContent
+            {
+                Content = request.ArticleContent!
+            }
+            : null
+            };
+
+            
+            await _unitOfWork.Lectures.AddAsync(lecture);
+            await _unitOfWork.SaveChangesAsync();
+        }
+    }
 
     }
-}

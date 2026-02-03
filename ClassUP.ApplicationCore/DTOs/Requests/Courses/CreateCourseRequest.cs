@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
-namespace ClassUP.ApplicationCore.DTOs.Requests
+namespace ClassUP.ApplicationCore.DTOs.Requests.Courses
 {
     public class CreateCourseRequest
     {

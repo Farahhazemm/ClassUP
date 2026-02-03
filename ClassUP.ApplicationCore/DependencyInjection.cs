@@ -2,6 +2,7 @@
 using ClassUP.ApplicationCore.Services.Categorise;
 using ClassUP.ApplicationCore.Services.Courses;
 using ClassUP.ApplicationCore.Services.Lectures;
+using ClassUP.ApplicationCore.Services.Sections;
 using ClassUP.ApplicationCore.Services.Thumbnail;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -17,7 +18,7 @@ namespace ClassUP.ApplicationCore
             services.AddScoped<IThumbnailService, ThumbnailService>();
             services.AddScoped<ILectureService, LectureService>();
             services.AddScoped<ICategoryServices,CategoryService>();
-           
+            services.AddScoped<ISectionService, SectionService>();
 
 
 

@@ -1,6 +1,5 @@
 ﻿using ClassUP.ApplicationCore.Common.Filters;
 using ClassUP.ApplicationCore.DTOs.Responses.Cources;
-using ClassUP.ApplicationCore.DTOs.Requests;
 using ClassUP.ApplicationCore.Services.Courses;
 using ClassUP.Domain.Enums;
 using ClassUP.Domain.Models;
@@ -8,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using ClassUP.ApplicationCore.DTOs.Requests.Courses;
 
 namespace ClassUP.API.Controllers
 {
