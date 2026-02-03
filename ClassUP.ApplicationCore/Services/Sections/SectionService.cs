@@ -38,6 +38,7 @@ namespace ClassUP.ApplicationCore.Services.Sections
                 Id = section.Id,
                 Title = section.Title,
                 OrderIndex = section.OrderIndex,
+                CourseId = section.CourseId
 
             };
         }
@@ -73,8 +74,23 @@ namespace ClassUP.ApplicationCore.Services.Sections
 
 
 
-        } 
+        }
+
+
         #endregion
+        public async Task<SectionDTO> GetByIdAsync(int id)
+        {
+            var section = await _unitOfWork.Sections.GetByIdAsync(id);
+            if (section == null)
+                throw new KeyNotFoundException($"Section with id {id} not found");
+            return new SectionDTO
+            {
+                Id = section.Id,
+                Title = section.Title,
+                OrderIndex = section.OrderIndex,
+                CourseId = section.CourseId
+            };
+        }
 
     }
 }

@@ -45,6 +45,16 @@ namespace ClassUP.API.Controllers
         {
             await _sectionService.DeleteAsync(id);
             return NoContent();
+        }
+        #endregion
+
+        #region GetById
+        [HttpGet("sections/{id}", Name = "GetSectionById")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var section = await _sectionService.GetByIdAsync(id);
+            return Ok(section);
+
         } 
         #endregion
 
