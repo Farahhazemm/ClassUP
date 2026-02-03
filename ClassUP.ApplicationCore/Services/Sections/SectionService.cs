@@ -41,6 +41,8 @@ namespace ClassUP.ApplicationCore.Services.Sections
 
             };
         }
+
+       
         #endregion
 
         #region Update
@@ -55,7 +57,24 @@ namespace ClassUP.ApplicationCore.Services.Sections
                 section.OrderIndex = request.OrderIndex.Value;
             _unitOfWork.Sections.UpdateAsync(section);
             await _unitOfWork.SaveChangesAsync();
+        }
+        #endregion
+
+        #region Delete
+        public async Task DeleteAsync(int id)
+        {
+            var section = await _unitOfWork.Sections.GetByIdAsync(id);
+            if (section == null)
+                throw new KeyNotFoundException($"Section with id {id} not found");
+            /* if (section.Lectures.Any())
+                 throw new BusinessException("Cannot delete section that has lectures");*/
+            _unitOfWork.Sections.DeleteAsync(section);
+            await _unitOfWork.SaveChangesAsync();
+
+
+
         } 
         #endregion
+
     }
 }

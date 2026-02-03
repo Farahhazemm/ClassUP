@@ -36,6 +36,15 @@ namespace ClassUP.API.Controllers
         {
             await _sectionService.UpdateAsync(id, request);
             return NoContent();
+        }
+        #endregion
+
+        #region Delete
+        [HttpDelete("sections/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _sectionService.DeleteAsync(id);
+            return NoContent();
         } 
         #endregion
 
