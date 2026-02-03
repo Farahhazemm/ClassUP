@@ -13,5 +13,6 @@ namespace ClassUP.ApplicationCore.Services.Sections
         Task UpdateAsync(int id, UpdateSectionRequest request);
         Task DeleteAsync(int id);
         Task<SectionDTO> GetByIdAsync(int id);
+        Task<IEnumerable<SectionDTO>> GetCourseSectionsAsync(int id);
     }
 }

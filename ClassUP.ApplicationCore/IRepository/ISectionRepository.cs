@@ -9,6 +9,6 @@ namespace ClassUP.ApplicationCore.IRepository
 {
     public interface ISectionRepository : IBaseRepository<Section>
     {
-       
+       Task<IEnumerable<Section>> GetByCourseIdAsync(int id);
     }
 }

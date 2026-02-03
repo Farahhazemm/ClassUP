@@ -55,6 +55,15 @@ namespace ClassUP.API.Controllers
             var section = await _sectionService.GetByIdAsync(id);
             return Ok(section);
 
+        }
+        #endregion
+
+        #region GetCourseSections
+        [HttpGet("course/{courseId}/sections")]
+        public async Task<IActionResult> GetSectionsByCourse(int courseId)
+        {
+            var sections = await _sectionService.GetCourseSectionsAsync(courseId);
+            return Ok(sections);
         } 
         #endregion
 

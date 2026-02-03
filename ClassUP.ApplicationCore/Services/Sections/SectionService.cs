@@ -78,6 +78,8 @@ namespace ClassUP.ApplicationCore.Services.Sections
 
 
         #endregion
+
+        #region GetById
         public async Task<SectionDTO> GetByIdAsync(int id)
         {
             var section = await _unitOfWork.Sections.GetByIdAsync(id);
@@ -91,6 +93,26 @@ namespace ClassUP.ApplicationCore.Services.Sections
                 CourseId = section.CourseId
             };
         }
+        #endregion
 
+        #region GetCorseSections
+        public async Task<IEnumerable<SectionDTO>> GetCourseSectionsAsync(int id)
+        {
+            var sections = await _unitOfWork.Sections.GetByCourseIdAsync(id);
+            if (sections == null || !sections.Any())
+                return Enumerable.Empty<SectionDTO>();
+
+            return sections
+           .OrderBy(s => s.OrderIndex)
+           .Select(s => new SectionDTO
+           {
+               Id = s.Id,
+               Title = s.Title,
+               OrderIndex = s.OrderIndex,
+               CourseId = s.CourseId
+           })
+           .ToList();
+        } 
+        #endregion
     }
-}
+    }
