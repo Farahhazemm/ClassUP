@@ -21,8 +21,6 @@ namespace ClassUP.Infrastructure.Data.Configurations
                    .IsRequired()
                    .HasColumnType("nvarchar(max)");
 
-            builder.Property(ac => ac.ReadingTime)
-                   .IsRequired();
 
             builder.HasOne(ac => ac.lecture)
                    .WithOne(l => l.ArticleContent)

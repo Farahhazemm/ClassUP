@@ -13,9 +13,7 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Lectures
         [Required]
         [RegularExpression("video|article")]
         public string Type { get; set; } 
-        public int? Duration { get; set; } 
         public bool IsFree { get; set; } = false;
-        //public int? OrderIndex { get; set; } try calc in mapping
         public int SectionId { get; set; }
 
         //contet based type

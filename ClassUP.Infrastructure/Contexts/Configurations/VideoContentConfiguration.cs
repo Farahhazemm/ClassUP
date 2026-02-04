@@ -19,10 +19,6 @@ namespace ClassUP.Infrastructure.Data.Configurations
             builder.HasKey(v => v.Id);
 
 
-
-            builder.Property(v => v.UploadedAt)
-                   .IsRequired();
-
             builder.HasOne(v => v.lecture)
                    .WithOne(l => l.VideoContent)
                    .HasForeignKey<VideoContent>(v => v.LectureId)

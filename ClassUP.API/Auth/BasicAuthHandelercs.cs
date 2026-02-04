@@ -59,13 +59,13 @@ namespace ClassUP.API.Auth
             var username = parts[0];
             var password = parts[1];
 
-            // 5️⃣ Validate user (مثال بسيط)
+            // 5️ Validate user 
             if (username != "admin" || password != "1234")
             {
                 return Task.FromResult(AuthenticateResult.Fail("Invalid Username or Password"));
             }
 
-            // 6️⃣ Create Claims
+            // 6️ Create Claims
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, username),

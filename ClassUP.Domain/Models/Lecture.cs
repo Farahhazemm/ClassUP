@@ -13,8 +13,6 @@ namespace ClassUP.Domain.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public String Type { get; set; } // Video, Article
-        public int Duration { get; set; } // in seconds
-        public int OrderIndex { get; set; }
         public int SectionId { get; set; }
 
         public bool IsFree { get; set; } // for Preview lessons

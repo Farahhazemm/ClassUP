@@ -12,7 +12,6 @@ namespace ClassUP.Domain.Models
         public int LectureId { get; set; }
         public Lecture lecture { get; set; }
         public string Content { get; set; } 
-        public int ReadingTime { get; set; } // in minutes
        
     }
 }

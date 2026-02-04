@@ -25,14 +25,22 @@ namespace ClassUP.API.Controllers
             return Ok(Courses);
         }
 
-        [HttpGet("{LectureId}")]
-        public async Task<IActionResult> GetByIdAsync(int LectureId)
+        [HttpGet("{lectureId}")]
+        public async Task<IActionResult> GetById(int lectureId)
         {
-            var lecture = await _lectureService.GetByIdAsync(LectureId);
+            var lecture = await _lectureService.GetByIdAsync(lectureId);
             return Ok(lecture);
 
         }
-       
 
+        [HttpPost("section/lectures")]
+        public async Task<IActionResult>Create( [FromBody] CreateLectureRequest request)
+        {
+            var lecture = await _lectureService.AddAsync( request);
+
+            return CreatedAtAction("GetById", new { lectureId = lecture.Id },lecture);
         }
+
+
+    }
     }

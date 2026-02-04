@@ -48,8 +48,6 @@ namespace ClassUP.ApplicationCore.Services.Lectures
                 Title = lecture.Title,
                 Description = lecture.Description,
                 Type = lecture.Type,
-                Duration = lecture.Duration,
-                OrderIndex = lecture.OrderIndex,
                 SectionId = lecture.SectionId,
                 IsFree = lecture.IsFree,
 
@@ -95,8 +93,6 @@ namespace ClassUP.ApplicationCore.Services.Lectures
                 Title = lecture.Title,
                 Description = lecture.Description,
                 Type = lecture.Type,
-                Duration = lecture.Duration,
-                OrderIndex = lecture.OrderIndex,
                 SectionId = lecture.SectionId,
                 IsFree = lecture.IsFree
             };
@@ -105,7 +101,7 @@ namespace ClassUP.ApplicationCore.Services.Lectures
 
         #endregion
 
-        public async Task AddAsync(int userId, CreateLectureRequest request)
+        public async Task <LectureDto>AddAsync( CreateLectureRequest request)
         {
             var section = await _unitOfWork.Sections.GetByIdAsync(request.SectionId);
             if (section == null)
@@ -127,7 +123,6 @@ namespace ClassUP.ApplicationCore.Services.Lectures
                 Title = request.Title,
                 Description = request.Description,
                 Type = request.Type,
-                Duration = request.Duration ?? 0,
                 IsFree = request.IsFree,
                 SectionId = request.SectionId,
                // OrderIndex = orderIndex,
@@ -147,10 +142,22 @@ namespace ClassUP.ApplicationCore.Services.Lectures
             : null
             };
 
-            
             await _unitOfWork.Lectures.AddAsync(lecture);
             await _unitOfWork.SaveChangesAsync();
+            return new LectureDto
+            {
+               Id=lecture.Id,
+               Title= lecture.Title,    
+               Description= lecture.Description,
+               Type = lecture.Type, 
+               SectionId =lecture.SectionId,
+               IsFree = lecture.IsFree,
+
+
+            };
         }
+
+       
     }
 
     }

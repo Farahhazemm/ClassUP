@@ -12,7 +12,6 @@ namespace ClassUP.Domain.Models
         public int LectureId { get; set; }
         public Lecture lecture { get; set; }
         public string VideoUrl { get; set; } 
-        public DateTime UploadedAt { get; set; }
 
     }
 }

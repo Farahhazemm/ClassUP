@@ -35,14 +35,6 @@ namespace ClassUP.Infrastructure.Data.Configurations
                 .HasMaxLength(20)
                 .HasConversion<string>();
 
-         
-            builder.Property(l => l.Duration)
-                .IsRequired()
-                .HasDefaultValue(0);
-
-            builder.Property(l => l.OrderIndex)
-                .IsRequired()
-                .HasDefaultValue(0);
 
             builder.Property(l => l.SectionId)
                 .IsRequired();
