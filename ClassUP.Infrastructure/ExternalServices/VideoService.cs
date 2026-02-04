@@ -1,0 +1,55 @@
+﻿using ClassUP.ApplicationCore.DTOs.Requests.Lectures;
+using System.Collections.Generic;
+using ClassUP.ApplicationCore.Services.Videos;
+using ClassUP.Domain.Models;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+using System;
+using System.IO;
+using System.Threading.Tasks;
+
+namespace ClassUP.Infrastructure.ExternalServices
+{
+    public class VideoService : IVideoService
+    {
+        private readonly Cloudinary _cloudinary;
+        public VideoService(IOptions<CloudinarySettings> config)
+        {
+            var account = new Account(
+            config.Value.CloudName,
+            config.Value.ApiKey,
+            config.Value.ApiSecret);
+
+            _cloudinary = new Cloudinary(account);
+            _cloudinary.Api.Secure = true;
+        }
+
+        public async Task<string> UploadAsync(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                throw new ArgumentException("File is empty.");
+
+            var uploadParams = new VideoUploadParams()
+            {
+                File = new FileDescription(file.FileName, file.OpenReadStream()),
+                PublicId = Guid.NewGuid().ToString(),
+                EagerTransforms = new List<Transformation> // another forms of videos
+                {
+                  new EagerTransformation().Width(720).Height(480).Crop("fit"),
+                  new EagerTransformation().Width(160).Height(90).Crop("fill").AudioCodec("none")
+                },
+                EagerAsync = true,
+            };
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            if (uploadResult.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return uploadResult.SecureUrl.ToString();
+            }
+
+            throw new Exception("Video upload failed.");
+        }
+
+    }
+}

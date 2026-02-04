@@ -1,4 +1,5 @@
 ﻿using ClassUP.ApplicationCore.DTOs.Responses.Lectures;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,7 +18,6 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Lectures
         public int SectionId { get; set; }
 
         //contet based type
-        public string? VideoUrl { get; set; }
         public string? ArticleContent { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using ClassUP.ApplicationCore.DTOs.Requests.Lectures;
 using ClassUP.ApplicationCore.DTOs.Responses.Lectures;
 using ClassUP.ApplicationCore.IRepository;
+using ClassUP.ApplicationCore.Services.Videos;
 using ClassUP.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -14,11 +15,14 @@ namespace ClassUP.ApplicationCore.Services.Lectures
     {
         
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IVideoService _videoService;
 
-        public LectureService( IUnitOfWork unitOfWork)
+        public LectureService( IUnitOfWork unitOfWork, IVideoService videoService )
         {
            
             _unitOfWork = unitOfWork;
+            _videoService = videoService;
+           
         }
 
        
@@ -107,16 +111,12 @@ namespace ClassUP.ApplicationCore.Services.Lectures
             if (section == null)
                 throw new ArgumentException("Section not found");
 
-            if (request.Type != "video" && request.Type != "article")
-                throw new ValidationException("Lecture type must be Video or Article");
+            if (request.Type != "video" || request.Type != "article")
+                throw new ValidationException("Lecture type must be video or article");
 
-            if (request.Type == "Video" && string.IsNullOrWhiteSpace(request.VideoUrl))
-                throw new ValidationException("VideoUrl is required for Video lectures");
-
+           
             if (request.Type == "Article" && string.IsNullOrWhiteSpace(request.ArticleContent))
                 throw new ValidationException("ArticleContent is required for Article lectures");
-
-          //  var orderIndex = await _unitOfWork.Lectures.CountAsync(l => l.SectionId == request.SectionId) + 1;
 
             var lecture = new Lecture
             {
@@ -125,14 +125,6 @@ namespace ClassUP.ApplicationCore.Services.Lectures
                 Type = request.Type,
                 IsFree = request.IsFree,
                 SectionId = request.SectionId,
-               // OrderIndex = orderIndex,
-
-                VideoContent = request.Type == "Video"
-            ? new VideoContent
-            {
-                VideoUrl = request.VideoUrl!
-            }
-            : null,
 
                 ArticleContent = request.Type == "Article"
             ? new ArticleContent

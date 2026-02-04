@@ -1,8 +1,11 @@
 using ClassUP.API.Auth;
 using ClassUP.ApplicationCore;
+using ClassUP.ApplicationCore.DTOs.Requests.Lectures;
 using ClassUP.ApplicationCore.IRepository;
+using ClassUP.ApplicationCore.Services.Videos;
 using ClassUP.Infrastructure;
 using ClassUP.Infrastructure.Contexts;
+using ClassUP.Infrastructure.ExternalServices;
 using ClassUP.Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
@@ -18,11 +21,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// For Video Upload / Delete
+builder.Services.Configure<CloudinarySettings>(
+    builder.Configuration.GetSection("CloudinarySettings"));
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MyConc")));
-
-
+builder.Services.AddScoped<IVideoService, VideoService>();
 /*
  Add Scheme => away to Authenticate Takes Two parameters 
 1 : Name in shape string "Name is here "
@@ -35,7 +38,6 @@ also need Two genaric Parameters <,>
 /*builder.Services.AddAuthentication()
     .AddScheme<AuthenticationSchemeOptions, BasicAuthHandelercs>("Basic", null);*/
 var app = builder.Build();
-
 
 if (app.Environment.IsDevelopment())
 {
