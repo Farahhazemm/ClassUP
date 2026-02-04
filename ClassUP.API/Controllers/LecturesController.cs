@@ -60,8 +60,16 @@ namespace ClassUP.API.Controllers
             return NoContent();
         }
 
+        [HttpDelete("lecture/video/{publicId}")]
+        public async Task<IActionResult> DeleteVideo(string publicId)
+        {
+
+           await _videoService.DeleteAsync(publicId);
+
+            return NoContent();
+        }
 
 
 
     }
-    }
+}

@@ -26,6 +26,21 @@ namespace ClassUP.Infrastructure.ExternalServices
             _cloudinary.Api.Secure = true;
         }
 
+        public async Task<bool> DeleteAsync(string publicId)
+        {
+            var deleteParams = new DeletionParams(publicId)
+            {
+                ResourceType = ResourceType.Video
+            };
+
+            var result = await _cloudinary.DestroyAsync(deleteParams);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return true;
+            }
+            throw new Exception("Video deletion failed.");
+        }
+
         public async Task<string> UploadAsync(IFormFile file)
         {
             if (file == null || file.Length == 0)

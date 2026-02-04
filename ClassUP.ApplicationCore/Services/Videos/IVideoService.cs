@@ -9,6 +9,7 @@ namespace ClassUP.ApplicationCore.Services.Videos
         public interface IVideoService
         {
             Task<string>UploadAsync(IFormFile videoFile);
-        }
+             Task<bool>DeleteAsync(string publicId);
+    }
     }
 
