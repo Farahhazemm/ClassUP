@@ -11,7 +11,8 @@ namespace ClassUP.Domain.Models
         public int Id { get; set; }
         public int LectureId { get; set; }
         public Lecture lecture { get; set; }
-        public string VideoUrl { get; set; } 
+        public string VideoUrl { get; set; }
+        public string PublicId { get; set; } = null!;
 
     }
 }

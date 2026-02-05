@@ -19,7 +19,7 @@ namespace ClassUP.ApplicationCore.DTOs.Responses.Lectures
 
         #region OP :Video or Article details
 
-        public VideoContentDTO? VideoContent { get; set; }
+        public VideoResult? VideoContent { get; set; }
         public ArticleContentDTO? ArticleContent { get; set; }
         #endregion
 

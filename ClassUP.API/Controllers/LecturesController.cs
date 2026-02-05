@@ -21,6 +21,7 @@ namespace ClassUP.API.Controllers
             _videoService = videoService;
 
         }
+        #region GetAll
         [HttpGet("GetAllLectures")]
         public async Task<IActionResult> GetAllLectures([FromQuery] FilterOptions filter)
         {
@@ -28,6 +29,10 @@ namespace ClassUP.API.Controllers
             return Ok(Courses);
         }
 
+        #endregion
+
+
+        #region GetBYId
         [HttpGet("{lectureId}")]
         public async Task<IActionResult> GetById(int lectureId)
         {
@@ -36,38 +41,42 @@ namespace ClassUP.API.Controllers
 
         }
 
+        #endregion
+
+
+        #region Create
         [HttpPost("section/lectures")]
-        public async Task<IActionResult>Create([FromBody] CreateLectureRequest request)
+        public async Task<IActionResult> Create([FromBody] CreateLectureRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var lecture = await _lectureService.AddAsync( request);
+            var lecture = await _lectureService.AddAsync(request);
 
-            return CreatedAtAction("GetById", new { lectureId = lecture.Id },lecture);
+            return CreatedAtAction("GetById", new { lectureId = lecture.Id }, lecture);
         }
+        #endregion
 
-        [HttpPost("lecture/video")]
-        public async Task<IActionResult>UploadVideo( IFormFile videoFile)
+        #region UploadVideo
+        [HttpPost("{lectureId}/video")]
+        public async Task<IActionResult> UploadVideo(int lectureId, IFormFile file)
         {
-            if (videoFile == null || videoFile.Length == 0)
-            {
-                return BadRequest("No video file provided");
-            }
-
-            await _videoService.UploadAsync(videoFile);
-
+            await _lectureService.UploadLectureVideoAsync(lectureId, file);
             return NoContent();
         }
 
-        [HttpDelete("lecture/video/{publicId}")]
-        public async Task<IActionResult> DeleteVideo(string publicId)
+        #endregion
+
+        #region DeleteVideo
+        [HttpDelete("lecture/video/{lectureId}")]
+        public async Task<IActionResult> DeleteVideo(int lectureId)
         {
 
-           await _videoService.DeleteAsync(publicId);
+            await _lectureService.DeleteLectureVideoAsync(lectureId);
 
             return NoContent();
-        }
+        } 
+        #endregion
 
 
 

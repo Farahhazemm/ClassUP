@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClassUP.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace ClassUP.Domain.Models
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public String Type { get; set; } // Video, Article
+        public LectureType Type { get; set; }// Video, Article
         public int SectionId { get; set; }
 
         public bool IsFree { get; set; } // for Preview lessons

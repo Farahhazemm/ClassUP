@@ -1,4 +1,5 @@
 ﻿using ClassUP.ApplicationCore.DTOs.Responses.Lectures;
+using ClassUP.Domain.Enums;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -9,15 +10,21 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Lectures
 {
     public class CreateLectureRequest
     {
-        public string Title { get; set; } = null!;
-        public string Description { get; set; } = null!;
         [Required]
-        [RegularExpression("video|article")]
-        public string Type { get; set; } 
-        public bool IsFree { get; set; } = false;
+    public string Title { get; set; } = null!;
+
+        [Required]
+        public string Description { get; set; } = null!;
+
+        [Required]
+        public LectureType Type { get; set; }
+
+        public bool IsFree { get; set; }
+
+        [Required]
         public int SectionId { get; set; }
 
-        //contet based type
+        // Article only
         public string? ArticleContent { get; set; }
     }
 }

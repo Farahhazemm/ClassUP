@@ -3,7 +3,9 @@ using ClassUP.ApplicationCore.DTOs.Requests.Lectures;
 using ClassUP.ApplicationCore.DTOs.Responses.Lectures;
 using ClassUP.ApplicationCore.IRepository;
 using ClassUP.ApplicationCore.Services.Videos;
+using ClassUP.Domain.Enums;
 using ClassUP.Domain.Models;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,110 +15,68 @@ namespace ClassUP.ApplicationCore.Services.Lectures
 {
     public class LectureService : ILectureService
     {
-        
         private readonly IUnitOfWork _unitOfWork;
         private readonly IVideoService _videoService;
-
-        public LectureService( IUnitOfWork unitOfWork, IVideoService videoService )
+        public LectureService(IUnitOfWork unitOfWork, IVideoService videoService)
         {
-           
             _unitOfWork = unitOfWork;
             _videoService = videoService;
-           
         }
 
-       
-
-        #region GetAll
-        public async Task<IEnumerable<LectureDto>> GetLecturesAsync(FilterOptions filterOptions)
+        public async Task<IEnumerable<LectureDto>> GetLecturesAsync(FilterOptions filter)
         {
-            var lectures = await _unitOfWork.Lectures.GetAllAsync(filterOptions);
-            if (lectures == null || !lectures.Any())
-                return Enumerable.Empty<LectureDto>();
+            var lectures = await _unitOfWork.Lectures.GetAllAsync(filter);
 
-            return lectures.Select(MapToLectureDto);
-
+            return lectures.Select(l => new LectureDto
+            {
+                Id = l.Id,
+                Title = l.Title,
+                Description = l.Description,
+                Type = l.Type.ToString(),
+                SectionId = l.SectionId,
+                IsFree = l.IsFree
+            });
         }
-        #endregion
 
-        #region GetById
-        public async Task<LectureDetailDto?> GetByIdAsync(int id)
+        public async Task<LectureDetailDto> GetByIdAsync(int id)
         {
+            var lecture = await _unitOfWork.Lectures.GetByIdWithDetailsAsync(id)
+                ?? throw new KeyNotFoundException("Lecture not found");
 
-            var lecture = await _unitOfWork.Lectures.GetByIdWithDetailsAsync(id);
-            if (lecture == null)
-                throw new KeyNotFoundException("Lecture not found");
             return new LectureDetailDto
             {
                 Id = lecture.Id,
                 Title = lecture.Title,
                 Description = lecture.Description,
-                Type = lecture.Type,
+                Type = lecture.Type.ToString(),
                 SectionId = lecture.SectionId,
                 IsFree = lecture.IsFree,
 
-                VideoContent = lecture.Type == "Video" && lecture.VideoContent != null
-    ? new VideoContentDTO
-    {
-        Id = lecture.VideoContent.Id,
-        VideoUrl = lecture.VideoContent.VideoUrl,
+                VideoContent = lecture.Type == LectureType.Video
+                    ? lecture.VideoContent == null ? null : new VideoResult
+                    {
+                        VideoUrl = lecture.VideoContent.VideoUrl,
+                    }
+                    : null,
 
-    }
-    : null,
-
-
-                ArticleContent = lecture.Type == "Article" && lecture.ArticleContent != null
-    ? new ArticleContentDTO
-    {
-        Id = lecture.ArticleContent.Id,
-        ArticleText = lecture.ArticleContent.Content
-    }
-    : null,
-
-
-                LectureProgresses = lecture.LectureProgresses
-                .Select(p => new LectureProgressDTO
-                {
-                    Id = p.Id,
-                    IsCompleted = p.IsCompleted,
-                    WatchedDuration = p.WatchedDuration,
-                    LastWatchedAt = p.LastWatchedAt,
-                    CompletedAt = p.CompletedAt
-                })
-                .ToList()
-            };
-        } 
-        #endregion
-
-        #region MapMethod
-        private LectureDto MapToLectureDto(Lecture lecture)
-        {
-            return new LectureDto
-            {
-                Id = lecture.Id,
-                Title = lecture.Title,
-                Description = lecture.Description,
-                Type = lecture.Type,
-                SectionId = lecture.SectionId,
-                IsFree = lecture.IsFree
+                ArticleContent = lecture.Type == LectureType.Article
+                    ? lecture.ArticleContent == null ? null : new ArticleContentDTO
+                    {
+                        Id = lecture.ArticleContent.Id,
+                        ArticleText = lecture.ArticleContent.Content
+                    }
+                    : null
             };
         }
 
-
-        #endregion
-
-        public async Task <LectureDto>AddAsync( CreateLectureRequest request)
+        public async Task<LectureDto> AddAsync(CreateLectureRequest request)
         {
-            var section = await _unitOfWork.Sections.GetByIdAsync(request.SectionId);
-            if (section == null)
-                throw new ArgumentException("Section not found");
+            var section = await _unitOfWork.Sections.GetByIdAsync(request.SectionId)
+                ?? throw new ArgumentException("Section not found");
 
-            if (request.Type != "video" || request.Type != "article")
-                throw new ValidationException("Lecture type must be video or article");
-
-           
-            if (request.Type == "Article" && string.IsNullOrWhiteSpace(request.ArticleContent))
-                throw new ValidationException("ArticleContent is required for Article lectures");
+            if (request.Type == LectureType.Article &&
+                string.IsNullOrWhiteSpace(request.ArticleContent))
+                throw new ValidationException("ArticleContent is required");
 
             var lecture = new Lecture
             {
@@ -125,31 +85,74 @@ namespace ClassUP.ApplicationCore.Services.Lectures
                 Type = request.Type,
                 IsFree = request.IsFree,
                 SectionId = request.SectionId,
-
-                ArticleContent = request.Type == "Article"
-            ? new ArticleContent
-            {
-                Content = request.ArticleContent!
-            }
-            : null
+                ArticleContent = request.Type == LectureType.Article
+                    ? new ArticleContent { Content = request.ArticleContent! }
+                    : null
             };
 
             await _unitOfWork.Lectures.AddAsync(lecture);
             await _unitOfWork.SaveChangesAsync();
+
             return new LectureDto
             {
-               Id=lecture.Id,
-               Title= lecture.Title,    
-               Description= lecture.Description,
-               Type = lecture.Type, 
-               SectionId =lecture.SectionId,
-               IsFree = lecture.IsFree,
-
-
+                Id = lecture.Id,
+                Title = lecture.Title,
+                Description = lecture.Description,
+                Type = lecture.Type.ToString(),
+                SectionId = lecture.SectionId,
+                IsFree = lecture.IsFree
             };
         }
 
-       
-    }
+        #region UploadVideo
+        public async Task UploadLectureVideoAsync(int lectureId, IFormFile file)
+        {
+            var lecture = await _unitOfWork.Lectures.GetByIdAsync(lectureId)
+                ?? throw new KeyNotFoundException("Lecture not found");
+
+            if (lecture.Type != Domain.Enums.LectureType.Video)
+                throw new ValidationException("Lecture is not video type");
+
+            var uploadResult = await _videoService.UploadAsync(file);
+
+            lecture.VideoContent = new VideoContent
+            {
+                VideoUrl = uploadResult.VideoUrl,
+                PublicId = uploadResult.PublicId
+            };
+
+            await _unitOfWork.SaveChangesAsync();
+        }
+        #endregion
+
+        #region DeleteVideo
+        public async Task DeleteLectureVideoAsync(int lectureId)
+        {
+
+            var lecture = await _unitOfWork.Lectures.GetByIdWithDetailsAsync(lectureId)
+             ?? throw new KeyNotFoundException("Lecture not found");
+
+
+
+            if (lecture.Type != LectureType.Video)
+                throw new ValidationException("Lecture is not video type");
+
+
+            if (lecture.VideoContent == null)
+                throw new InvalidOperationException("Lecture does not have a video");
+
+
+            await _videoService.DeleteAsync(lecture.VideoContent.PublicId);
+
+
+            lecture.VideoContent = null;
+
+
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        #endregion
 
     }
+
+}
