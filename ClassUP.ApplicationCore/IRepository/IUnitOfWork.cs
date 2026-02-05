@@ -11,6 +11,7 @@ namespace ClassUP.ApplicationCore.IRepository
         ICategoryRepository Categorises { get; }
 
         ISectionRepository Sections { get; }
+        IReviewRepository Reviews { get; }
         Task<int> SaveChangesAsync();
     }
 }

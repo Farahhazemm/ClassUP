@@ -2,6 +2,7 @@
 using ClassUP.ApplicationCore.Services.Categorise;
 using ClassUP.ApplicationCore.Services.Courses;
 using ClassUP.ApplicationCore.Services.Lectures;
+using ClassUP.ApplicationCore.Services.Reviws;
 using ClassUP.ApplicationCore.Services.Sections;
 using ClassUP.ApplicationCore.Services.Thumbnail;
 using ClassUP.ApplicationCore.Services.Videos;
@@ -20,6 +21,7 @@ namespace ClassUP.ApplicationCore
             services.AddScoped<ILectureService, LectureService>();
             services.AddScoped<ICategoryServices,CategoryService>();
             services.AddScoped<ISectionService, SectionService>();
+            services.AddScoped<IReviewService,ReviewService>();
             
 
 

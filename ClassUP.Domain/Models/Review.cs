@@ -13,7 +13,7 @@ namespace ClassUP.Domain.Models
         public int UserId { get; set; }
         public int Rating { get; set; } // 1-5
         public string Comment { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public User User { get; set; }
         public Course Course { get; set; }
 

@@ -23,7 +23,8 @@ namespace ClassUP.Infrastructure.Repository
             Courses = new CourseRepository(_db);
             Lectures = new LectureRepository(_db);
             Categorises = new CategoryRepository(_db);
-            Sections =new SectionRepository(_db);   
+            Sections =new SectionRepository(_db);
+            Reviews = new ReviewRepository(_db);
         }
         public ICourseRepository Courses { get; }
         public ILectureRepository Lectures { get; }
@@ -31,6 +32,7 @@ namespace ClassUP.Infrastructure.Repository
         public ICategoryRepository Categorises { get; }
 
         public ISectionRepository Sections { get; }
+        public IReviewRepository Reviews { get; }
 
         public async Task<int> SaveChangesAsync()
         {
