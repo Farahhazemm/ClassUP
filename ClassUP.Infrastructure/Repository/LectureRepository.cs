@@ -34,5 +34,10 @@ namespace ClassUP.Infrastructure.Repository
             .Where(l => l.SectionId == sectionId).ToListAsync();
             return lectures;
         }
+
+        public async Task RemoveVideoContent(VideoContent video)
+        {
+             _dbSet.VideoContents.Remove(video);
+        }
     }
 }

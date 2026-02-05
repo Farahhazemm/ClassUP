@@ -158,6 +158,24 @@ namespace ClassUP.ApplicationCore.Services.Lectures
                 lecture.IsFree = request.IsFree.Value;
 
             await _unitOfWork.SaveChangesAsync();
+        }
+        #endregion
+
+        #region Delete
+        public async Task DeleteAsync(int lectureId)
+        {
+            var lecture = await _unitOfWork.Lectures.GetByIdWithDetailsAsync(lectureId);
+
+            if (lecture == null || lecture.VideoContent == null)
+                return;
+
+            await _videoService.DeleteAsync(lecture.VideoContent.PublicId);
+            await _unitOfWork.Lectures.RemoveVideoContent(lecture.VideoContent);
+
+
+            _unitOfWork.Lectures.DeleteAsync(lecture);
+
+            await _unitOfWork.SaveChangesAsync();
         } 
         #endregion
 
@@ -209,15 +227,8 @@ namespace ClassUP.ApplicationCore.Services.Lectures
             await _unitOfWork.SaveChangesAsync();
         }
 
-        Task<IEnumerable<LectureDTO>> ILectureService.GetLecturesAsync(FilterOptions filterOptions)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<LectureDTO> ILectureService.AddAsync(CreateLectureRequest request)
-        {
-            throw new NotImplementedException();
-        }
+      
+     
 
 
 

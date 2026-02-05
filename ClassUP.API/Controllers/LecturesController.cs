@@ -82,6 +82,17 @@ namespace ClassUP.API.Controllers
         }
         #endregion
 
+        #region Delete
+        [HttpDelete("{lectureId}")]
+        public async Task<IActionResult> DeleteLecture(int lectureId)
+        {
+            await _lectureService.DeleteAsync(lectureId);
+            return NoContent();
+        }
+
+
+        #endregion
+
 
         #region UploadVideo
         [HttpPost("{lectureId}/video")]

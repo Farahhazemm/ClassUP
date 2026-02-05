@@ -16,6 +16,7 @@ namespace ClassUP.ApplicationCore.Services.Lectures
         Task<IEnumerable<LectureDTO>> GetBySectionIdAsync(int sectionId);
         Task<LectureDTO> AddAsync( CreateLectureRequest request);
         Task UpdateAsync(int lectureId, UpdateLectureRequest request);
+        Task DeleteAsync(int id);   
 
         Task UploadLectureVideoAsync(int lectureId, IFormFile file);
         Task DeleteLectureVideoAsync(int lectureId);
