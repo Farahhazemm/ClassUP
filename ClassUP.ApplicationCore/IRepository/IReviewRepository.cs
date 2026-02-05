@@ -7,6 +7,6 @@ namespace ClassUP.ApplicationCore.IRepository
 {
     public interface IReviewRepository : IBaseRepository<Review>    
     {
-        
+        Task<List<Review>> GetByCourseIdAsync(int courseId);
     }
 }

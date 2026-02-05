@@ -23,5 +23,12 @@ namespace ClassUP.API.Controllers
             await  _reviewService.AddAsync(reviewDTO);
             return NoContent();
         }
+
+        [HttpGet("get-course-review/{courseId}")]
+        public async Task<IActionResult> GetAllReviews(int courseId)
+        {
+            var reviews = await _reviewService.GetAllAsync(courseId);
+            return Ok(reviews);
+        }
     }
 }
