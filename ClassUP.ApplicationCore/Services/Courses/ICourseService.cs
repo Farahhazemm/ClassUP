@@ -12,6 +12,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
     {
         Task<IEnumerable<AllCoursesDTO>> GetAllCourses(FilterOptions filter); // made for test
         Task<IEnumerable<AllCoursesDTO>> GetInstructorCoursesAsync(int instructorId,FilterOptions filter );
+        Task<IEnumerable<AllCoursesDTO>> GetCategoryCourses(int categoryId);
        Task<CourseDetailsDTO> GetByIdAsync(int id);
        Task<CreateCourseDTO> CreateCourse(CreateCourseRequest request, int userId);
         Task UpdateCourse(int userId, UpdateCourseRequest request);

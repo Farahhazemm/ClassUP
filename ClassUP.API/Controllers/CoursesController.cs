@@ -50,6 +50,13 @@ namespace ClassUP.API.Controllers
             
             return Ok(Course);
         }
+
+        [HttpGet("/Category{categoryId}/Courses")]
+        public async Task<ActionResult> GetCoursesByCategory(int categoryId)
+        {
+            var courses = await _courseService.GetCategoryCourses(categoryId);
+            return Ok(courses);
+        }
         #endregion
 
         #region Create

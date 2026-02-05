@@ -31,6 +31,15 @@ namespace ClassUP.Infrastructure.Repository
             return await query.ToListAsync();
 
         }
+
+        public async Task<IEnumerable<Course>> GetCategoryCoursesAsync(int categoryId)
+        {
+            return await _db.Courses
+         .Where(c => c.CategoryId == categoryId)
+         .AsNoTracking()
+         .ToListAsync();
+        }
+
     }
 }
 

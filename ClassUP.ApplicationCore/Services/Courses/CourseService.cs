@@ -103,8 +103,18 @@ namespace ClassUP.ApplicationCore.Services.Courses
 
         #endregion
 
+        public async Task<IEnumerable<AllCoursesDTO>> GetCategoryCourses(int categoryId)
+        {
+            var courses = await _unitOfWork.Courses.GetCategoryCoursesAsync(categoryId);
+
+            if (courses == null || !courses.Any())
+                return Enumerable.Empty<AllCoursesDTO>();
+
+            return courses.Select(MapToAllCoursesDto);
+        }
+
         #region GetById
-         public async Task<CourseDetailsDTO> GetByIdAsync(int id)
+        public async Task<CourseDetailsDTO> GetByIdAsync(int id)
          {
              var Course= await _unitOfWork.Courses.GetByIdAsync(id);
             if (Course == null)
@@ -113,13 +123,15 @@ namespace ClassUP.ApplicationCore.Services.Courses
 
             return MapToCourseDetailsDto(Course); 
          }
-        
-         #endregion
+
+       
+
+        #endregion
 
 
 
         #region GetCorsesByInstractor
-         public async Task<IEnumerable<AllCoursesDTO>> GetInstructorCoursesAsync(int instructorId, FilterOptions filter)
+        public async Task<IEnumerable<AllCoursesDTO>> GetInstructorCoursesAsync(int instructorId, FilterOptions filter)
          {
             var courses = await _unitOfWork.Courses.GetInstructorCoursesAsync(instructorId, filter);
 
