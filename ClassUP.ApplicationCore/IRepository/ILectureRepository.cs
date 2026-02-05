@@ -12,5 +12,7 @@ namespace ClassUP.ApplicationCore.IRepository
     {
         Task<Lecture?> GetByIdWithDetailsAsync(int id);
 
+        Task<IEnumerable<Lecture>> GetSectionLectursAsync(int sectionId);   
+
     }
 }

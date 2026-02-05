@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ClassUP.ApplicationCore.DTOs.Responses.Lectures
 {
-    public class LectureDto
+    public class LectureDTO
     {
         public int Id { get; set; }
         public string Title { get; set; }

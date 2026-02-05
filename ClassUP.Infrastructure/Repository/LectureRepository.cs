@@ -27,5 +27,12 @@ namespace ClassUP.Infrastructure.Repository
            .Include(l => l.LectureProgresses)
            .FirstOrDefaultAsync(l => l.Id == id);
         }
+
+        public async Task<IEnumerable<Lecture>> GetSectionLectursAsync(int sectionId)
+        {
+            var lectures = await _dbSet.Lectures
+            .Where(l => l.SectionId == sectionId).ToListAsync();
+            return lectures;
+        }
     }
 }

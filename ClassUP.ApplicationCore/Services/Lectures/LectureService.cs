@@ -1,5 +1,6 @@
 ﻿using ClassUP.ApplicationCore.Common.Filters;
 using ClassUP.ApplicationCore.DTOs.Requests.Lectures;
+using ClassUP.ApplicationCore.DTOs.Responses.Cources;
 using ClassUP.ApplicationCore.DTOs.Responses.Lectures;
 using ClassUP.ApplicationCore.IRepository;
 using ClassUP.ApplicationCore.Services.Videos;
@@ -23,11 +24,11 @@ namespace ClassUP.ApplicationCore.Services.Lectures
             _videoService = videoService;
         }
 
-        public async Task<IEnumerable<LectureDto>> GetLecturesAsync(FilterOptions filter)
+        public async Task<IEnumerable<LectureDTO>> GetLecturesAsync(FilterOptions filter)
         {
             var lectures = await _unitOfWork.Lectures.GetAllAsync(filter);
 
-            return lectures.Select(l => new LectureDto
+            return lectures.Select(l => new LectureDTO
             {
                 Id = l.Id,
                 Title = l.Title,
@@ -36,6 +37,27 @@ namespace ClassUP.ApplicationCore.Services.Lectures
                 SectionId = l.SectionId,
                 IsFree = l.IsFree
             });
+        }
+
+        public async Task<IEnumerable<LectureDTO>> GetBySectionIdAsync(int sectionId)
+        {
+            var lectures = await _unitOfWork.Lectures.GetSectionLectursAsync(sectionId);
+            if (lectures == null || !lectures.Any())
+                return Enumerable.Empty<LectureDTO>();
+
+            var lectureDtos = lectures.Select(l => new LectureDTO
+            {
+                Id = l.Id,
+                Title = l.Title,
+                Description = l.Description,
+                Type = l.Type.ToString(),
+                SectionId = l.SectionId,
+                IsFree = l.IsFree
+            });
+
+            return lectureDtos;
+
+
         }
 
         public async Task<LectureDetailDto> GetByIdAsync(int id)
@@ -69,7 +91,7 @@ namespace ClassUP.ApplicationCore.Services.Lectures
             };
         }
 
-        public async Task<LectureDto> AddAsync(CreateLectureRequest request)
+        public async Task<LectureDTO> AddAsync(CreateLectureRequest request)
         {
             var section = await _unitOfWork.Sections.GetByIdAsync(request.SectionId)
                 ?? throw new ArgumentException("Section not found");
@@ -93,7 +115,7 @@ namespace ClassUP.ApplicationCore.Services.Lectures
             await _unitOfWork.Lectures.AddAsync(lecture);
             await _unitOfWork.SaveChangesAsync();
 
-            return new LectureDto
+            return new LectureDTO
             {
                 Id = lecture.Id,
                 Title = lecture.Title,
@@ -151,7 +173,20 @@ namespace ClassUP.ApplicationCore.Services.Lectures
             await _unitOfWork.SaveChangesAsync();
         }
 
+        Task<IEnumerable<LectureDTO>> ILectureService.GetLecturesAsync(FilterOptions filterOptions)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<LectureDTO> ILectureService.AddAsync(CreateLectureRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
         #endregion
+
 
     }
 

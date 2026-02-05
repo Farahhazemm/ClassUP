@@ -44,6 +44,16 @@ namespace ClassUP.API.Controllers
         #endregion
 
 
+        #region GetSectionLectures
+        [HttpGet("section/{sectionId}/lectures")]
+        public async Task<IActionResult> GetLecturesBySection(int sectionId)
+        {
+            var lectures = await _lectureService.GetBySectionIdAsync(sectionId);
+            return Ok(lectures);
+        }
+
+        #endregion
+
         #region Create
         [HttpPost("section/lectures")]
         public async Task<IActionResult> Create([FromBody] CreateLectureRequest request)

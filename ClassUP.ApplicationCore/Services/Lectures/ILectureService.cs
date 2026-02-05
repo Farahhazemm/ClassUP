@@ -11,9 +11,10 @@ namespace ClassUP.ApplicationCore.Services.Lectures
 {
     public interface ILectureService
     {
-        Task<IEnumerable<LectureDto>> GetLecturesAsync(FilterOptions filterOptions );
+        Task<IEnumerable<LectureDTO>> GetLecturesAsync(FilterOptions filterOptions );
         Task<LectureDetailDto?> GetByIdAsync(int id);
-        Task<LectureDto> AddAsync( CreateLectureRequest request);
+        Task<IEnumerable<LectureDTO>> GetBySectionIdAsync(int sectionId);
+        Task<LectureDTO> AddAsync( CreateLectureRequest request);
         Task UploadLectureVideoAsync(int lectureId, IFormFile file);
         Task DeleteLectureVideoAsync(int lectureId);
 
