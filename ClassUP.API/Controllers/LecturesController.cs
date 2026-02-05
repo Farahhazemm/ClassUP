@@ -67,6 +67,22 @@ namespace ClassUP.API.Controllers
         }
         #endregion
 
+        #region Update
+
+        [HttpPatch("lectures/{id}")]
+        public async Task<IActionResult> UpdateLecture(int id, [FromBody] UpdateLectureRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+         await _lectureService.UpdateAsync(id, request);
+
+
+            return NoContent();
+        }
+        #endregion
+
+
         #region UploadVideo
         [HttpPost("{lectureId}/video")]
         public async Task<IActionResult> UploadVideo(int lectureId, IFormFile file)

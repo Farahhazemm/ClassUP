@@ -39,6 +39,7 @@ namespace ClassUP.ApplicationCore.Services.Lectures
             });
         }
 
+        #region GetLecturesBySection
         public async Task<IEnumerable<LectureDTO>> GetBySectionIdAsync(int sectionId)
         {
             var lectures = await _unitOfWork.Lectures.GetSectionLectursAsync(sectionId);
@@ -59,7 +60,9 @@ namespace ClassUP.ApplicationCore.Services.Lectures
 
 
         }
+        #endregion
 
+        #region GetById
         public async Task<LectureDetailDto> GetByIdAsync(int id)
         {
             var lecture = await _unitOfWork.Lectures.GetByIdWithDetailsAsync(id)
@@ -91,6 +94,10 @@ namespace ClassUP.ApplicationCore.Services.Lectures
             };
         }
 
+        #endregion
+
+
+        #region Add
         public async Task<LectureDTO> AddAsync(CreateLectureRequest request)
         {
             var section = await _unitOfWork.Sections.GetByIdAsync(request.SectionId)
@@ -125,6 +132,35 @@ namespace ClassUP.ApplicationCore.Services.Lectures
                 IsFree = lecture.IsFree
             };
         }
+
+        #endregion
+
+        #region Update
+        public async Task UpdateAsync(int lectureId, UpdateLectureRequest request)
+        {
+            var lecture = await _unitOfWork.Lectures.GetByIdAsync(lectureId);
+            if (lecture == null)
+                return;
+
+            if (!string.IsNullOrWhiteSpace(request.Title))
+                lecture.Title = request.Title;
+
+            if (!string.IsNullOrWhiteSpace(request.Description))
+                lecture.Description = request.Description;
+
+            if (!string.IsNullOrWhiteSpace(request.Type) &&
+                Enum.TryParse<LectureType>(request.Type, true, out var lectureType))
+            {
+                lecture.Type = lectureType;
+            }
+
+            if (request.IsFree.HasValue)
+                lecture.IsFree = request.IsFree.Value;
+
+            await _unitOfWork.SaveChangesAsync();
+        } 
+        #endregion
+
 
         #region UploadVideo
         public async Task UploadLectureVideoAsync(int lectureId, IFormFile file)
