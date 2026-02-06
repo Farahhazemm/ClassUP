@@ -30,5 +30,13 @@ namespace ClassUP.API.Controllers
             var reviews = await _reviewService.GetAllAsync(courseId);
             return Ok(reviews);
         }
+
+        [HttpPatch("update-course-review")]
+        public async Task<IActionResult>UpdateReview([FromBody] UpdateReviewDTO reviewDTO)
+        {
+            await _reviewService.UpdateAsync(reviewDTO);
+            return NoContent();
+
+        }
     }
 }

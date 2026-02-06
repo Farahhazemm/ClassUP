@@ -51,5 +51,27 @@ namespace ClassUP.ApplicationCore.Services.Reviws
                 UserFullName = $"{r.User.FirstName} {r.User.LastName}"
             }).ToList();
         }
+        public async Task UpdateAsync(UpdateReviewDTO reviewDTO)
+        {
+            var review = await _unitOfWork.Reviews.GetByIdAsync(reviewDTO.ReviewId);
+
+            if (review == null)
+                throw new KeyNotFoundException("Review not found");
+
+            // Authorization check
+            if (review.UserId != reviewDTO.UserId)
+                throw new UnauthorizedAccessException("You cannot update this review");
+
+            // Partial Update
+            if (reviewDTO.Rating.HasValue)
+                review.Rating = reviewDTO.Rating.Value;
+
+            if (!string.IsNullOrWhiteSpace(reviewDTO.Comment))
+                review.Comment = reviewDTO.Comment;
+
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+
     }
 }

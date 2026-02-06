@@ -8,7 +8,8 @@ namespace ClassUP.ApplicationCore.Services.Reviws
 {
     public interface IReviewService
     {
-        Task AddAsync(CourseReviewDTO reviewDTO);
+        Task AddAsync(CourseReviewDTO request);
+        Task UpdateAsync(UpdateReviewDTO request);
         Task<List<CourseReviewResponseDTO>> GetAllAsync(int courseId);
     }
 }
