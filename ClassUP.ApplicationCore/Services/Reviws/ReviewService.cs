@@ -72,6 +72,22 @@ namespace ClassUP.ApplicationCore.Services.Reviws
             await _unitOfWork.SaveChangesAsync();
         }
 
+        public async Task DeleteAsync(int reviewId, int userId)
+        {
+            var review = await _unitOfWork.Reviews.GetByIdAsync(reviewId);
+
+            if (review == null)
+                throw new KeyNotFoundException("Review not found");
+
+            // Authorization
+            if (review.UserId != userId)
+                throw new UnauthorizedAccessException("You are not allowed to delete this review");
+
+            await _unitOfWork.Reviews.DeleteAsync(review);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+
 
     }
 }
