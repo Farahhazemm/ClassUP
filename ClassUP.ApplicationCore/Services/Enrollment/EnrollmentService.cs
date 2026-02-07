@@ -104,5 +104,17 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
                
             };
         }
+        public async Task UnEnrollAsync(int courseId, int userId)
+        {
+            var enrollment = await _unitOfWork.Enrollments
+                .GetEnrollmentAsync(userId, courseId);
+
+            if (enrollment == null)
+                return ;
+
+            _unitOfWork.Enrollments.DeleteAsync(enrollment);
+            await _unitOfWork.SaveChangesAsync();
+        }
     }
 }
+

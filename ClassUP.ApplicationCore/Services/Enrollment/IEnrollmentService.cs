@@ -13,6 +13,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
         Task<EnrollmentDTO> CreateAsync(CreateEnrollmentRequest request);
         Task<EnrollmentDTO> GetByIdAsync(int id);
         Task<CheckEnrollmentResponse> IsEnrolledAsync(int courseId, int userId);
+        Task UnEnrollAsync(int courseId, int userId);
 
     }
 }

@@ -44,5 +44,15 @@ namespace ClassUP.API.Controllers
                 IsEnrolled = isEnrolled
             });
         }
+
+        [HttpDelete("unenroll/{courseId}")]
+        public async Task<IActionResult> UnEnroll(int courseId, [FromQuery] int userId)
+        {
+
+            await _enrollmentService.UnEnrollAsync(courseId, userId);
+
+            return NoContent();
+        }
+
     }
 }
