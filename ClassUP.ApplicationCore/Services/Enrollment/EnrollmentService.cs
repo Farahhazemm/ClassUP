@@ -17,7 +17,22 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
         {
             _unitOfWork = unitOfWork;
         }
+        public async Task<IEnumerable<EnrollmentDTO>> GetAllAsync()
+        {
+            var enrollments = await _unitOfWork.Enrollments
+                .GetAllAsync(null);
 
+            return enrollments.Select(e => new EnrollmentDTO
+            {
+                EnrollmentId = e.Id,
+                CourseId = e.CourseId,
+                StudentId = e.UserId,
+                EnrolledAt = e.EnrolledAt,
+                ProgressPercentage = e.ProgressPercentage,
+                CompletedAt = e.CompletedAt,
+            
+            });
+        }
         public async Task<EnrollmentDTO> GetByIdAsync(int id)
         {
             if (id <= 0)
