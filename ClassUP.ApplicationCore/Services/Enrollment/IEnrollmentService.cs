@@ -10,5 +10,6 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
     public interface IEnrollmentService
     {
         Task<EnrollmentDTO> CreateAsync(CreateEnrollmentRequest request);
+        Task<EnrollmentDTO> GetByIdAsync(int id);
     }
 }
