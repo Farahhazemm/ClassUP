@@ -25,6 +25,13 @@ namespace ClassUP.API.Controllers
             return Ok(enrollments);
         }
 
+        [HttpGet("get-student-enrollments")]
+        public async Task<IActionResult> GetStudentEnrollments(int userId)
+        {
+            var enrollments = await _enrollmentService.GetStudentEnrollmentsAsync(userId);
+            return Ok(enrollments); 
+        }
+
         [HttpPost("enroll")]
         public async Task<IActionResult> EnrollStudent(CreateEnrollmentRequest request)
         {

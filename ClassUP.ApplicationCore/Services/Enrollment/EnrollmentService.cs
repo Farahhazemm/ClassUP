@@ -1,4 +1,5 @@
-﻿using ClassUP.ApplicationCore.DTOs.Requests.Enrollment;
+﻿using ClassUP.ApplicationCore.Common.Filters;
+using ClassUP.ApplicationCore.DTOs.Requests.Enrollment;
 using ClassUP.ApplicationCore.DTOs.Responses.Enrollment;
 using ClassUP.ApplicationCore.DTOs.Responses.Enrollments;
 using ClassUP.ApplicationCore.IRepository;
@@ -53,6 +54,22 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
                 CompletedAt = enrollment.CompletedAt,
                 
             };
+        }
+
+        public async Task<IEnumerable<EnrollmentDTO>> GetStudentEnrollmentsAsync(int userId)
+        {
+            var enrollments = await _unitOfWork.Enrollments.GetAllAsync(null);
+
+            return enrollments.Select(e => new EnrollmentDTO
+            {
+                EnrollmentId = e.Id,
+                CourseId = e.CourseId,
+                StudentId = e.UserId,
+                EnrolledAt = e.EnrolledAt,
+                ProgressPercentage = e.ProgressPercentage,
+                CompletedAt = e.CompletedAt,
+              
+            });
         }
 
         public async Task<CheckEnrollmentResponse> IsEnrolledAsync(int courseId, int userId)
