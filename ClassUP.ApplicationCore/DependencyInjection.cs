@@ -1,6 +1,7 @@
 ﻿using ClassUP.ApplicationCore.IRepository;
 using ClassUP.ApplicationCore.Services.Categorise;
 using ClassUP.ApplicationCore.Services.Courses;
+using ClassUP.ApplicationCore.Services.Enrollment;
 using ClassUP.ApplicationCore.Services.Lectures;
 using ClassUP.ApplicationCore.Services.Reviws;
 using ClassUP.ApplicationCore.Services.Sections;
@@ -22,6 +23,7 @@ namespace ClassUP.ApplicationCore
             services.AddScoped<ICategoryServices,CategoryService>();
             services.AddScoped<ISectionService, SectionService>();
             services.AddScoped<IReviewService,ReviewService>();
+            services.AddScoped<IEnrollmentService, EnrollmentService>();
             
 
 

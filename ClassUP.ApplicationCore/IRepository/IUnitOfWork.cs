@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClassUP.ApplicationCore.Services.Enrollment;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,6 +13,7 @@ namespace ClassUP.ApplicationCore.IRepository
 
         ISectionRepository Sections { get; }
         IReviewRepository Reviews { get; }
+        IEnrollmentRepository Enrollments { get; }
         Task<int> SaveChangesAsync();
     }
 }

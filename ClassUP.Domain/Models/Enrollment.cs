@@ -13,9 +13,8 @@ namespace ClassUP.Domain.Models
         public int CourseId { get; set; }
         public Course Course { get; set; }
         public DateTime EnrolledAt { get; set; }
-        public DateTime? CompletedAt { get; set; }
+        public DateTime? CompletedAt { get; set; } 
         public int ProgressPercentage { get; set; }
-        public DateTime? LastAccessedAt { get; set; }
 
         // Navigation properties
         public User User { get; set; }

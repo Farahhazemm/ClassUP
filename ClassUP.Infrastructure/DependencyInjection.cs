@@ -26,6 +26,7 @@ namespace ClassUP.Infrastructure
             services.AddScoped<ILectureRepository, LectureRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
+            services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;

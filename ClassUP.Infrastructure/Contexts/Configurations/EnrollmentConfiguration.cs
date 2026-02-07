@@ -39,8 +39,7 @@ namespace ClassUP.Infrastructure.Data.Configurations
             builder.HasIndex(e => new { e.UserId, e.CourseId })
                 .IsUnique();
 
-            builder.Property(e => e.LastAccessedAt)
-                .IsRequired(false);
+          
 
 
             builder.Property(e => e.ProgressPercentage)
