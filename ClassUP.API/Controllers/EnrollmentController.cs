@@ -31,5 +31,18 @@ namespace ClassUP.API.Controllers
             var enrollment = await _enrollmentService.GetByIdAsync(id);
             return Ok(enrollment);  
         }
+        [HttpGet("check/{courseId}")]
+        public async Task<IActionResult> CheckEnrollment(int courseId,int userId)
+        {
+            // get user by claims neer
+            var isEnrolled = await _enrollmentService.IsEnrolledAsync(courseId, userId);
+
+            return Ok(new
+            {
+                CourseId = courseId,
+                UserId = userId,
+                IsEnrolled = isEnrolled
+            });
+        }
     }
 }

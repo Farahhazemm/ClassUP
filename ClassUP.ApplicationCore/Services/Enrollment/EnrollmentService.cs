@@ -1,5 +1,6 @@
 ﻿using ClassUP.ApplicationCore.DTOs.Requests.Enrollment;
 using ClassUP.ApplicationCore.DTOs.Responses.Enrollment;
+using ClassUP.ApplicationCore.DTOs.Responses.Enrollments;
 using ClassUP.ApplicationCore.IRepository;
 using ClassUP.Domain.Models;
 using System;
@@ -39,15 +40,43 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
             };
         }
 
+        public async Task<CheckEnrollmentResponse> IsEnrolledAsync(int courseId, int userId)
+        {
+            if (courseId <= 0 || userId <= 0)
+                return new CheckEnrollmentResponse
+                {
+                    IsEnrolled = false,
+                    EnrollmentDate = null
+                };
+
+            var enrollment = await _unitOfWork.Enrollments
+                .GetEnrollmentAsync(userId, courseId);
+
+            if (enrollment == null)
+            {
+                return new CheckEnrollmentResponse
+                {
+                    IsEnrolled = false,
+                    EnrollmentDate = null
+                };
+            }
+
+            return new CheckEnrollmentResponse
+            {
+                IsEnrolled = true,
+                EnrollmentDate = enrollment.EnrolledAt
+            };
+        }
+
         public async Task<EnrollmentDTO> CreateAsync(CreateEnrollmentRequest request)
         {
             if (request.CourseId <= 0 || request.StudentId <= 0)
                 return null;
 
-           /* var alreadyEnrolled = await _unitOfWork.Enrollments
+            var alreadyEnrolled = await _unitOfWork.Enrollments
                .IsEnrolledAsync(request.StudentId, request.CourseId);
             if (alreadyEnrolled)
-                return null;*/
+                return null;
             var course = await _unitOfWork.Courses
                .GetByIdAsync(request.CourseId);
             if (course == null)

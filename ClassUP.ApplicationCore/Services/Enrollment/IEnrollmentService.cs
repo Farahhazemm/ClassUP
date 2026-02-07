@@ -1,5 +1,6 @@
 ﻿using ClassUP.ApplicationCore.DTOs.Requests.Enrollment;
 using ClassUP.ApplicationCore.DTOs.Responses.Enrollment;
+using ClassUP.ApplicationCore.DTOs.Responses.Enrollments;
 using ClassUP.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -11,5 +12,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
     {
         Task<EnrollmentDTO> CreateAsync(CreateEnrollmentRequest request);
         Task<EnrollmentDTO> GetByIdAsync(int id);
+        Task<CheckEnrollmentResponse> IsEnrolledAsync(int courseId, int userId);
+
     }
 }
