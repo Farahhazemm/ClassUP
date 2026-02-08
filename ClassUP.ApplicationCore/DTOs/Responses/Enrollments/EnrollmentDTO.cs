@@ -8,7 +8,7 @@ namespace ClassUP.ApplicationCore.DTOs.Responses.Enrollment
     {
         public int EnrollmentId { get; set; }
         public int CourseId { get; set; }
-        public int StudentId { get; set; }
+        public string StudentId { get; set; }
         public DateTime EnrolledAt { get; set; }
         public int ProgressPercentage { get; set; }
         public DateTime? CompletedAt { get; set; }

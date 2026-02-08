@@ -24,7 +24,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
 
 
         #region Create
-        public async Task<CreateCourseDTO> CreateCourse(CreateCourseRequest request, int userId)
+        public async Task<CreateCourseDTO> CreateCourse(CreateCourseRequest request, string userId)
         {
             if (request.Thumbnail == null)
                 throw new ArgumentException("Thumbnail is required");
@@ -131,7 +131,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
 
 
         #region GetCorsesByInstractor
-        public async Task<IEnumerable<AllCoursesDTO>> GetInstructorCoursesAsync(int instructorId, FilterOptions filter)
+        public async Task<IEnumerable<AllCoursesDTO>> GetInstructorCoursesAsync(string instructorId, FilterOptions filter)
          {
             var courses = await _unitOfWork.Courses.GetInstructorCoursesAsync(instructorId, filter);
 
@@ -145,7 +145,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
         #endregion
 
         #region UpdateCourse
-         public async Task UpdateCourse(int userId, UpdateCourseRequest request)
+         public async Task UpdateCourse(string userId, UpdateCourseRequest request)
          {
              if (request == null )
                  throw new ArgumentNullException(nameof(request));

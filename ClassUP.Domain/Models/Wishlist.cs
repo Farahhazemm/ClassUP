@@ -9,10 +9,10 @@ namespace ClassUP.Domain.Models
     public class Wishlist
     {
         public int Id { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public int CourseId { get; set; }
         public DateTime AddedAt { get; set; }
-        public User User { get; set; }
+        public AppUser User { get; set; }
         public Course Course { get; set; }
     }
 }

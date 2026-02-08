@@ -12,10 +12,10 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
     {
         Task<EnrollmentDTO> CreateAsync(CreateEnrollmentRequest request);
         Task<EnrollmentDTO> GetByIdAsync(int id);
-        Task<IEnumerable<EnrollmentDTO>> GetStudentEnrollmentsAsync(int userId);
+        Task<IEnumerable<EnrollmentDTO>> GetStudentEnrollmentsAsync(string userId);
         Task<IEnumerable<EnrollmentDTO>> GetAllAsync();
-        Task<CheckEnrollmentResponse> IsEnrolledAsync(int courseId, int userId);
-        Task UnEnrollAsync(int courseId, int userId);
+        Task<CheckEnrollmentResponse> IsEnrolledAsync(int courseId, string userId);
+        Task UnEnrollAsync(int courseId, string userId);
 
     }
 }

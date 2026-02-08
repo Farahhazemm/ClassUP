@@ -17,7 +17,7 @@ namespace ClassUP.Infrastructure.Repository
         {
             _db = db;
         }
-        public async Task<IEnumerable<Course>> GetInstructorCoursesAsync(int instructorId, FilterOptions filter)
+        public async Task<IEnumerable<Course>> GetInstructorCoursesAsync(string instructorId, FilterOptions filter)
         {
             var query = _db.Courses.Where(q => q.UserId == instructorId);
 

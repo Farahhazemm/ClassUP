@@ -1,17 +1,17 @@
 ﻿using ClassUP.Domain.Models;
 using ClassUP.Infrastructure.Contexts.Configurations;
 using ClassUP.Infrastructure.Data.Configurations;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClassUP.Infrastructure.Contexts
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<AppUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
 
-        public DbSet<User> Users { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Tag> Tags { get; set; }
@@ -23,7 +23,7 @@ namespace ClassUP.Infrastructure.Contexts
         public DbSet<CourseRequirement> CourseRequirements { get; set; }
         public DbSet<CourseObjective> CourseObjectives { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
-        public DbSet<LectureProgress> LessonProgresses { get; set; }
+        public DbSet<LectureProgress> LectureProgresses { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Wishlist> Wishlists { get; set; }
         public DbSet<Order> Orders { get; set; }
@@ -31,7 +31,9 @@ namespace ClassUP.Infrastructure.Contexts
         public DbSet<Payment> Payments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {   
+        {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new CourseConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());

@@ -8,7 +8,7 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Reviews
     {
         public int  ReviewId { get; set; }
 
-        public int UserId { get; set; }   // temp
+        public string UserId { get; set; }   // temp
 
         public int? Rating { get; set; }
 

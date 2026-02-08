@@ -7,8 +7,8 @@ namespace ClassUP.ApplicationCore.IRepository
 {
     public interface IEnrollmentRepository : IBaseRepository<Enrollment>
     {
-        Task<Enrollment> GetEnrollmentAsync(int userId, int courseId);
-        Task<bool> IsEnrolledAsync(int userId, int courseId);
+        Task<Enrollment> GetEnrollmentAsync(string userId, int courseId);
+        Task<bool> IsEnrolledAsync(string userId, int courseId);
 
     }
 }

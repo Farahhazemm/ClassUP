@@ -10,7 +10,7 @@ namespace ClassUP.ApplicationCore.Services.Reviws
     {
         Task AddAsync(CourseReviewDTO request);
         Task UpdateAsync(UpdateReviewDTO request);
-        Task DeleteAsync(int reviewId, int userId);
+        Task DeleteAsync(int reviewId, string userId);
 
         Task<List<CourseReviewResponseDTO>> GetAllAsync(int courseId);
     }

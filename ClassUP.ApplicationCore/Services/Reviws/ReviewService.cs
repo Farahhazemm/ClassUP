@@ -72,7 +72,7 @@ namespace ClassUP.ApplicationCore.Services.Reviws
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int reviewId, int userId)
+        public async Task DeleteAsync(int reviewId, string userId)
         {
             var review = await _unitOfWork.Reviews.GetByIdAsync(reviewId);
 

@@ -17,7 +17,7 @@ namespace ClassUP.Infrastructure.Repository
             _db = db;
         }
 
-        public async Task<Enrollment> GetEnrollmentAsync(int userId, int courseId)
+        public async Task<Enrollment> GetEnrollmentAsync(string userId, int courseId)
         {
             return await _db.Enrollments
                 .AsNoTracking()
@@ -26,7 +26,8 @@ namespace ClassUP.Infrastructure.Repository
                     e.CourseId == courseId);
         }
 
-        public async Task<bool> IsEnrolledAsync(int userId, int courseId)
+        public async Task<bool> IsEnrolledAsync(string
+            userId, int courseId)
         {
             return await _db.Enrollments
                 .AnyAsync(e => e.UserId == userId && e.CourseId == courseId);

@@ -56,7 +56,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
             };
         }
 
-        public async Task<IEnumerable<EnrollmentDTO>> GetStudentEnrollmentsAsync(int userId)
+        public async Task<IEnumerable<EnrollmentDTO>> GetStudentEnrollmentsAsync(string userId)
         {
             var enrollments = await _unitOfWork.Enrollments.GetAllAsync(null);
 
@@ -72,9 +72,9 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
             });
         }
 
-        public async Task<CheckEnrollmentResponse> IsEnrolledAsync(int courseId, int userId)
+        public async Task<CheckEnrollmentResponse> IsEnrolledAsync(int courseId, string userId)
         {
-            if (courseId <= 0 || userId <= 0)
+            if (courseId <= 0)
                 return new CheckEnrollmentResponse
                 {
                     IsEnrolled = false,
@@ -102,7 +102,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
 
         public async Task<EnrollmentDTO> CreateAsync(CreateEnrollmentRequest request)
         {
-            if (request.CourseId <= 0 || request.StudentId <= 0)
+            if (request.CourseId <= 0)
                 return null;
 
             var alreadyEnrolled = await _unitOfWork.Enrollments
@@ -136,7 +136,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
                
             };
         }
-        public async Task UnEnrollAsync(int courseId, int userId)
+        public async Task UnEnrollAsync(int courseId, string userId)
         {
             var enrollment = await _unitOfWork.Enrollments
                 .GetEnrollmentAsync(userId, courseId);

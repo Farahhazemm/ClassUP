@@ -10,13 +10,13 @@ namespace ClassUP.Domain.Models
     public class Order
     {
         public int Id { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public decimal Total { get; set; }
         public OrderStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
 
         // Navigation properties
-        public User User { get; set; }
+        public AppUser User { get; set; }
         public List<OrderItem> OrderItems { get; set; }
         public Payment Payment { get; set; }
     }

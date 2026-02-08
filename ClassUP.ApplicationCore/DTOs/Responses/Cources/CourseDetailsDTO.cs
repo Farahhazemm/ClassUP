@@ -21,7 +21,7 @@ namespace ClassUP.ApplicationCore.DTOs.Responses.Cources
 
         #region Instructor Info
 
-        public int InstructorId { get; set; }
+        public string InstructorId { get; set; }
         #endregion
 
         #region  Category Info

@@ -40,7 +40,7 @@ namespace ClassUP.API.Controllers
         }
 
         [HttpDelete("delete-course-review/{reviewId}")]
-        public async Task<IActionResult> DeleteReview(int reviewId, [FromQuery] int userId)
+        public async Task<IActionResult> DeleteReview(int reviewId, [FromQuery] string userId)
         {
             await _reviewService.DeleteAsync(reviewId, userId);
             return NoContent();

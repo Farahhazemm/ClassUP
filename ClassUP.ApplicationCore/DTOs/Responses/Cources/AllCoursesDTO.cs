@@ -15,7 +15,7 @@ namespace ClassUP.ApplicationCore.DTOs.Responses.Cources
         public CourseLevel Level { get; set; }         
         public string Language { get; set; } = null!;  
         public bool IsActive { get; set; }             
-        public int InstructorId { get; set; }          
+        public string InstructorId { get; set; }          
         public string ThumbnailUrl { get; set; } = null!;
         public int CategoryId { get; set; }
 

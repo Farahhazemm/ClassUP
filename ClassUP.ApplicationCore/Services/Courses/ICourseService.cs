@@ -11,11 +11,11 @@ namespace ClassUP.ApplicationCore.Services.Courses
     public interface ICourseService
     {
         Task<IEnumerable<AllCoursesDTO>> GetAllCourses(FilterOptions filter); // made for test
-        Task<IEnumerable<AllCoursesDTO>> GetInstructorCoursesAsync(int instructorId,FilterOptions filter );
+        Task<IEnumerable<AllCoursesDTO>> GetInstructorCoursesAsync(string instructorId,FilterOptions filter );
         Task<IEnumerable<AllCoursesDTO>> GetCategoryCourses(int categoryId);
        Task<CourseDetailsDTO> GetByIdAsync(int id);
-       Task<CreateCourseDTO> CreateCourse(CreateCourseRequest request, int userId);
-        Task UpdateCourse(int userId, UpdateCourseRequest request);
+       Task<CreateCourseDTO> CreateCourse(CreateCourseRequest request, string userId);
+        Task UpdateCourse(string userId, UpdateCourseRequest request);
 
         Task DeleteCourse(int courseId);
     }

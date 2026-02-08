@@ -32,13 +32,13 @@ namespace ClassUP.Domain.Models
         public bool IsPublished { get; set; }
         public DateTime? PublishedAt { get; set; }
         
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public int CategoryId { get; set; }
 
         #endregion
 
         #region Navigation properties
-        public User user { get; set; }
+        public AppUser user { get; set; }
         public Category  Category { get; set; }
         public List<Section> Sections { get; set; }
         public List<CourseRequirement> Requirements { get; set; }

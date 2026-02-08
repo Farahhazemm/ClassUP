@@ -33,7 +33,7 @@ namespace ClassUP.API.Controllers
 
 
         [HttpGet("GetInstructorCourses/{instructorId}")]
-        public async Task<IActionResult> GetInstructorCoursesAsync(int instructorId, [FromQuery] FilterOptions filter)
+        public async Task<IActionResult> GetInstructorCoursesAsync(string instructorId, [FromQuery] FilterOptions filter)
         {
             var courses = await _courseService.GetInstructorCoursesAsync(instructorId, filter);
 
@@ -62,7 +62,7 @@ namespace ClassUP.API.Controllers
         #region Create
         [HttpPost]
         //userId passed from query until Auth is implemented
-        public async Task<IActionResult> CreateCourse([FromForm] CreateCourseRequest request, [FromQuery] int UserId)
+        public async Task<IActionResult> CreateCourse([FromForm] CreateCourseRequest request, [FromQuery] string UserId)
         {
 
 
@@ -75,7 +75,7 @@ namespace ClassUP.API.Controllers
 
         #region Update
         [HttpPatch("{courseId}")]
-        public async Task<IActionResult> UpdateCourse([FromForm] UpdateCourseRequest request, [FromQuery] int userId, [FromRoute] int courseId)
+        public async Task<IActionResult> UpdateCourse([FromForm] UpdateCourseRequest request, [FromQuery] string userId, [FromRoute] int courseId)
         {
             request.courseId = courseId;
             await _courseService.UpdateCourse(userId, request);

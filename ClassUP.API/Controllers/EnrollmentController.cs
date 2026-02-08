@@ -26,7 +26,7 @@ namespace ClassUP.API.Controllers
         }
 
         [HttpGet("get-student-enrollments")]
-        public async Task<IActionResult> GetStudentEnrollments(int userId)
+        public async Task<IActionResult> GetStudentEnrollments(string userId)
         {
             var enrollments = await _enrollmentService.GetStudentEnrollmentsAsync(userId);
             return Ok(enrollments); 
@@ -45,7 +45,7 @@ namespace ClassUP.API.Controllers
             return Ok(enrollment);  
         }
         [HttpGet("check/{courseId}")]
-        public async Task<IActionResult> CheckEnrollment(int courseId,int userId)
+        public async Task<IActionResult> CheckEnrollment(int courseId,string userId)
         {
             // get user by claims neer
             var isEnrolled = await _enrollmentService.IsEnrolledAsync(courseId, userId);
@@ -59,7 +59,7 @@ namespace ClassUP.API.Controllers
         }
 
         [HttpDelete("unenroll/{courseId}")]
-        public async Task<IActionResult> UnEnroll(int courseId, [FromQuery] int userId)
+        public async Task<IActionResult> UnEnroll(int courseId, [FromQuery] string userId)
         {
 
             await _enrollmentService.UnEnrollAsync(courseId, userId);
