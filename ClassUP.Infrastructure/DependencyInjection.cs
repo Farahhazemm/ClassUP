@@ -1,4 +1,5 @@
 ﻿using ClassUP.ApplicationCore.IRepository;
+using ClassUP.ApplicationCore.Services.Auth;
 using ClassUP.Infrastructure.Contexts;
 using ClassUP.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +29,7 @@ namespace ClassUP.Infrastructure
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            services.AddScoped<IAuthService, AuthService>();
             return services;
         }
     }

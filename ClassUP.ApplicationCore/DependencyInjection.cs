@@ -25,7 +25,7 @@ namespace ClassUP.ApplicationCore
             services.AddScoped<ISectionService, SectionService>();
             services.AddScoped<IReviewService,ReviewService>();
             services.AddScoped<IEnrollmentService, EnrollmentService>();
-            services.AddScoped<IAuthService, AuthService>();
+            
             
 
 

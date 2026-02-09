@@ -1,4 +1,4 @@
-using ClassUP.API.Auth;
+
 using ClassUP.API.Extensions;
 using ClassUP.ApplicationCore;
 using ClassUP.ApplicationCore.DTOs.Requests.Lectures;
@@ -31,35 +31,31 @@ builder.Services.AddControllers()
 builder.Services.ConfigureIdentity();
 
 //---------------------------------------
-string Key = builder.Configuration["JWT :SecritKey"];
+string Key = builder.Configuration["JWT:SecretKey"];
 var KeyinBytes = Encoding.UTF8.GetBytes(Key);
 var signinKey = new SymmetricSecurityKey(KeyinBytes);
-// 1.1 How Validation 
+
 builder.Services.AddAuthentication(op =>
 {
     op.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    op.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;  // return Un authrized 
+    op.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     op.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(op => // 1.2 How Verfied Key
+}).AddJwtBearer(op =>
 {
     op.SaveToken = true;
     op.RequireHttpsMetadata = false;
     op.TokenValidationParameters = new TokenValidationParameters()
     {
         ValidateIssuer = true,
-        ValidIssuer = builder.Configuration["JWT : Issuer"],
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["JWT :Audience"],
+        ValidAudience = builder.Configuration["JWT:Audience"],
         IssuerSigningKey = signinKey,
         ValidateIssuerSigningKey = true,
         ValidateLifetime = true,
-
-
     };
-
-   
-    
 });
+
 //---------------------------------------
 
 builder.Services.AddEndpointsApiExplorer();
