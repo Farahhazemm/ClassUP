@@ -1,12 +1,13 @@
 ﻿using ClassUP.Domain.Models;
 using ClassUP.Infrastructure.Contexts.Configurations;
 using ClassUP.Infrastructure.Data.Configurations;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClassUP.Infrastructure.Contexts
 {
-    public class AppDbContext : IdentityDbContext<AppUser>
+    public class AppDbContext : IdentityDbContext<AppUser, IdentityRole, string>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {

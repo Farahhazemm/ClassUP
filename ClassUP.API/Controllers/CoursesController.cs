@@ -23,7 +23,7 @@ namespace ClassUP.API.Controllers
         #region Read Actions
         // use in test
 
-        // [Authorize(Roles ="Admin")]
+        [Authorize]
         [HttpGet("GetAllCourses")]
         public async Task<IActionResult> GetAllCourses([FromQuery] FilterOptions filter)
         {
