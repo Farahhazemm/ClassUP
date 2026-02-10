@@ -1,13 +1,15 @@
-﻿using ClassUP.ApplicationCore.Common.Filters;
+﻿using ClassUP.API.Extensions;
+using ClassUP.ApplicationCore.Common.Filters;
+using ClassUP.ApplicationCore.DTOs.Requests.Courses;
 using ClassUP.ApplicationCore.DTOs.Responses.Cources;
 using ClassUP.ApplicationCore.Services.Courses;
+using ClassUP.Domain.Constants;
 using ClassUP.Domain.Enums;
 using ClassUP.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using ClassUP.ApplicationCore.DTOs.Requests.Courses;
 
 namespace ClassUP.API.Controllers
 {
@@ -20,6 +22,9 @@ namespace ClassUP.API.Controllers
         {
             _courseService = courseService;
         }
+
+       
+
         #region Read Actions
         // use in test
 
@@ -32,10 +37,13 @@ namespace ClassUP.API.Controllers
         }
 
 
-        [HttpGet("GetInstructorCourses/{instructorId}")]
-        public async Task<IActionResult> GetInstructorCoursesAsync(string instructorId, [FromQuery] FilterOptions filter)
+        [Authorize]
+        [HttpGet("my-courses")]
+        public async Task<IActionResult> GetInstructorCoursesAsync( [FromQuery] FilterOptions filter)
         {
-            var courses = await _courseService.GetInstructorCoursesAsync(instructorId, filter);
+            var userId = User.GetUserId();
+
+            var courses = await _courseService.GetInstructorCoursesAsync(userId, filter);
 
             if (!courses.Any())
                 return NoContent();
@@ -51,7 +59,7 @@ namespace ClassUP.API.Controllers
             return Ok(Course);
         }
 
-        [HttpGet("/Category{categoryId}/Courses")]
+        [HttpGet("/Category/{categoryId}/Courses")]
         public async Task<ActionResult> GetCoursesByCategory(int categoryId)
         {
             var courses = await _courseService.GetCategoryCourses(categoryId);
@@ -60,37 +68,55 @@ namespace ClassUP.API.Controllers
         #endregion
 
         #region Create
+        [Authorize]
+        
         [HttpPost]
-        //userId passed from query until Auth is implemented
-        public async Task<IActionResult> CreateCourse([FromForm] CreateCourseRequest request, [FromQuery] string UserId)
+        public async Task<IActionResult> CreateCourse([FromForm] CreateCourseRequest request)
         {
+            var userId = User.GetUserId();
 
+            var course = await _courseService.CreateCourse(request, userId);
 
-            var course = await _courseService.CreateCourse(request, UserId);
-
-            return CreatedAtAction("GetCourseById", new { courseId = course.Id }, course);
+            return CreatedAtAction(
+                "GetCourseById",
+                new { courseId = course.Id },
+                course
+            );
         }
         #endregion
 
 
         #region Update
+        [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
         [HttpPatch("{courseId}")]
-        public async Task<IActionResult> UpdateCourse([FromForm] UpdateCourseRequest request, [FromQuery] string userId, [FromRoute] int courseId)
+        public async Task<IActionResult> UpdateCourse([FromForm] UpdateCourseRequest request, [FromRoute] int courseId)
         {
+            var userId = User.GetUserId();
+            var isAdmin = User.IsInRole(AppRoles.Admin);
+
             request.courseId = courseId;
-            await _courseService.UpdateCourse(userId, request);
+
+            await _courseService.UpdateCourse(userId, isAdmin, request);
             return NoContent();
         }
 
         #endregion
 
         #region Delete
+        [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
         [HttpDelete("{courseId}")]
         public async Task<IActionResult> DeleteCourse([FromRoute] int courseId)
         {
-            await _courseService.DeleteCourse(courseId);
+            var userId = User.GetUserId(); 
+            var isAdmin = User.IsInRole(AppRoles.Admin); 
+
+            await _courseService.DeleteCourse(courseId, userId, isAdmin);
+
             return NoContent();
-        } 
+        }
+
+
+
         #endregion
 
     }

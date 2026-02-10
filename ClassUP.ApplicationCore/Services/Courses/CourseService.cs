@@ -3,10 +3,13 @@ using ClassUP.ApplicationCore.DTOs.Requests.Courses;
 using ClassUP.ApplicationCore.DTOs.Responses.Cources;
 using ClassUP.ApplicationCore.IRepository;
 using ClassUP.ApplicationCore.Services.Thumbnail;
+using ClassUP.Domain.Constants;
 using ClassUP.Domain.Enums;
 using ClassUP.Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 
 namespace ClassUP.ApplicationCore.Services.Courses
@@ -75,19 +78,26 @@ namespace ClassUP.ApplicationCore.Services.Courses
         #region Delete
 
         // search how implement Soft Delete 
-        public async Task DeleteCourse(int courseId)
-         {
-             var course = await _unitOfWork.Courses.GetByIdAsync(courseId);
-             if (course == null)
-             {
+        public async Task DeleteCourse(int courseId, string userId, bool isAdmin)
+        {
+           
+            var course = await _unitOfWork.Courses.GetByIdAsync(courseId);
+            if (course == null)
+                throw new KeyNotFoundException($"Course with id {courseId} not found");
 
-               throw new KeyNotFoundException($"Course with id {courseId} not found");
-             }
-             await _unitOfWork.Courses.DeleteAsync(course);
-             await _thumbnailService.DeleteAsync(course.ThumbnailUrl);
-             await _unitOfWork.SaveChangesAsync();
+            
+            if (course.UserId != userId && !isAdmin)
+                throw new UnauthorizedAccessException("Not authorized to delete this course");
 
-         } 
+           
+            await _unitOfWork.Courses.DeleteAsync(course);
+            await _thumbnailService.DeleteAsync(course.ThumbnailUrl);
+
+           
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+
         #endregion
 
         #region GetAll
@@ -103,6 +113,8 @@ namespace ClassUP.ApplicationCore.Services.Courses
 
         #endregion
 
+
+        #region GetByCategory
         public async Task<IEnumerable<AllCoursesDTO>> GetCategoryCourses(int categoryId)
         {
             var courses = await _unitOfWork.Courses.GetCategoryCoursesAsync(categoryId);
@@ -111,7 +123,8 @@ namespace ClassUP.ApplicationCore.Services.Courses
                 return Enumerable.Empty<AllCoursesDTO>();
 
             return courses.Select(MapToAllCoursesDto);
-        }
+        } 
+        #endregion
 
         #region GetById
         public async Task<CourseDetailsDTO> GetByIdAsync(int id)
@@ -144,56 +157,61 @@ namespace ClassUP.ApplicationCore.Services.Courses
 
         #endregion
 
+
         #region UpdateCourse
-         public async Task UpdateCourse(string userId, UpdateCourseRequest request)
-         {
-             if (request == null )
-                 throw new ArgumentNullException(nameof(request));
+        public async Task UpdateCourse(string userId, bool isAdmin, UpdateCourseRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
 
-             var course = await _unitOfWork.Courses.GetByIdAsync(request.courseId);
-             if (course == null)
-                 throw new KeyNotFoundException($"Course with ID {request.courseId} not found");
+            var course = await _unitOfWork.Courses.GetByIdAsync(request.courseId);
+            if (course == null)
+                throw new KeyNotFoundException($"Course with ID {request.courseId} not found");
 
-             // Partial Update
-             course.Title = string.IsNullOrWhiteSpace(request.Title) ? course.Title : request.Title;
-             course.Description = string.IsNullOrWhiteSpace(request.Description) ? course.Description : request.Description;
-             course.Price = request.Price ?? course.Price;
-             course.Language = string.IsNullOrWhiteSpace(request.Language) ? course.Language : request.Language;
-             course.IsActive = request.IsActive ?? course.IsActive;
+            //  Auth check
+            if (course.UserId != userId && !isAdmin)
+                throw new UnauthorizedAccessException("Not authorized to update this course");
 
-             // Enum 
-             if (!string.IsNullOrWhiteSpace(request.Level))
-             {
-                 if (!Enum.TryParse<CourseLevel>(request.Level, true, out var level))
-                     throw new ArgumentException("Invalid course level");
+            // Partial Update
+            course.Title = string.IsNullOrWhiteSpace(request.Title) ? course.Title : request.Title;
+            course.Description = string.IsNullOrWhiteSpace(request.Description) ? course.Description : request.Description;
+            course.Price = request.Price ?? course.Price;
+            course.Language = string.IsNullOrWhiteSpace(request.Language) ? course.Language : request.Language;
+            course.IsActive = request.IsActive ?? course.IsActive;
 
-                 course.Level = level;
-             }
-
-             // Thumb
-             if (request.Thumbnail != null)
+            // Enum 
+            if (!string.IsNullOrWhiteSpace(request.Level))
             {
-                 var oldThumbnail = course.ThumbnailUrl;
-                 var thumbnailDTO = new ThumbnailDTO
-                 {
+                if (!Enum.TryParse<CourseLevel>(request.Level, true, out var level))
+                    throw new ArgumentException("Invalid course level");
+
+                course.Level = level;
+            }
+
+            // Thumb
+            if (request.Thumbnail != null)
+            {
+                var oldThumbnail = course.ThumbnailUrl;
+                var thumbnailDTO = new ThumbnailDTO
+                {
                     FileStream = request.Thumbnail.OpenReadStream(),
                     MimeType = request.Thumbnail.ContentType,
                     FileSize = request.Thumbnail.Length
-                 };
+                };
 
-                 course.ThumbnailUrl = await _thumbnailService.SaveAsync(thumbnailDTO, "courses");
+                course.ThumbnailUrl = await _thumbnailService.SaveAsync(thumbnailDTO, "courses");
 
-                 if (!string.IsNullOrWhiteSpace(oldThumbnail) && oldThumbnail != course.ThumbnailUrl)
-                 {
-                     await _thumbnailService.DeleteAsync(oldThumbnail);
-                 }
-             }
+                if (!string.IsNullOrWhiteSpace(oldThumbnail) && oldThumbnail != course.ThumbnailUrl)
+                {
+                    await _thumbnailService.DeleteAsync(oldThumbnail);
+                }
+            }
 
-             await _unitOfWork.Courses.UpdateAsync(course);
-             await _unitOfWork.SaveChangesAsync();
-         }
+            await _unitOfWork.Courses.UpdateAsync(course);
+            await _unitOfWork.SaveChangesAsync();
+        }
 
-         
+
         #endregion
 
 

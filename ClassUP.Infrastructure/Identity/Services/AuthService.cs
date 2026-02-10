@@ -3,6 +3,7 @@ using ClassUP.ApplicationCore.DTOs.Requests.Auth.Register;
 using ClassUP.ApplicationCore.DTOs.Responses.Auth.Login;
 using ClassUP.ApplicationCore.DTOs.Responses.Auth.Register;
 using ClassUP.ApplicationCore.IRepository;
+using ClassUP.Domain.Constants;
 using ClassUP.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -51,7 +52,7 @@ namespace ClassUP.ApplicationCore.Services.Auth
             }
 
             // assign Role
-            var roleResult = await _userManager.AddToRoleAsync(user, "Student");
+            var roleResult = await _userManager.AddToRoleAsync(user, AppRoles.User);
 
             if (!roleResult.Succeeded)
             {

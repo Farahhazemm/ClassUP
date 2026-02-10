@@ -4,18 +4,21 @@ using ClassUP.ApplicationCore;
 using ClassUP.ApplicationCore.DTOs.Requests.Lectures;
 using ClassUP.ApplicationCore.IRepository;
 using ClassUP.ApplicationCore.Services.Videos;
+using ClassUP.Domain.Models;
 using ClassUP.Infrastructure;
 using ClassUP.Infrastructure.Contexts;
 using ClassUP.Infrastructure.ExternalServices;
-using ClassUP.Infrastructure.Identity;
+using ClassUP.Infrastructure.Identity.DataSeeder;
 using ClassUP.Infrastructure.Repository;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -85,7 +88,12 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await ClassUP.Infrastructure.Identity.RoleSeeder.SeedRolesAsync(services);
+
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    await RoleSeeder.SeedAsync(roleManager);
+
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+    await AdminSeeder.SeedAdminAsync(userManager, roleManager);
 }
 
 app.Run();
