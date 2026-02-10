@@ -106,7 +106,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
                 return null;
 
             var alreadyEnrolled = await _unitOfWork.Enrollments
-               .IsEnrolledAsync(request.StudentId, request.CourseId);
+               .IsEnrolledAsync(request.UserId, request.CourseId);
             if (alreadyEnrolled)
                 return null;
             var course = await _unitOfWork.Courses
@@ -116,7 +116,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
             var enrollment = new Domain.Models.Enrollment
             {
                 CourseId = request.CourseId,
-                UserId = request.StudentId,
+                UserId = request.UserId,
                 EnrolledAt = DateTime.Now,
                 ProgressPercentage = 0,
                 CompletedAt = null,

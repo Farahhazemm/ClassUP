@@ -26,10 +26,8 @@ namespace ClassUP.API.Controllers
        
 
         #region Read Actions
-        // use in test
-
-        [Authorize]
         [HttpGet("GetAllCourses")]
+        [ProducesResponseType(typeof(IEnumerable<AllCoursesDTO>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllCourses([FromQuery] FilterOptions filter)
         {
             var Courses = await _courseService.GetAllCourses(filter);
@@ -50,8 +48,11 @@ namespace ClassUP.API.Controllers
 
             return Ok(courses);
         }
-      
+
+        [AllowAnonymous]
         [HttpGet("{courseId}")]
+        [ProducesResponseType(typeof(CourseDetailsDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCourseById(int courseId)
         {
             var Course = await _courseService.GetByIdAsync(courseId);
@@ -59,18 +60,22 @@ namespace ClassUP.API.Controllers
             return Ok(Course);
         }
 
+        [AllowAnonymous]
         [HttpGet("/Category/{categoryId}/Courses")]
+        [ProducesResponseType(typeof(IEnumerable<AllCoursesDTO>), StatusCodes.Status200OK)]
         public async Task<ActionResult> GetCoursesByCategory(int categoryId)
         {
             var courses = await _courseService.GetCategoryCourses(categoryId);
             return Ok(courses);
         }
+
         #endregion
 
         #region Create
-        [Authorize]
-        
+        [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
         [HttpPost]
+        [ProducesResponseType(typeof(CreateCourseDTO), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateCourse([FromForm] CreateCourseRequest request)
         {
             var userId = User.GetUserId();
@@ -89,6 +94,10 @@ namespace ClassUP.API.Controllers
         #region Update
         [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
         [HttpPatch("{courseId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateCourse([FromForm] UpdateCourseRequest request, [FromRoute] int courseId)
         {
             var userId = User.GetUserId();
@@ -105,18 +114,18 @@ namespace ClassUP.API.Controllers
         #region Delete
         [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
         [HttpDelete("{courseId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteCourse([FromRoute] int courseId)
         {
-            var userId = User.GetUserId(); 
-            var isAdmin = User.IsInRole(AppRoles.Admin); 
+            var userId = User.GetUserId();
+            var isAdmin = User.IsInRole(AppRoles.Admin);
 
             await _courseService.DeleteCourse(courseId, userId, isAdmin);
 
             return NoContent();
         }
-
-
-
         #endregion
 
     }

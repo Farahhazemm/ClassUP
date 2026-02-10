@@ -8,6 +8,6 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Enrollment
     {
         public int CourseId { get; set; }
 
-        public string StudentId { get; set; }
+        public string UserId { get; set; }
     }
 }

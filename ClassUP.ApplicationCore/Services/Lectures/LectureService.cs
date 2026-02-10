@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ClassUP.ApplicationCore.Services.Lectures
 {
@@ -24,6 +26,7 @@ namespace ClassUP.ApplicationCore.Services.Lectures
             _videoService = videoService;
         }
 
+        #region GetAll
         public async Task<IEnumerable<LectureDTO>> GetLecturesAsync(FilterOptions filter)
         {
             var lectures = await _unitOfWork.Lectures.GetAllAsync(filter);
@@ -38,15 +41,16 @@ namespace ClassUP.ApplicationCore.Services.Lectures
                 IsFree = l.IsFree
             });
         }
+        #endregion
 
-        #region GetLecturesBySection
+        #region GetBySection
         public async Task<IEnumerable<LectureDTO>> GetBySectionIdAsync(int sectionId)
         {
             var lectures = await _unitOfWork.Lectures.GetSectionLectursAsync(sectionId);
             if (lectures == null || !lectures.Any())
                 return Enumerable.Empty<LectureDTO>();
 
-            var lectureDtos = lectures.Select(l => new LectureDTO
+            return lectures.Select(l => new LectureDTO
             {
                 Id = l.Id,
                 Title = l.Title,
@@ -55,10 +59,6 @@ namespace ClassUP.ApplicationCore.Services.Lectures
                 SectionId = l.SectionId,
                 IsFree = l.IsFree
             });
-
-            return lectureDtos;
-
-
         }
         #endregion
 
@@ -76,14 +76,12 @@ namespace ClassUP.ApplicationCore.Services.Lectures
                 Type = lecture.Type.ToString(),
                 SectionId = lecture.SectionId,
                 IsFree = lecture.IsFree,
-
                 VideoContent = lecture.Type == LectureType.Video
                     ? lecture.VideoContent == null ? null : new VideoResult
                     {
                         VideoUrl = lecture.VideoContent.VideoUrl,
                     }
                     : null,
-
                 ArticleContent = lecture.Type == LectureType.Article
                     ? lecture.ArticleContent == null ? null : new ArticleContentDTO
                     {
@@ -93,15 +91,19 @@ namespace ClassUP.ApplicationCore.Services.Lectures
                     : null
             };
         }
-
         #endregion
 
-
         #region Add
-        public async Task<LectureDTO> AddAsync(CreateLectureRequest request)
+        public async Task<LectureDTO> AddAsync(CreateLectureRequest request, string userId, bool isAdmin)
         {
             var section = await _unitOfWork.Sections.GetByIdAsync(request.SectionId)
                 ?? throw new ArgumentException("Section not found");
+
+            var course = await _unitOfWork.Courses.GetByIdAsync(section.CourseId)
+                ?? throw new KeyNotFoundException("Course not found");
+
+            if (course.UserId != userId && !isAdmin)
+                throw new UnauthorizedAccessException("Not authorized to add lecture to this course");
 
             if (request.Type == LectureType.Article &&
                 string.IsNullOrWhiteSpace(request.ArticleContent))
@@ -132,15 +134,19 @@ namespace ClassUP.ApplicationCore.Services.Lectures
                 IsFree = lecture.IsFree
             };
         }
-
         #endregion
 
         #region Update
-        public async Task UpdateAsync(int lectureId, UpdateLectureRequest request)
+        public async Task UpdateAsync(int lectureId, UpdateLectureRequest request, string userId, bool isAdmin)
         {
-            var lecture = await _unitOfWork.Lectures.GetByIdAsync(lectureId);
-            if (lecture == null)
-                return;
+            var lecture = await _unitOfWork.Lectures.GetByIdWithDetailsAsync(lectureId)
+                ?? throw new KeyNotFoundException("Lecture not found");
+
+            var course = await _unitOfWork.Courses.GetByIdAsync(lecture.Section.CourseId)
+                ?? throw new KeyNotFoundException("Course not found");
+
+            if (course.UserId != userId && !isAdmin)
+                throw new UnauthorizedAccessException("Not authorized to update this lecture");
 
             if (!string.IsNullOrWhiteSpace(request.Title))
                 lecture.Title = request.Title;
@@ -162,31 +168,41 @@ namespace ClassUP.ApplicationCore.Services.Lectures
         #endregion
 
         #region Delete
-        public async Task DeleteAsync(int lectureId)
+        public async Task DeleteAsync(int lectureId, string userId, bool isAdmin)
         {
-            var lecture = await _unitOfWork.Lectures.GetByIdWithDetailsAsync(lectureId);
-
-            if (lecture == null || lecture.VideoContent == null)
-                return;
-
-            await _videoService.DeleteAsync(lecture.VideoContent.PublicId);
-            await _unitOfWork.Lectures.RemoveVideoContent(lecture.VideoContent);
-
-
-            _unitOfWork.Lectures.DeleteAsync(lecture);
-
-            await _unitOfWork.SaveChangesAsync();
-        } 
-        #endregion
-
-
-        #region UploadVideo
-        public async Task UploadLectureVideoAsync(int lectureId, IFormFile file)
-        {
-            var lecture = await _unitOfWork.Lectures.GetByIdAsync(lectureId)
+            var lecture = await _unitOfWork.Lectures.GetByIdWithDetailsAsync(lectureId)
                 ?? throw new KeyNotFoundException("Lecture not found");
 
-            if (lecture.Type != Domain.Enums.LectureType.Video)
+            var course = await _unitOfWork.Courses.GetByIdAsync(lecture.Section.CourseId)
+                ?? throw new KeyNotFoundException("Course not found");
+
+            if (course.UserId != userId && !isAdmin)
+                throw new UnauthorizedAccessException("Not authorized to delete this lecture");
+
+            if (lecture.VideoContent != null)
+            {
+                await _videoService.DeleteAsync(lecture.VideoContent.PublicId);
+                await _unitOfWork.Lectures.RemoveVideoContent(lecture.VideoContent);
+            }
+
+            await _unitOfWork.Lectures.DeleteAsync(lecture);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        #endregion
+
+        #region UploadVideo
+        public async Task UploadLectureVideoAsync(int lectureId, IFormFile file, string userId, bool isAdmin)
+        {
+            var lecture = await _unitOfWork.Lectures.GetByIdWithDetailsAsync(lectureId)
+                ?? throw new KeyNotFoundException("Lecture not found");
+
+            var course = await _unitOfWork.Courses.GetByIdAsync(lecture.Section.CourseId)
+                ?? throw new KeyNotFoundException("Course not found");
+
+            if (course.UserId != userId && !isAdmin)
+                throw new UnauthorizedAccessException("Not authorized to upload video to this lecture");
+
+            if (lecture.Type != LectureType.Video)
                 throw new ValidationException("Lecture is not video type");
 
             var uploadResult = await _videoService.UploadAsync(file);
@@ -202,39 +218,29 @@ namespace ClassUP.ApplicationCore.Services.Lectures
         #endregion
 
         #region DeleteVideo
-        public async Task DeleteLectureVideoAsync(int lectureId)
+        public async Task DeleteLectureVideoAsync(int lectureId, string userId, bool isAdmin)
         {
-
             var lecture = await _unitOfWork.Lectures.GetByIdWithDetailsAsync(lectureId)
-             ?? throw new KeyNotFoundException("Lecture not found");
+                ?? throw new KeyNotFoundException("Lecture not found");
 
+            var course = await _unitOfWork.Courses.GetByIdAsync(lecture.Section.CourseId)
+                ?? throw new KeyNotFoundException("Course not found");
 
+            if (course.UserId != userId && !isAdmin)
+                throw new UnauthorizedAccessException("Not authorized to delete video from this lecture");
 
             if (lecture.Type != LectureType.Video)
                 throw new ValidationException("Lecture is not video type");
 
-
             if (lecture.VideoContent == null)
                 throw new InvalidOperationException("Lecture does not have a video");
 
-
             await _videoService.DeleteAsync(lecture.VideoContent.PublicId);
-
 
             lecture.VideoContent = null;
 
-
             await _unitOfWork.SaveChangesAsync();
         }
-
-      
-     
-
-
-
         #endregion
-
-
     }
-
 }

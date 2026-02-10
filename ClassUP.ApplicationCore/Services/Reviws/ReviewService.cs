@@ -16,22 +16,7 @@ namespace ClassUP.ApplicationCore.Services.Reviws
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task AddAsync(CourseReviewDTO reviewDTO)
-        {
-
-            var review = new Review
-            {
-                CourseId = reviewDTO.CourseId,
-                Rating = reviewDTO.Rating,
-                Comment = reviewDTO.Comment,
-
-               UserId = reviewDTO.StudentId   //Need User By Claim
-            };
-
-            await _unitOfWork.Reviews.AddAsync(review);
-            await _unitOfWork.SaveChangesAsync();
-        }
-
+       
         public async Task<List<CourseReviewResponseDTO>> GetAllAsync(int courseId)
         {
             //  safe check  >> remember Do it at  User  in Add review
@@ -51,18 +36,30 @@ namespace ClassUP.ApplicationCore.Services.Reviws
                 UserFullName = $"{r.User.FirstName} {r.User.LastName}"
             }).ToList();
         }
-        public async Task UpdateAsync(UpdateReviewDTO reviewDTO)
+
+        public async Task AddAsync(CourseReviewDTO reviewDTO, string userId)
+        {
+            var review = new Review
+            {
+                CourseId = reviewDTO.CourseId,
+                Rating = reviewDTO.Rating,
+                Comment = reviewDTO.Comment,
+                UserId = userId
+            };
+
+            await _unitOfWork.Reviews.AddAsync(review);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(UpdateReviewDTO reviewDTO, string userId)
         {
             var review = await _unitOfWork.Reviews.GetByIdAsync(reviewDTO.ReviewId);
-
             if (review == null)
                 throw new KeyNotFoundException("Review not found");
 
-            // Authorization check
-            if (review.UserId != reviewDTO.UserId)
+            if (review.UserId != userId)
                 throw new UnauthorizedAccessException("You cannot update this review");
 
-            // Partial Update
             if (reviewDTO.Rating.HasValue)
                 review.Rating = reviewDTO.Rating.Value;
 
@@ -75,11 +72,9 @@ namespace ClassUP.ApplicationCore.Services.Reviws
         public async Task DeleteAsync(int reviewId, string userId)
         {
             var review = await _unitOfWork.Reviews.GetByIdAsync(reviewId);
-
             if (review == null)
                 throw new KeyNotFoundException("Review not found");
 
-            // Authorization
             if (review.UserId != userId)
                 throw new UnauthorizedAccessException("You are not allowed to delete this review");
 
