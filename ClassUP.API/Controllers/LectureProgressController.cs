@@ -22,20 +22,20 @@ namespace ClassUP.API.Controllers
         {
             var userId = User.GetUserId(); 
             await _progressService.MarkLessonAsCompletedAsync(lectureId, userId);
-            return Ok(new { message = "Lesson marked as completed" });
+            return Ok(new { message = "Lecture marked as completed" });
         }
 
         [Authorize]
-        [HttpDelete("uncomplete-lesson/{lectureId}")]
+        [HttpDelete("uncomplete-lecture/{lectureId}")]
         public async Task<IActionResult> UnCompleteLesson(int lectureId)
         {
             var userId = User.GetUserId(); 
             await _progressService.UnCompleteLessonAsync(lectureId, userId);
-            return Ok("Lesson uncompleted successfully.");
+            return Ok("Lecture uncompleted successfully.");
         }
 
         [Authorize]
-        [HttpGet("is-lesson-completed/{lectureId}")]
+        [HttpGet("is-lecture-completed/{lectureId}")]
         public async Task<IActionResult> IsLessonCompleted(int lectureId)
         {
             var userId = User.GetUserId(); 
@@ -44,12 +44,20 @@ namespace ClassUP.API.Controllers
         }
 
         [Authorize]
-        [HttpGet("completed-lessons/{courseId}")]
+        [HttpGet("completed-lecture/{courseId}")]
         public async Task<IActionResult> GetCompletedLessons(int courseId)
         {
             var userId = User.GetUserId(); 
             var completedLessonIds = await _progressService.GetCompletedLessonsAsync(courseId, userId);
             return Ok(completedLessonIds);
+        }
+
+        [Authorize]
+        [HttpPost("recalculate-progress/{enrollmentId}")]
+        public async Task<IActionResult> RecalculateProgress(int enrollmentId)
+        {
+            var progress = await _progressService.RecalculateProgressAsync(enrollmentId);
+            return Ok(new { progress });
         }
 
 

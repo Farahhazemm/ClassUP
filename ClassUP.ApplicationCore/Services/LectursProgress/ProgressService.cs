@@ -115,6 +115,63 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
                 .Select(lp => lp.LectureId);
         }
 
+        public async Task<float> RecalculateProgressAsync(int enrollmentId)
+        {
+            // جلب ال enrollment
+            var enrollment = await _unitOfWork.Enrollments.GetByIdAsync(enrollmentId);
+            if (enrollment == null)
+                throw new Exception("Enrollment not found");
+
+         
+            var totalLectures = await _unitOfWork.Lectures.GetAllAsync(null);
+
+            
+            int totalCount = totalLectures.Count(l => l.Section != null && l.Section.CourseId == enrollment.CourseId);
+
+            if (totalCount == 0)
+                return 0;
+
+            
+            var allProgress = await _unitOfWork.Progresses.GetAllAsync(null);
+
+            
+            int completedLessons = allProgress.Count(lp =>
+                lp.EnrollmentId == enrollmentId &&
+                lp.IsCompleted &&
+                lp.lecture != null &&
+                lp.lecture.Section != null &&
+                lp.lecture.Section.CourseId == enrollment.CourseId);
+
+            
+            float progressPercentage = totalCount > 0
+                ? ((float)completedLessons / totalCount) * 100
+                : 0;
+
+            progressPercentage = (float)Math.Round(progressPercentage);
+
+            
+            enrollment.ProgressPercentage = progressPercentage;
+
+           
+            if (Math.Abs(progressPercentage - 100) < 0.01)
+            {
+                enrollment.Status = "Completed";
+                enrollment.CompletedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                enrollment.Status = "Active";
+                enrollment.CompletedAt = null;
+            }
+
+            
+            await _unitOfWork.SaveChangesAsync();
+
+            return progressPercentage;
+        }
+
+
+
 
     }
 

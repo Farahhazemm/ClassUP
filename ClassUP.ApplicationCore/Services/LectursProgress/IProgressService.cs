@@ -10,6 +10,7 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
         Task UnCompleteLessonAsync(int lectureId, string userId);
         Task<bool> IsLessonCompletedAsync(int lectureId, string userId);
         Task<IEnumerable<int>> GetCompletedLessonsAsync(int courseId, string userId);
+        Task<float> RecalculateProgressAsync(int enrollmentId);
 
     }
 }
