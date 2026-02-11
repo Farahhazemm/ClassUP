@@ -9,5 +9,6 @@ namespace ClassUP.ApplicationCore.IRepository
     {
         Task<LectureProgress> GetByEnrollmentAndLectureAsync(int enrollmentId, int lectureId);
 
+
     }
 }

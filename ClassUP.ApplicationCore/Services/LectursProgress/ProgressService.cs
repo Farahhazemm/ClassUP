@@ -51,7 +51,34 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
             await _unitOfWork.SaveChangesAsync();
         }
 
+        public async Task UnCompleteLessonAsync(int lectureId, string userId)
+        {
+            if (lectureId <= 0)
+                throw new ArgumentException("Invalid lesson ID");
+
+           
+            var enrollment = await _unitOfWork.Enrollments
+                .GetEnrollmentAsync(userId, lectureId);
+
+            if (enrollment == null)
+                throw new Exception("User is not enrolled in this course");
+
+            
+            var progress = await _unitOfWork.Progresses
+                .GetByEnrollmentAndLectureAsync(enrollment.Id, lectureId);
+
+            if (progress == null)
+                throw new Exception("Progress not found");
+
+            
+            progress.IsCompleted = false;
+            progress.CompletedAt = null;
+
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+
 
     }
-        
-    }
+
+}

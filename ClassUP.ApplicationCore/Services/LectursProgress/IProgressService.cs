@@ -7,5 +7,7 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
     public interface IProgressService
     {
         Task MarkLessonAsCompletedAsync(int lectureId, string userId);
+        Task UnCompleteLessonAsync(int lectureId, string userId);
+
     }
 }

@@ -25,7 +25,17 @@ namespace ClassUP.API.Controllers
             return Ok(new { message = "Lesson marked as completed" });
         }
 
+        [Authorize]
+        [HttpDelete("uncomplete-lesson/{lectureId}")]
+        public async Task<IActionResult> UnCompleteLesson(int lectureId)
+        {
+            var userId = User.GetUserId(); 
+            await _progressService.UnCompleteLessonAsync(lectureId, userId);
+            return Ok("Lesson uncompleted successfully.");
+        }
+
+
     }
 
-  
+
 }
