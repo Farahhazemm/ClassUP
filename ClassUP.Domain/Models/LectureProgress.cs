@@ -14,8 +14,6 @@ namespace ClassUP.Domain.Models
         public int LectureId { get; set; }
         public Lecture lecture { get; set; }
         public bool IsCompleted { get; set; }
-        public int WatchedDuration { get; set; } // in seconds
-        public DateTime LastWatchedAt { get; set; }
         public DateTime? CompletedAt { get; set; }
     }
 }

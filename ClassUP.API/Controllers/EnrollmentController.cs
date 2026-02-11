@@ -1,5 +1,4 @@
 ﻿using ClassUP.API.Extensions;
-using ClassUP.ApplicationCore.DTOs.Requests.Enrollment;
 using ClassUP.ApplicationCore.Services.Enrollment;
 using ClassUP.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -26,11 +25,11 @@ namespace ClassUP.API.Controllers
         {
             var enrollments = await _enrollmentService.GetAllAsync();
             return Ok(enrollments);
-        } 
+        }
         #endregion
 
         #region Get Current Student Enrollments
-        [HttpGet("me")]
+        [HttpGet("get-student-enrollments")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMyEnrollments()
         {
@@ -42,13 +41,13 @@ namespace ClassUP.API.Controllers
 
         #region  Enroll in a Course
 
-        [HttpPost("enroll")]
+        [HttpPost("enroll/{courseId}")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> EnrollStudent([FromBody] CreateEnrollmentRequest request)
+        public async Task<IActionResult> EnrollStudent(int courseId)
         {
-            request.UserId = User.GetUserId();
-            var enroll = await _enrollmentService.CreateAsync(request);
+            var userId = User.GetUserId();
+            var enroll = await _enrollmentService.CreateAsync(courseId,userId);
             return CreatedAtAction("GetById", new { id = enroll.EnrollmentId }, enroll);
         } 
         #endregion

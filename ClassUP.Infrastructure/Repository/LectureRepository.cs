@@ -39,5 +39,17 @@ namespace ClassUP.Infrastructure.Repository
         {
              _dbSet.VideoContents.Remove(video);
         }
+
+        public async Task<Lecture?> GetLectureWithSectionAndCourseAsync(int lectureId)
+        {
+            return await _dbSet.Lectures
+                .Include(l => l.Section)
+                    .ThenInclude(s => s.Course)
+                .Include(l => l.VideoContent)
+                .Include(l => l.ArticleContent)
+                .Include(l => l.LectureProgresses)
+                .FirstOrDefaultAsync(l => l.Id == lectureId);
+        }
+
     }
 }

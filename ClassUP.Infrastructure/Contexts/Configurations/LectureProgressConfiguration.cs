@@ -21,8 +21,7 @@ namespace ClassUP.Infrastructure.Data.Configurations
             builder.Property(lp => lp.EnrollmentId).IsRequired();
             builder.Property(lp => lp.LectureId).IsRequired();
             builder.Property(lp => lp.IsCompleted).IsRequired().HasDefaultValue(false);
-            builder.Property(lp => lp.WatchedDuration).IsRequired().HasDefaultValue(0);
-            builder.Property(lp => lp.LastWatchedAt).IsRequired();
+          
             builder.Property(lp => lp.CompletedAt).IsRequired(false);
 
             builder.HasOne(lp => lp.enrollment)

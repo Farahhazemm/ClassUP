@@ -14,6 +14,7 @@ namespace ClassUP.ApplicationCore.IRepository
         ISectionRepository Sections { get; }
         IReviewRepository Reviews { get; }
         IEnrollmentRepository Enrollments { get; }
+        IProgressRepository  Progresses { get; }
         Task<int> SaveChangesAsync();
     }
 }

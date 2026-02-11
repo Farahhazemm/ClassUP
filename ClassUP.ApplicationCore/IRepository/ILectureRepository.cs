@@ -15,5 +15,7 @@ namespace ClassUP.ApplicationCore.IRepository
         Task<IEnumerable<Lecture>> GetSectionLectursAsync(int sectionId);
 
         Task RemoveVideoContent(VideoContent video);
+        Task<Lecture?> GetLectureWithSectionAndCourseAsync(int lectureId);
+
     }
 }

@@ -30,6 +30,7 @@ namespace ClassUP.Infrastructure
             services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IProgressRepository, ProgressRepository>();
             return services;
         }
     }

@@ -26,6 +26,7 @@ namespace ClassUP.Infrastructure.Repository
             Sections =new SectionRepository(_db);
             Reviews = new ReviewRepository(_db);
             Enrollments = new EnrollmentRepository(_db);
+            Progresses = new ProgressRepository(_db);
         }
         public ICourseRepository Courses { get; }
         public ILectureRepository Lectures { get; }
@@ -35,6 +36,8 @@ namespace ClassUP.Infrastructure.Repository
         public ISectionRepository Sections { get; }
         public IReviewRepository Reviews { get; }
         public IEnrollmentRepository Enrollments { get; }
+
+        public IProgressRepository Progresses { get; }
 
         public async Task<int> SaveChangesAsync()
         {

@@ -4,6 +4,7 @@ using ClassUP.ApplicationCore.Services.Categorise;
 using ClassUP.ApplicationCore.Services.Courses;
 using ClassUP.ApplicationCore.Services.Enrollment;
 using ClassUP.ApplicationCore.Services.Lectures;
+using ClassUP.ApplicationCore.Services.LectursProgress;
 using ClassUP.ApplicationCore.Services.Reviws;
 using ClassUP.ApplicationCore.Services.Sections;
 using ClassUP.ApplicationCore.Services.Thumbnail;
@@ -25,7 +26,7 @@ namespace ClassUP.ApplicationCore
             services.AddScoped<ISectionService, SectionService>();
             services.AddScoped<IReviewService,ReviewService>();
             services.AddScoped<IEnrollmentService, EnrollmentService>();
-            
+            services.AddScoped<IProgressService, ProgressService>();
             
 
 

@@ -1,5 +1,4 @@
 ﻿using ClassUP.ApplicationCore.Common.Filters;
-using ClassUP.ApplicationCore.DTOs.Requests.Enrollment;
 using ClassUP.ApplicationCore.DTOs.Responses.Enrollment;
 using ClassUP.ApplicationCore.DTOs.Responses.Enrollments;
 using ClassUP.ApplicationCore.IRepository;
@@ -58,18 +57,21 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
 
         public async Task<IEnumerable<EnrollmentDTO>> GetStudentEnrollmentsAsync(string userId)
         {
-            var enrollments = await _unitOfWork.Enrollments.GetAllAsync(null);
+            var allEnrollments = await _unitOfWork.Enrollments.GetAllAsync(null);
 
-            return enrollments.Select(e => new EnrollmentDTO
-            {
-                EnrollmentId = e.Id,
-                CourseId = e.CourseId,
-                StudentId = e.UserId,
-                EnrolledAt = e.EnrolledAt,
-                ProgressPercentage = e.ProgressPercentage,
-                CompletedAt = e.CompletedAt,
-              
-            });
+            var enrollments = allEnrollments
+                .Where(e => e.UserId == userId)
+                .Select(e => new EnrollmentDTO
+                {
+                    EnrollmentId = e.Id,
+                    CourseId = e.CourseId,
+                    StudentId = e.UserId,
+                    EnrolledAt = e.EnrolledAt,
+                    ProgressPercentage = e.ProgressPercentage,
+                    CompletedAt = e.CompletedAt,
+                });
+
+            return enrollments;
         }
 
         public async Task<CheckEnrollmentResponse> IsEnrolledAsync(int courseId, string userId)
@@ -100,23 +102,23 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
             };
         }
 
-        public async Task<EnrollmentDTO> CreateAsync(CreateEnrollmentRequest request)
+        public async Task<EnrollmentDTO> CreateAsync(int CourseId,string UserId)
         {
-            if (request.CourseId <= 0)
+            if (CourseId <= 0)
                 return null;
 
             var alreadyEnrolled = await _unitOfWork.Enrollments
-               .IsEnrolledAsync(request.UserId, request.CourseId);
+               .IsEnrolledAsync(UserId, CourseId);
             if (alreadyEnrolled)
                 return null;
             var course = await _unitOfWork.Courses
-               .GetByIdAsync(request.CourseId);
+               .GetByIdAsync(CourseId);
             if (course == null)
                 return null;
             var enrollment = new Domain.Models.Enrollment
             {
-                CourseId = request.CourseId,
-                UserId = request.UserId,
+                CourseId = CourseId,
+                UserId = UserId,
                 EnrolledAt = DateTime.Now,
                 ProgressPercentage = 0,
                 CompletedAt = null,
