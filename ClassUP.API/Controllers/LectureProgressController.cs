@@ -43,6 +43,16 @@ namespace ClassUP.API.Controllers
             return Ok(new { isCompleted });
         }
 
+        [Authorize]
+        [HttpGet("completed-lessons/{courseId}")]
+        public async Task<IActionResult> GetCompletedLessons(int courseId)
+        {
+            var userId = User.GetUserId(); 
+            var completedLessonIds = await _progressService.GetCompletedLessonsAsync(courseId, userId);
+            return Ok(completedLessonIds);
+        }
+
+
 
 
     }

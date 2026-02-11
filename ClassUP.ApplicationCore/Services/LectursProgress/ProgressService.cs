@@ -97,6 +97,23 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
         }
 
 
+        public async Task<IEnumerable<int>> GetCompletedLessonsAsync(int courseId, string userId)
+        {
+            
+            var enrollment = await _unitOfWork.Enrollments
+                .GetEnrollmentAsync(userId, courseId);
+
+            if (enrollment == null)
+                throw new Exception("User is not enrolled in this course");
+
+            
+            var completedLessons = await _unitOfWork.Progresses
+                .GetAllAsync(null); 
+
+            return completedLessons
+                .Where(lp => lp.EnrollmentId == enrollment.Id && lp.IsCompleted)
+                .Select(lp => lp.LectureId);
+        }
 
 
     }

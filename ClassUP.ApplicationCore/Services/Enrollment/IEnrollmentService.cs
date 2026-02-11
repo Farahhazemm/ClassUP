@@ -16,5 +16,6 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
         Task<CheckEnrollmentResponse> IsEnrolledAsync(int courseId, string userId);
         Task UnEnrollAsync(int courseId, string userId);
 
+
     }
 }
