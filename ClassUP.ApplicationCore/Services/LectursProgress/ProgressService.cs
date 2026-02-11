@@ -77,6 +77,26 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
             await _unitOfWork.SaveChangesAsync();
         }
 
+        public async Task<bool> IsLessonCompletedAsync(int lectureId, string userId)
+        {
+            
+            var enrollment = await _unitOfWork.Enrollments
+                .GetEnrollmentAsync(userId, lectureId); 
+
+            if (enrollment == null)
+                throw new Exception("User is not enrolled in this course");
+
+           
+            var progress = await _unitOfWork.Progresses
+                .GetByEnrollmentAndLectureAsync(enrollment.Id, lectureId);
+
+            if (progress == null)
+                return false;
+
+            return progress.IsCompleted;
+        }
+
+
 
 
     }

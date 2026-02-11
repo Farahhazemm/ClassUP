@@ -8,6 +8,7 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
     {
         Task MarkLessonAsCompletedAsync(int lectureId, string userId);
         Task UnCompleteLessonAsync(int lectureId, string userId);
+        Task<bool> IsLessonCompletedAsync(int lectureId, string userId);
 
     }
 }
