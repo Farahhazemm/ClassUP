@@ -3,7 +3,7 @@ using ClassUP.ApplicationCore.DTOs.Requests.ForgotPassword;
 
 using ClassUP.ApplicationCore.DTOs.Responses.ForgotPassword;
 using ClassUP.ApplicationCore.Services.Auth;
-using ClassUP.ApplicationCore.Services.ForgotPassword;
+using ClassUP.ApplicationCore.Services.IIdentity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

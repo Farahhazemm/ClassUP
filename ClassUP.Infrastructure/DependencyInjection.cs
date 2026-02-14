@@ -1,6 +1,8 @@
 ﻿using ClassUP.ApplicationCore.IRepository;
 using ClassUP.ApplicationCore.Services.Auth;
+using ClassUP.ApplicationCore.Services.IIdentity;
 using ClassUP.Infrastructure.Contexts;
+using ClassUP.Infrastructure.Identity.Services;
 using ClassUP.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,15 +24,24 @@ namespace ClassUP.Infrastructure
                 )
             );
 
-            
+            #region UnitOfWork
+            services.AddScoped<IUnitOfWork, UnitOfWork>(); 
+            #endregion
+
+            #region Repositories
             services.AddScoped<ICourseRepository, CourseRepository>();
             services.AddScoped<ILectureRepository, LectureRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IProgressRepository, ProgressRepository>(); 
+            #endregion
+
+            #region IdentityServices
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IProgressRepository, ProgressRepository>();
+            services.AddScoped<IUserTokenService, UserTokenService>(); 
+            #endregion
+
             return services;
         }
     }

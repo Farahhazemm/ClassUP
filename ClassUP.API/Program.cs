@@ -34,7 +34,7 @@ builder.Services.AddControllers()
 builder.Services.ConfigureIdentity();
 
 //---------------------------------------
-string Key = builder.Configuration["JWT:SecretKey"];
+string Key = builder.Configuration["JWT:SigningKey"];
 var KeyinBytes = Encoding.UTF8.GetBytes(Key);
 var signinKey = new SymmetricSecurityKey(KeyinBytes);
 
@@ -80,7 +80,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthentication(); 
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
