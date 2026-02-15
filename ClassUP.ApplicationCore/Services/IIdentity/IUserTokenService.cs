@@ -9,5 +9,8 @@ namespace ClassUP.ApplicationCore.Services.IIdentity
         Task<(string Token, DateTime Expiration)> GenerateJwtAsync(AppUser user);
         RefreshToken GenerateRefreshToken(string userId);
         Task<TokensDTO> RefreshTokenAsync(string Token );
+        Task<bool>RevokeTokenAsync(string Token);
+        Task RevokeAllAsync(string userId);
+
     }
 }

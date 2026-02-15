@@ -32,13 +32,17 @@ namespace ClassUP.Infrastructure.Identity.Services
             var roles = await _userManager.GetRolesAsync(user);
 
             foreach (var role in roles)
-                userClaims.Add(new Claim(ClaimTypes.Role, role));
+                // Identity Claims
+            userClaims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
+            userClaims.Add(new Claim(ClaimTypes.Name, user.UserName));
 
+            // JWT Standard Claims
             userClaims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id));
             userClaims.Add(new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName));
             userClaims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
 
-            
+
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SigningKey"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -102,9 +106,53 @@ namespace ClassUP.Infrastructure.Identity.Services
             return tokens;
 
 
-        } 
+        }
         #endregion
 
+
+        #region RevokecurrToken
+        public async Task<bool> RevokeTokenAsync(string Token)
+        {
+            var user = await _userManager.Users.Include(u => u.RefreshTokens).SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == Token));
+            if (user == null)
+                return false;
+            var refreshtoken = user.RefreshTokens.Single(t => t.Token == Token);
+            if (!refreshtoken.IsActive)
+                return false;
+
+
+            refreshtoken.RevokedOn = DateTime.UtcNow;
+
+            await _userManager.UpdateAsync(user);
+            return true;
+        }
+
+        #endregion
+
+        #region RevokeAllForLogout
+        public async Task RevokeAllAsync(string userId)
+        {
+            var user = await _userManager.Users
+                .Include(u => u.RefreshTokens)
+                .SingleOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+                return;
+
+            var activeTokens = user.RefreshTokens
+                .Where(t => t.IsActive)
+                .ToList();
+
+            foreach (var token in activeTokens)
+            {
+                token.RevokedOn = DateTime.UtcNow;
+            }
+
+            await _userManager.UpdateAsync(user);
+        }
+
+
+        #endregion
 
         #region GenerateRefreshToken
         public RefreshToken GenerateRefreshToken(string userId)
@@ -124,5 +172,7 @@ namespace ClassUP.Infrastructure.Identity.Services
         }
 
         #endregion
+
+
     }
 }

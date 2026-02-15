@@ -1,4 +1,5 @@
 ﻿using ClassUP.ApplicationCore.DTOs.Requests.Auth.Login;
+using ClassUP.ApplicationCore.DTOs.Requests.Auth.Refresh;
 using ClassUP.ApplicationCore.DTOs.Requests.Auth.Register;
 using ClassUP.ApplicationCore.Services.Auth;
 using ClassUP.ApplicationCore.Services.IIdentity;
@@ -37,10 +38,9 @@ namespace ClassUP.API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginDTO dto)
         {
             var result = await _authservice.LoginAsync(dto);
-            if (!string.IsNullOrEmpty(result.RefreshToken))
-            {
-                SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpiresAt);
-            }
+            
+            SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpiresAt);
+            
             return Ok(result);
         }
         [HttpGet("RefreshToken")]
@@ -53,6 +53,40 @@ namespace ClassUP.API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("RevokeToken")]
+        public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenDTO? dto)
+        {
+            var token = dto?.Token ?? Request.Cookies["refreshtoken"];
+
+            if (string.IsNullOrEmpty(token))
+                return BadRequest("Token Is required");
+
+            var result = await _userTokenService.RevokeTokenAsync(token);
+
+            if (!result)
+                return BadRequest("Token Is invalid");
+
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpDelete("Logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            await _userTokenService.RevokeAllAsync(userId);
+
+            Response.Cookies.Delete("refreshtoken");
+
+            return NoContent();
+        }
+
+
+
         private void SetRefreshTokenInCookie(string refreshToken,DateTime expires)
         {
             var cookieoptions = new CookieOptions
@@ -63,6 +97,7 @@ namespace ClassUP.API.Controllers
             };
             Response.Cookies.Append("refreshtoken",refreshToken, cookieoptions);
         }
+
 
     }
 }
