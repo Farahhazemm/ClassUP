@@ -1,12 +1,16 @@
-﻿using ClassUP.ApplicationCore.Services.IIdentity;
+﻿using ClassUP.ApplicationCore.DTOs.Responses.Auth.Refresh;
+using ClassUP.ApplicationCore.Services.IIdentity;
 using ClassUP.Domain.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
-
 namespace ClassUP.Infrastructure.Identity.Services
 {
     public class UserTokenService : IUserTokenService
@@ -56,7 +60,69 @@ namespace ClassUP.Infrastructure.Identity.Services
             return (tokenString, expiration);
         }
 
-       
+        #endregion
+
+        #region createAnRefreshToken
+        public async Task<TokensDTO> RefreshTokenAsync(string Token )
+        {
+            var tokens = new TokensDTO();
+
+            var user = await _userManager.Users.Include(u => u.RefreshTokens).SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == Token));
+
+
+
+            if (user == null)
+                    throw new SecurityException("Invalid refresh token");
+            
+            // I Use single => before chech confirm that The curr user has refreshtoken
+            var refreshtoken = user.RefreshTokens.Single(t => t.Token == Token);
+            if (!refreshtoken.IsActive)
+            {
+                throw new SecurityException("Invalid refresh token");
+            }
+
+            //  arrive here => i sure that my end user send a valid refreshToken & still actiive 
+            // now I make a three steps 
+            //1 : Revoke an old token 
+            //2 : generate a new refresh token 
+            //3 : Generate a new JWT TOken 
+      
+            refreshtoken.RevokedOn = DateTime.UtcNow;
+
+            var newrefreshtoken = GenerateRefreshToken(user.Id);
+            user.RefreshTokens.Add(newrefreshtoken);
+
+            await _userManager.UpdateAsync(user);
+
+            var jwttoken = await GenerateJwtAsync(user);
+            tokens.JwtToken = jwttoken.Token;
+            tokens.RefreshToken = newrefreshtoken.Token;
+            tokens.RefreshTokenExpiration = newrefreshtoken.ExpiresOn;
+
+            return tokens;
+
+
+        } 
+        #endregion
+
+
+        #region GenerateRefreshToken
+        public RefreshToken GenerateRefreshToken(string userId)
+        {
+            var randomNumber = new byte[32];
+
+            using var generator = RandomNumberGenerator.Create();
+            generator.GetBytes(randomNumber);
+
+            return new RefreshToken
+            {
+                Token = Convert.ToBase64String(randomNumber),
+                ExpiresOn = DateTime.UtcNow.AddDays(10),
+                CreatedOn = DateTime.UtcNow,
+                UserId = userId
+            };
+        }
+
         #endregion
     }
 }

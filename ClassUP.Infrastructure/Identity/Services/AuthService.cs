@@ -58,20 +58,31 @@ namespace ClassUP.ApplicationCore.Services.Auth
 
         public async Task<LoginResponseDTO> LoginAsync(LoginDTO dto)
         {
+           
             var user = await _userManager.FindByEmailAsync(dto.Email)
                 ?? throw new InvalidCredentialsException();
 
+        
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, dto.Password);
             if (!isPasswordValid)
                 throw new InvalidCredentialsException();
 
-            var (token, expiration) = await _tokenService.GenerateJwtAsync(user);
+         
+            var (jwtToken, jwtExpiration) = await _tokenService.GenerateJwtAsync(user);
+
+            var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
+
+            user.RefreshTokens.Add(refreshToken);
+            await _userManager.UpdateAsync(user);
 
             return new LoginResponseDTO
             {
-                Token = token,
-                Expiration = expiration
+                Token = jwtToken,
+                RefreshToken = refreshToken.Token,
+                RefreshTokenExpiresAt = refreshToken.ExpiresOn
             };
         }
+
+
     }
 }

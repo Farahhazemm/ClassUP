@@ -56,6 +56,7 @@ builder.Services.AddAuthentication(op =>
         IssuerSigningKey = signinKey,
         ValidateIssuerSigningKey = true,
         ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
     };
 });
 
