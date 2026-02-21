@@ -1,8 +1,10 @@
 ﻿using ClassUP.ApplicationCore.IRepository;
 using ClassUP.ApplicationCore.Services.Auth;
+using ClassUP.ApplicationCore.Services.IAccount;
 using ClassUP.ApplicationCore.Services.IIdentity;
 using ClassUP.Infrastructure.Contexts;
 using ClassUP.Infrastructure.Identity.Services;
+using ClassUP.Infrastructure.Identity_Account.Services;
 using ClassUP.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -41,7 +43,8 @@ namespace ClassUP.Infrastructure
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUserTokenService, UserTokenService>();
             services.AddScoped<IEmailVerificationService, EmailVerificationService>();
-          
+            services.AddScoped<IEmailService, EmailService>();
+
 
             #endregion
 

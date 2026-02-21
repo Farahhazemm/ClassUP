@@ -1,6 +1,10 @@
 ﻿using ClassUP.ApplicationCore.DTOs.Requests.Account.Email;
 using ClassUP.ApplicationCore.Services.Auth;
+using ClassUP.ApplicationCore.Services.IAccount;
 using ClassUP.Domain.Models;
+using ClassUP.Infrastructure.Identity_Account.Email.Helpers;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.WebUtilities;
@@ -15,16 +19,20 @@ namespace ClassUP.Infrastructure.Identity.Services
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<EmailVerificationService> _logger;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailService _emailService;
+        IHttpContextAccessor _httpContextAccessor;
+        private readonly IWebHostEnvironment _env;
 
         public EmailVerificationService(
             UserManager<AppUser> userManager,
-           // IEmailSender emailSender,
-            ILogger<EmailVerificationService> logger)
+            IEmailService emailService,
+            ILogger<EmailVerificationService> logger, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment env)
         {
             _userManager = userManager;
-           // _emailSender = emailSender;
+            _emailService = emailService;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
+            _env = env;
         }
 
         public async Task<string> GenerateVerificationCodeAsync(AppUser user)
@@ -37,6 +45,48 @@ namespace ClassUP.Infrastructure.Identity.Services
             return code;
         }
 
+        public async Task SendConfirmationEmailAsync(AppUser user, string code)
+        {
+            var origin = _httpContextAccessor.HttpContext?
+                .Request
+                .Headers
+                .Origin
+                .ToString();
 
+            var confirmationLink = $"{origin}/auth/emailConfirmation?userId={user.Id}&code={code}";
+
+          
+            var templatePath = Path.Combine(
+                _env.WebRootPath,              
+                "EmailTemplates",              
+                "EmailConfirmation.html"
+            );
+
+            // log للتحقق (أضيفيه مؤقتًا)
+            _logger.LogInformation("محاولة قراءة الـ template من: {TemplatePath}", templatePath);
+
+            if (!File.Exists(templatePath))
+            {
+                _logger.LogError("الملف مش موجود في: {TemplatePath}", templatePath);
+                throw new FileNotFoundException("Email template not found at " + templatePath);
+            }
+
+            var emailBody = EmailBodyBuilder.Generate(
+                templatePath,
+                new Dictionary<string, string>
+                {
+            { "{{name}}", user.FirstName ?? "User" },
+            { "{{action_url}}", confirmationLink }
+                }
+            );
+
+            await _emailService.SendAsync(
+                user.Email!,
+                "✅ ClassUP: Email Confirmation",
+                emailBody
+            );
+
+            _logger.LogInformation("Confirmation email sent to {Email}", user.Email);
+        }
     }
 }

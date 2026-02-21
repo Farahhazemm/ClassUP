@@ -8,7 +8,6 @@ using ClassUP.ApplicationCore.Exeptions;
 using ClassUP.ApplicationCore.Services.IIdentity;
 using ClassUP.Domain.Constants;
 using ClassUP.Domain.Models;
-using ClassUP.Infrastructure.Identity.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
@@ -55,7 +54,10 @@ namespace ClassUP.ApplicationCore.Services.Auth
             var verificationCode = await _emailVerificationService.GenerateVerificationCodeAsync(user);
 
             //  Send verification email
-          //  await _emailVerificationService.SendVerificationEmailAsync(user, verificationCode);
+            
+            await _emailVerificationService.GenerateVerificationCodeAsync(user);
+
+            await _emailVerificationService.SendConfirmationEmailAsync(user, verificationCode );
 
             //  Get roles => for return in DTO
             var roles = await _userManager.GetRolesAsync(user);
@@ -133,24 +135,23 @@ namespace ClassUP.ApplicationCore.Services.Auth
         }
 
 
-public async Task ResendConfirmationEmailAsync(ResendConfirmationEmailDTO request)
-    {
-        var user = await _userManager.FindByEmailAsync(request.Email);
+        public async Task ResendConfirmationEmailAsync(ResendConfirmationEmailDTO request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null)
+                return;
 
-        
-        if (user == null)
-            return; 
+            if (user.EmailConfirmed)
+                throw new BadRequestException("Email is already confirmed.");
 
-        if (user.EmailConfirmed)
-            throw new BadRequestException("Email is already confirmed.");
+            var verificationCode =
+                await _emailVerificationService.GenerateVerificationCodeAsync(user);
 
-        var verificationCode =
-            await _emailVerificationService.GenerateVerificationCodeAsync(user);
+            await _emailVerificationService.SendConfirmationEmailAsync(
+                user,
+                verificationCode
+            );
+        }
 
-        // TODO:
-        // await _emailVerificationService.SendVerificationEmailAsync(user, verificationCode);
     }
-
-
-}
 }

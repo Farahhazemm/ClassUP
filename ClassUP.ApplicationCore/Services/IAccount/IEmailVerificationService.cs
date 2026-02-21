@@ -9,5 +9,7 @@ namespace ClassUP.ApplicationCore.Services.Auth
     public interface IEmailVerificationService
     {
         Task<string> GenerateVerificationCodeAsync(AppUser user);
+        Task SendConfirmationEmailAsync(AppUser user, string code);
+
     }
 }

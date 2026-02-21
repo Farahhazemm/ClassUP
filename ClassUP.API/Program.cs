@@ -10,6 +10,7 @@ using ClassUP.Infrastructure;
 using ClassUP.Infrastructure.Contexts;
 using ClassUP.Infrastructure.ExternalServices;
 using ClassUP.Infrastructure.Identity.DataSeeder;
+using ClassUP.Infrastructure.Identity_Account.Email.Settings;
 using ClassUP.Infrastructure.Repository;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication;
@@ -69,9 +70,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("CloudinarySettings"));
 
+builder.Services.Configure<MailSettings>(
+    builder.Configuration.GetSection(nameof(MailSettings))
+);
+
 builder.Services.AddScoped<IVideoService, VideoService>();
 
-
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 app.UseMiddleware<GlobalExceptionMiddleware>();
