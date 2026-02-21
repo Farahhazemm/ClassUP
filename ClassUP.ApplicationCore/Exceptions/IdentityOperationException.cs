@@ -2,7 +2,7 @@
 
 namespace ClassUP.ApplicationCore.Exceptions
 {
-    public class IdentityOperationException : ApplicationExceptionBase
+    public class IdentityOperationException : AppException
     {
         public IEnumerable<string> Errors { get; }
 

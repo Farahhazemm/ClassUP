@@ -27,6 +27,8 @@ namespace ClassUP.API.Controllers
             _authservice = authservice;
             _userTokenService = userTokenService;
         }
+
+        #region Register&Login&LogOut
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO dto)
         {
@@ -38,11 +40,32 @@ namespace ClassUP.API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginDTO dto)
         {
             var result = await _authservice.LoginAsync(dto);
-            
+
             SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpiresAt);
-            
+
             return Ok(result);
         }
+
+        [Authorize]
+        [HttpDelete("Logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            await _userTokenService.RevokeAllAsync(userId);
+
+            Response.Cookies.Delete("refreshtoken");
+
+            return NoContent();
+        }
+
+        #endregion
+
+
+        #region TokenEndPoints
         [HttpGet("RefreshToken")]
         public async Task<IActionResult> RefreshToken()
         {
@@ -69,25 +92,10 @@ namespace ClassUP.API.Controllers
             return Ok(result);
         }
 
-        [Authorize]
-        [HttpDelete("Logout")]
-        public async Task<IActionResult> Logout()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
-
-            await _userTokenService.RevokeAllAsync(userId);
-
-            Response.Cookies.Delete("refreshtoken");
-
-            return NoContent();
-        }
+       
 
 
-
-        private void SetRefreshTokenInCookie(string refreshToken,DateTime expires)
+        private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)
         {
             var cookieoptions = new CookieOptions
             {
@@ -95,8 +103,13 @@ namespace ClassUP.API.Controllers
                 Expires = expires.ToLocalTime(),
 
             };
-            Response.Cookies.Append("refreshtoken",refreshToken, cookieoptions);
+            Response.Cookies.Append("refreshtoken", refreshToken, cookieoptions);
         }
+
+        #endregion
+
+
+
 
 
     }

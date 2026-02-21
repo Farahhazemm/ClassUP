@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ClassUP.ApplicationCore.Exeptions
 {
-    public class InvalidCredentialsException : ApplicationExceptionBase
+    public class InvalidCredentialsException : AppException
     {
         public InvalidCredentialsException() : base("Invalid email or password")
         {

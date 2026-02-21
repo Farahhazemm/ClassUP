@@ -1,5 +1,6 @@
 
 using ClassUP.API.Extensions;
+using ClassUP.API.Middlewares;
 using ClassUP.ApplicationCore;
 using ClassUP.ApplicationCore.DTOs.Requests.Lectures;
 using ClassUP.ApplicationCore.IRepository;
@@ -73,6 +74,7 @@ builder.Services.AddScoped<IVideoService, VideoService>();
 
 
 var app = builder.Build();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {

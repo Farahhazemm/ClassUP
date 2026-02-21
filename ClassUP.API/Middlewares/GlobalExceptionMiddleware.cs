@@ -1,12 +1,5 @@
-﻿using ClassUP.ApplicationCore.Exceptions;
-using ClassUP.ApplicationCore.Exeptions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Net;
+﻿using ClassUP.ApplicationCore.Exeptions;
 using System.Text.Json;
-using System.Threading.Tasks;
-
 namespace ClassUP.API.Middlewares
 {
     public class GlobalExceptionMiddleware
@@ -30,47 +23,44 @@ namespace ClassUP.API.Middlewares
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unhandled exception");
+                _logger.LogError(ex, "Unhandled exception occurred");
 
                 await HandleExceptionAsync(context, ex);
             }
         }
 
-        private static Task HandleExceptionAsync(
+        private static async Task HandleExceptionAsync(
             HttpContext context,
             Exception exception)
         {
-            var statusCode = HttpStatusCode.InternalServerError;
-            var message = "An unexpected error occurred";
+            context.Response.ContentType = "application/json";
 
-            if (exception is InvalidCredentialsException)
+            if (exception is AppException appException)
             {
-                statusCode = HttpStatusCode.Unauthorized;
-                message = exception.Message;
-            }
-            else if (exception is IdentityOperationException)
-            {
-                statusCode = HttpStatusCode.BadRequest;
-                message = exception.Message;
-            }
-            else if (exception is ApplicationExceptionBase)
-            {
-                statusCode = HttpStatusCode.BadRequest;
-                message = exception.Message;
+                context.Response.StatusCode = (int)appException.StatusCode;
+
+                var response = new
+                {
+                    success = false,
+                    error = appException.Message
+                };
+
+                await context.Response.WriteAsync(
+                    JsonSerializer.Serialize(response));
+
+                return;
             }
 
-            var response = new
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+            var defaultResponse = new
             {
                 success = false,
-                error = message
+                error = "An unexpected error occurred. Please try again later."
             };
 
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)statusCode;
-
-            return context.Response.WriteAsync(
-                JsonSerializer.Serialize(response)
-            );
+            await context.Response.WriteAsync(
+                JsonSerializer.Serialize(defaultResponse));
         }
     }
 }

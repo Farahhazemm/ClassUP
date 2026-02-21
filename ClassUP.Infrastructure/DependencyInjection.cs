@@ -39,7 +39,10 @@ namespace ClassUP.Infrastructure
 
             #region IdentityServices
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IUserTokenService, UserTokenService>(); 
+            services.AddScoped<IUserTokenService, UserTokenService>();
+            services.AddScoped<IEmailVerificationService, EmailVerificationService>();
+          
+
             #endregion
 
             return services;

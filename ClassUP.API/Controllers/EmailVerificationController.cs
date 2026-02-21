@@ -1,4 +1,6 @@
-﻿using ClassUP.ApplicationCore.Services.Auth;
+﻿using ClassUP.API.Extensions;
+using ClassUP.ApplicationCore.DTOs.Requests.Account.Email;
+using ClassUP.ApplicationCore.Services.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +10,22 @@ namespace ClassUP.API.Controllers
     [ApiController]
     public class EmailVerificationController : ControllerBase
     {
-        private readonly IEmailVerification _emailVerification;
+        private readonly IAuthService _authService;
 
-        public EmailVerificationController(IEmailVerification emailVerification)
+        public EmailVerificationController(IAuthService authService)
         {
-            _emailVerification = emailVerification;
+            _authService = authService;
         }
+
+        [HttpPost("confirm-email")]
+        public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailDTO request)
+        {
+           
+         
+            await _authService.ConfirmEmailAsync(request);
+            return Ok(new { success = true, message = "Email confirmed successfully." });
+        }
+
+
     }
 }
