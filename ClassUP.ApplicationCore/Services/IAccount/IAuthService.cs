@@ -15,5 +15,8 @@ namespace ClassUP.ApplicationCore.Services.Auth
         Task<UserDTO> RegisterAsync(RegisterDTO dto);
 
         Task ConfirmEmailAsync(ConfirmEmailDTO request );
+
+        Task ResendConfirmationEmailAsync(ResendConfirmationEmailDTO request);
+
     }
 }

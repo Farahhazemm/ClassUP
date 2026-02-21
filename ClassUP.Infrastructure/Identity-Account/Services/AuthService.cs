@@ -133,5 +133,24 @@ namespace ClassUP.ApplicationCore.Services.Auth
         }
 
 
+public async Task ResendConfirmationEmailAsync(ResendConfirmationEmailDTO request)
+    {
+        var user = await _userManager.FindByEmailAsync(request.Email);
+
+        
+        if (user == null)
+            return; 
+
+        if (user.EmailConfirmed)
+            throw new BadRequestException("Email is already confirmed.");
+
+        var verificationCode =
+            await _emailVerificationService.GenerateVerificationCodeAsync(user);
+
+        // TODO:
+        // await _emailVerificationService.SendVerificationEmailAsync(user, verificationCode);
     }
+
+
+}
 }

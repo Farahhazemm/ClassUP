@@ -1,6 +1,7 @@
 ﻿using ClassUP.API.Extensions;
 using ClassUP.ApplicationCore.DTOs.Requests.Account.Email;
 using ClassUP.ApplicationCore.Services.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +27,18 @@ namespace ClassUP.API.Controllers
             return Ok(new { success = true, message = "Email confirmed successfully." });
         }
 
+        [AllowAnonymous]
+        [HttpPost("resend-confirmation-email")]
+        public async Task<IActionResult> ResendConfirmationEmail( [FromBody] ResendConfirmationEmailDTO request)
+        {
+            await _authService.ResendConfirmationEmailAsync(request);
+
+            return Ok(new
+            {
+                success = true,
+                message = "a confirmation code has been resent."
+            });
+        }
 
     }
 }
