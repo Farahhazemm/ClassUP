@@ -44,6 +44,7 @@ namespace ClassUP.Infrastructure
             services.AddScoped<IUserTokenService, UserTokenService>();
             services.AddScoped<IEmailVerificationService, EmailVerificationService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IResetPasswordService, ResetPasswordService>();
 
 
             #endregion

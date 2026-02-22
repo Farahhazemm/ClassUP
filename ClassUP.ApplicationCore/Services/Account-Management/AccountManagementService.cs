@@ -1,10 +1,15 @@
 ﻿using ClassUP.ApplicationCore.DTOs.Requests.Account_Management;
 using ClassUP.ApplicationCore.DTOs.Responses.User;
 using ClassUP.ApplicationCore.Exceptions;
+using ClassUP.ApplicationCore.Exeptions;
+using ClassUP.ApplicationCore.Services.IAccount;
 using ClassUP.Domain.Models;
 using Mapster;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,11 +22,14 @@ namespace ClassUP.ApplicationCore.Services.Account_Management
 
 
         private readonly UserManager<AppUser> _userManager;
+        private readonly ILogger<AccountManagementService> _logger;
+        private readonly IResetPasswordService _resetPasswordService;
 
-
-        public AccountManagementService(UserManager<AppUser> userManager)
+        public AccountManagementService(UserManager<AppUser> userManager, ILogger<AccountManagementService> logger, IResetPasswordService resetPasswordService)
         {
             _userManager = userManager;
+            _logger=logger;
+            _resetPasswordService=resetPasswordService;
         }
 
 
@@ -60,15 +68,16 @@ namespace ClassUP.ApplicationCore.Services.Account_Management
             await _userManager.UpdateAsync(user);
 
 
-        } 
+        }
         #endregion
 
-        public async Task ChangePasswordAsync (string userId , ChangePasswordDTO dto)
+        #region ChangePassword
+        public async Task ChangePasswordAsync(string userId, ChangePasswordDTO dto)
         {
             var user = await _userManager.FindByIdAsync(userId);
             // Iam sure no null user
 
-           var result = await _userManager.ChangePasswordAsync(user!, dto.CurrentPassword, dto.NewPassword);
+            var result = await _userManager.ChangePasswordAsync(user!, dto.CurrentPassword, dto.NewPassword);
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description);
@@ -76,5 +85,10 @@ namespace ClassUP.ApplicationCore.Services.Account_Management
 
             }
         }
+        #endregion
+
+       
+
+
     }
 }

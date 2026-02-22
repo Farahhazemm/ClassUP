@@ -5,11 +5,13 @@ using ClassUP.ApplicationCore.DTOs.Responses.Auth.Login;
 using ClassUP.ApplicationCore.DTOs.Responses.Auth.Register;
 using ClassUP.ApplicationCore.Exceptions;
 using ClassUP.ApplicationCore.Exeptions;
+using ClassUP.ApplicationCore.Services.IAccount;
 using ClassUP.ApplicationCore.Services.IIdentity;
 using ClassUP.Domain.Constants;
 using ClassUP.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
 using System.Text;
 
 namespace ClassUP.ApplicationCore.Services.Auth
@@ -19,13 +21,19 @@ namespace ClassUP.ApplicationCore.Services.Auth
         private readonly UserManager<AppUser> _userManager;
         private readonly IUserTokenService _tokenService;
         private readonly IEmailVerificationService _emailVerificationService;
-        public AuthService(UserManager<AppUser> userManager, IUserTokenService tokenService , IEmailVerificationService emailVerificationService)
+        private readonly ILogger<AuthService> _logger;
+        private readonly IResetPasswordService _resetPasswordService;
+        public AuthService(UserManager<AppUser> userManager, IUserTokenService tokenService , IEmailVerificationService emailVerificationService , ILogger<AuthService> logger,
+        IResetPasswordService resetPasswordService)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _emailVerificationService = emailVerificationService;
+            _logger = logger;
+            _resetPasswordService = resetPasswordService;
         }
 
+        #region Register
         public async Task<UserDTO> RegisterAsync(RegisterDTO dto)
         {
             //  Create user object
@@ -54,10 +62,10 @@ namespace ClassUP.ApplicationCore.Services.Auth
             var verificationCode = await _emailVerificationService.GenerateVerificationCodeAsync(user);
 
             //  Send verification email
-            
+
             await _emailVerificationService.GenerateVerificationCodeAsync(user);
 
-            await _emailVerificationService.SendConfirmationEmailAsync(user, verificationCode );
+            await _emailVerificationService.SendConfirmationEmailAsync(user, verificationCode);
 
             //  Get roles => for return in DTO
             var roles = await _userManager.GetRolesAsync(user);
@@ -74,13 +82,17 @@ namespace ClassUP.ApplicationCore.Services.Auth
             };
         }
 
+        #endregion
+
+
+        #region Login
         public async Task<LoginResponseDTO> LoginAsync(LoginDTO dto)
         {
-           
+
             var user = await _userManager.FindByEmailAsync(dto.Email)
                 ?? throw new InvalidCredentialsException();
 
-        
+
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, dto.Password);
             if (!isPasswordValid)
                 throw new InvalidCredentialsException();
@@ -104,7 +116,11 @@ namespace ClassUP.ApplicationCore.Services.Auth
             };
         }
 
-        public async Task ConfirmEmailAsync(ConfirmEmailDTO request )
+        #endregion
+
+
+        #region ConfirmEmail
+        public async Task ConfirmEmailAsync(ConfirmEmailDTO request)
         {
             var user = await _userManager.FindByIdAsync(request.UserId);
             if (user == null)
@@ -130,11 +146,13 @@ namespace ClassUP.ApplicationCore.Services.Auth
                 throw new IdentityOperationException(new[] { error.Description });
             }
 
-            
-           // _logger.LogInformation("User {UserId} confirmed email successfully.", user.Id);
+
+            // _logger.LogInformation("User {UserId} confirmed email successfully.", user.Id);
         }
 
+        #endregion
 
+        #region Resend
         public async Task ResendConfirmationEmailAsync(ResendConfirmationEmailDTO request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
@@ -152,6 +170,27 @@ namespace ClassUP.ApplicationCore.Services.Auth
                 verificationCode
             );
         }
+        #endregion
+
+        #region ForgotPassword
+        public async Task SendResetPasswordCode(string Email)
+        {
+            // find user by Email
+            var user = await _userManager.FindByEmailAsync(Email);
+            if (user == null)
+                return;
+            if (!user.EmailConfirmed)
+                throw new EmailNotConfirmedException();
+            // now 1- Generate code 2- send code
+
+            var code = await _resetPasswordService.GenerateResetPasswordCodeAsync(user);
+            _logger.LogInformation("Reset code: {code}", code);
+
+            await _resetPasswordService.SendResetPasswordEmailAsync(user, code);
+
+
+        }
+        #endregion
 
     }
 }
