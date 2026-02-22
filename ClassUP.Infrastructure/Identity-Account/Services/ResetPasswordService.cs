@@ -76,7 +76,7 @@ namespace ClassUP.Infrastructure.Identity_Account.Services
 
             await _emailService.SendAsync(
                 user.Email!,
-                "✅ ClassUP: Email Confirmation",
+                "✅ ClassUP: Reset Password",
                 emailBody
             );
 

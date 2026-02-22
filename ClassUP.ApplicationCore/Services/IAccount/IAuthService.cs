@@ -1,4 +1,5 @@
 ﻿using ClassUP.ApplicationCore.DTOs.Requests.Account.Email;
+using ClassUP.ApplicationCore.DTOs.Requests.Account.Password;
 using ClassUP.ApplicationCore.DTOs.Requests.Auth.Login;
 using ClassUP.ApplicationCore.DTOs.Requests.Auth.Register;
 using ClassUP.ApplicationCore.DTOs.Responses.Auth.Login;
@@ -18,6 +19,7 @@ namespace ClassUP.ApplicationCore.Services.Auth
 
         Task ResendConfirmationEmailAsync(ResendConfirmationEmailDTO request);
         Task SendResetPasswordCode(string Email);
+        Task ResetPasswordAsync(ResetPasswordDTO dto);
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ClassUP.ApplicationCore.DTOs.Requests.Account.Email;
+using ClassUP.ApplicationCore.DTOs.Requests.Account.Password;
 using ClassUP.ApplicationCore.DTOs.Requests.Auth.Login;
 using ClassUP.ApplicationCore.DTOs.Requests.Auth.Register;
 using ClassUP.ApplicationCore.DTOs.Responses.Auth.Login;
@@ -191,6 +192,32 @@ namespace ClassUP.ApplicationCore.Services.Auth
 
         }
         #endregion
+
+        public async Task ResetPasswordAsync(ResetPasswordDTO dto)
+        {
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+
+            if (user is null)
+                throw new BadRequestException("InValid Code");
+            if(!user.EmailConfirmed)
+                throw new EmailNotConfirmedException();
+            IdentityResult result;
+            try
+            {
+                var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(dto.Code));
+                result = await _userManager.ResetPasswordAsync(user, code,dto.Password);
+            }
+            catch(FormatException)
+            {
+                throw new BadRequestException("Invalid reset password code.");
+            }
+
+            if (!result.Succeeded)
+                throw new IdentityOperationException(
+                    result.Errors.Select(e => e.Description));
+
+        }
+        
 
     }
 }

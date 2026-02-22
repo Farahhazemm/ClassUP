@@ -1,4 +1,5 @@
-﻿using ClassUP.ApplicationCore.DTOs.Requests.Account_Management;
+﻿using ClassUP.ApplicationCore.DTOs.Requests.Account.Password;
+using ClassUP.ApplicationCore.DTOs.Requests.Account_Management;
 using ClassUP.ApplicationCore.DTOs.Requests.Auth.Login;
 using ClassUP.ApplicationCore.DTOs.Requests.Auth.Refresh;
 using ClassUP.ApplicationCore.DTOs.Requests.Auth.Register;
@@ -110,12 +111,23 @@ namespace ClassUP.API.Controllers
         #endregion
 
 
+        #region ForgotPassword
         [HttpPost("forgot-password")]
-        public async Task <IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO dto)
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO dto)
         {
             await _authservice.SendResetPasswordCode(dto.Email);
             return NoContent();
         }
+        #endregion
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO dto)
+        {
+            await _authservice.ResetPasswordAsync(dto);
+            return NoContent();
+        }
+
+
 
 
 
