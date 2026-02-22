@@ -1,4 +1,5 @@
 ﻿using ClassUP.API.Extensions;
+using ClassUP.ApplicationCore.DTOs.Requests.Account_Management;
 using ClassUP.ApplicationCore.Services.Account_Management;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -22,6 +23,13 @@ namespace ClassUP.API.Controllers
         {
             var result = await _accountManagementService.GetProfileAsync(User.GetUserId()!);
             return Ok(result);
+        }
+
+        [HttpPut("Info")]
+        public async Task<IActionResult>UpdateProfile([FromBody] UpdateProfileDTO dto)
+        {
+            await _accountManagementService.UpdateProfileAsync(User.GetUserId()!,dto);
+            return NoContent();
         }
 
     }
