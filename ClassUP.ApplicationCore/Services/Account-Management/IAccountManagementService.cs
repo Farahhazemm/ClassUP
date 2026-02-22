@@ -10,5 +10,6 @@ namespace ClassUP.ApplicationCore.Services.Account_Management
     {
         Task<UserProfileDTO> GetProfileAsync(string userId);
         Task UpdateProfileAsync(string userId, UpdateProfileDTO dto);
+        Task ChangePasswordAsync(string userId, ChangePasswordDTO dto);
     }
 }

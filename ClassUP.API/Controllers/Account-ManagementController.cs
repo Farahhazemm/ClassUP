@@ -32,5 +32,12 @@ namespace ClassUP.API.Controllers
             return NoContent();
         }
 
+        [HttpPut("Change-Password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO dto)
+        {
+            await _accountManagementService.ChangePasswordAsync(User.GetUserId()!, dto);
+            return NoContent();
+        }
+
     }
 }

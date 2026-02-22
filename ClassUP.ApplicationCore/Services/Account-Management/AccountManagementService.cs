@@ -42,10 +42,11 @@ namespace ClassUP.ApplicationCore.Services.Account_Management
             userProfile.UserName = userProfile.Email.Split('@')[0];   // before @
 
             return userProfile;
-        } 
+        }
         #endregion
 
-        public async Task UpdateProfileAsync (string userId , UpdateProfileDTO dto)
+        #region UpdateProfile
+        public async Task UpdateProfileAsync(string userId, UpdateProfileDTO dto)
         {
             var user = await _userManager.FindByIdAsync(userId);
             // Iam sure no null user 
@@ -56,9 +57,24 @@ namespace ClassUP.ApplicationCore.Services.Account_Management
             user.ProfilePictureUrl = dto.ProfilePictureUrl ?? user.ProfilePictureUrl;
             user.PhoneNumber = dto.PhoneNumber ?? user.PhoneNumber;
 
-             await _userManager.UpdateAsync(user);
-            
+            await _userManager.UpdateAsync(user);
 
+
+        } 
+        #endregion
+
+        public async Task ChangePasswordAsync (string userId , ChangePasswordDTO dto)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            // Iam sure no null user
+
+           var result = await _userManager.ChangePasswordAsync(user!, dto.CurrentPassword, dto.NewPassword);
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+                throw new IdentityOperationException(errors);
+
+            }
         }
     }
 }
