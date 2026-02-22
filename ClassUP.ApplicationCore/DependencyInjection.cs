@@ -1,4 +1,5 @@
 ﻿using ClassUP.ApplicationCore.IRepository;
+using ClassUP.ApplicationCore.Services.Account_Management;
 using ClassUP.ApplicationCore.Services.Auth;
 using ClassUP.ApplicationCore.Services.Categorise;
 using ClassUP.ApplicationCore.Services.Courses;
@@ -27,7 +28,7 @@ namespace ClassUP.ApplicationCore
             services.AddScoped<IReviewService,ReviewService>();
             services.AddScoped<IEnrollmentService, EnrollmentService>();
             services.AddScoped<IProgressService, ProgressService>();
-            
+            services.AddScoped<IAccountManagementService, AccountManagementService>();
 
 
 

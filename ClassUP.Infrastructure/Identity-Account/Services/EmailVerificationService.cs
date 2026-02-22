@@ -62,12 +62,11 @@ namespace ClassUP.Infrastructure.Identity.Services
                 "EmailConfirmation.html"
             );
 
-            // log للتحقق (أضيفيه مؤقتًا)
-            _logger.LogInformation("محاولة قراءة الـ template من: {TemplatePath}", templatePath);
+           
 
             if (!File.Exists(templatePath))
             {
-                _logger.LogError("الملف مش موجود في: {TemplatePath}", templatePath);
+             
                 throw new FileNotFoundException("Email template not found at " + templatePath);
             }
 
