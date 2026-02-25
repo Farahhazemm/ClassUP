@@ -24,14 +24,16 @@ namespace ClassUP.ApplicationCore.Services.Auth
         private readonly IEmailVerificationService _emailVerificationService;
         private readonly ILogger<AuthService> _logger;
         private readonly IResetPasswordService _resetPasswordService;
+        private readonly SignInManager<AppUser> _signInManager;
         public AuthService(UserManager<AppUser> userManager, IUserTokenService tokenService , IEmailVerificationService emailVerificationService , ILogger<AuthService> logger,
-        IResetPasswordService resetPasswordService)
+        IResetPasswordService resetPasswordService , SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _emailVerificationService = emailVerificationService;
             _logger = logger;
             _resetPasswordService = resetPasswordService;
+            _signInManager = signInManager;
         }
 
         #region Register
@@ -64,8 +66,6 @@ namespace ClassUP.ApplicationCore.Services.Auth
 
             //  Send verification email
 
-            await _emailVerificationService.GenerateVerificationCodeAsync(user);
-
             await _emailVerificationService.SendConfirmationEmailAsync(user, verificationCode);
 
             //  Get roles => for return in DTO
@@ -89,23 +89,28 @@ namespace ClassUP.ApplicationCore.Services.Auth
         #region Login
         public async Task<LoginResponseDTO> LoginAsync(LoginDTO dto)
         {
-
             var user = await _userManager.FindByEmailAsync(dto.Email)
                 ?? throw new InvalidCredentialsException();
 
-            if(user.IsDisable)
+            if (user.IsDisable)
                 throw new DisabledUserException();
-
-            var isPasswordValid = await _userManager.CheckPasswordAsync(user, dto.Password);
-            if (!isPasswordValid)
-                throw new InvalidCredentialsException();
 
             if (!user.EmailConfirmed)
                 throw new EmailNotConfirmedException();
 
+            var signInResult = await _signInManager.CheckPasswordSignInAsync(
+                user,
+                dto.Password,
+                lockoutOnFailure: true
+            );
+
+            if (signInResult.IsLockedOut)
+                throw new UserLockedOutException();
+
+            if (!signInResult.Succeeded)
+                throw new InvalidCredentialsException();
 
             var (jwtToken, jwtExpiration) = await _tokenService.GenerateJwtAsync(user);
-
             var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
 
             user.RefreshTokens.Add(refreshToken);
@@ -118,7 +123,6 @@ namespace ClassUP.ApplicationCore.Services.Auth
                 RefreshTokenExpiresAt = refreshToken.ExpiresOn
             };
         }
-
         #endregion
 
 

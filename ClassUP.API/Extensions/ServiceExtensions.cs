@@ -18,8 +18,10 @@ namespace ClassUP.API.Extensions
                 options.Password.RequiredLength = 10;
 
                 // User settings
-                //options.SignIn.RequireConfirmedEmail = true;
+                options.SignIn.RequireConfirmedEmail = true;
                 options.User.RequireUniqueEmail = true;
+
+              
             })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();

@@ -3,6 +3,7 @@ using ClassUP.ApplicationCore.Exeptions;
 using ClassUP.ApplicationCore.Services.IIdentity;
 using ClassUP.Domain.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -33,14 +34,15 @@ namespace ClassUP.Infrastructure.Identity.Services
             var roles = await _userManager.GetRolesAsync(user);
 
             foreach (var role in roles)
-                // Identity Claims
+                userClaims.Add(new Claim(ClaimTypes.Role, role));
+
             userClaims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-            userClaims.Add(new Claim(ClaimTypes.Name, user.UserName));
+            userClaims.Add(new Claim(ClaimTypes.Name, user.UserName!));
 
             // JWT Standard Claims
             userClaims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id));
-            userClaims.Add(new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName));
-            userClaims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
+            userClaims.Add(new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName!));
+            userClaims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email!));
 
 
 
@@ -79,6 +81,9 @@ namespace ClassUP.Infrastructure.Identity.Services
 
             if (user.IsDisable)
                 throw new DisabledUserException();
+
+            if (user.LockoutEnd > DateTime.UtcNow)
+                throw new UserLockedOutException();
 
             // I Use single => before chech confirm that The curr user has refreshtoken
             var refreshtoken = user.RefreshTokens.Single(t => t.Token == Token);
