@@ -1,4 +1,5 @@
 ﻿using ClassUP.ApplicationCore.DTOs.Responses.Auth.Refresh;
+using ClassUP.ApplicationCore.Exeptions;
 using ClassUP.ApplicationCore.Services.IIdentity;
 using ClassUP.Domain.Models;
 using Microsoft.AspNetCore.Identity;
@@ -66,18 +67,19 @@ namespace ClassUP.Infrastructure.Identity.Services
 
         #endregion
 
-        #region createAnRefreshToken
+        #region GetRefreshToken
         public async Task<TokensDTO> RefreshTokenAsync(string Token )
         {
             var tokens = new TokensDTO();
 
             var user = await _userManager.Users.Include(u => u.RefreshTokens).SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == Token));
 
-
-
             if (user == null)
                     throw new SecurityException("Invalid refresh token");
-            
+
+            if (user.IsDisable)
+                throw new DisabledUserException();
+
             // I Use single => before chech confirm that The curr user has refreshtoken
             var refreshtoken = user.RefreshTokens.Single(t => t.Token == Token);
             if (!refreshtoken.IsActive)

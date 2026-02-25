@@ -93,6 +93,8 @@ namespace ClassUP.ApplicationCore.Services.Auth
             var user = await _userManager.FindByEmailAsync(dto.Email)
                 ?? throw new InvalidCredentialsException();
 
+            if(user.IsDisable)
+                throw new DisabledUserException();
 
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, dto.Password);
             if (!isPasswordValid)
@@ -193,21 +195,23 @@ namespace ClassUP.ApplicationCore.Services.Auth
         }
         #endregion
 
+
+        #region ResetPassword
         public async Task ResetPasswordAsync(ResetPasswordDTO dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
 
             if (user is null)
                 throw new BadRequestException("InValid Code");
-            if(!user.EmailConfirmed)
+            if (!user.EmailConfirmed)
                 throw new EmailNotConfirmedException();
             IdentityResult result;
             try
             {
                 var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(dto.Code));
-                result = await _userManager.ResetPasswordAsync(user, code,dto.Password);
+                result = await _userManager.ResetPasswordAsync(user, code, dto.Password);
             }
-            catch(FormatException)
+            catch (FormatException)
             {
                 throw new BadRequestException("Invalid reset password code.");
             }
@@ -217,7 +221,8 @@ namespace ClassUP.ApplicationCore.Services.Auth
                     result.Errors.Select(e => e.Description));
 
         }
-        
+
+        #endregion
 
     }
 }

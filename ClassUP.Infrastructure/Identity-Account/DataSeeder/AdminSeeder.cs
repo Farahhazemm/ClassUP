@@ -1,6 +1,7 @@
 ﻿using ClassUP.Domain.Constants;
 using ClassUP.Domain.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,14 +10,23 @@ namespace ClassUP.Infrastructure.Identity.DataSeeder
 {
     public static class AdminSeeder
     {
-        public static async Task SeedAdminAsync(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task SeedAdminAsync(
+            UserManager<AppUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration)
         {
-           
+            // Ensure admin role exists
             if (!await roleManager.RoleExistsAsync(AppRoles.Admin))
                 await roleManager.CreateAsync(new IdentityRole(AppRoles.Admin));
 
-            
-            var adminEmail = "admin@classup.com";
+            // Read cred from config =>Env Vars
+            var adminEmail = configuration["Admin:Email"];
+            var password = configuration["Admin:Password"];
+
+            if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(password))
+                throw new Exception("Admin credentials are missing from configuration.");
+
+            // no duplication
             var existingAdmin = await userManager.FindByEmailAsync(adminEmail);
             if (existingAdmin != null) return;
 
@@ -25,10 +35,9 @@ namespace ClassUP.Infrastructure.Identity.DataSeeder
                 UserName = adminEmail,
                 Email = adminEmail,
                 FirstName = "Super",
-                LastName = "Admin"
+                LastName = "Admin",
+                EmailConfirmed = true
             };
-
-            var password = "Admin123#@!"; 
 
             var result = await userManager.CreateAsync(adminUser, password);
             if (!result.Succeeded)
@@ -37,7 +46,6 @@ namespace ClassUP.Infrastructure.Identity.DataSeeder
                 throw new Exception($"Failed to create Admin user: {errors}");
             }
 
-            
             var roleResult = await userManager.AddToRoleAsync(adminUser, AppRoles.Admin);
             if (!roleResult.Succeeded)
             {
