@@ -45,7 +45,7 @@ namespace ClassUP.Infrastructure.Repository
                     Email = g.Key.Email,
                     IsDisable = g.Key.IsDisable,
                     LockoutEnd = g.Key.LockoutEnd,
-                    Roles = g.Where(x => x != null).Select(x => x.Name).ToList()
+                    Roles = g.Where(x => x != null).Select(x => x.Name).ToList()!
                 }
             ).ToListAsync();
 

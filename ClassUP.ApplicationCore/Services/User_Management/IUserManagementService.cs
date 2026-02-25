@@ -7,6 +7,7 @@ namespace ClassUP.ApplicationCore.Services.User_Management
 {
     public interface IUserManagementService
     {
-        Task<IEnumerable<UsersDTO>> GetAllAsync();
+        Task<IEnumerable<UserDTO>> GetAllAsync();
+        Task<UserDTO> GetUserAsync(string id);
     }
 }

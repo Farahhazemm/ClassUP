@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ClassUP.ApplicationCore.DTOs.Responses.UsersManagement
 {
-      public class UsersDTO
+      public class UserDTO
     {
         public string Id { get; set; }
         public string FullName { get; set; }

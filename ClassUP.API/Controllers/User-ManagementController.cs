@@ -21,5 +21,16 @@ namespace ClassUP.API.Controllers
             var users = await _userService.GetAllAsync();
             return Ok(users);
         }
+
+
+        // GET: /api/users/id
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get([FromRoute] string id)
+        {
+            var result = await _userService.GetUserAsync(id);
+            return Ok(result);
+        }
+
+
     }
 }
