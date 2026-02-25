@@ -39,5 +39,13 @@ namespace ClassUP.API.Controllers
 
             return CreatedAtAction( nameof(GetById),  new { id = user.Id },  user);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(string id, [FromBody] UpdateUserDTO dto)
+        {
+            var updatedUser = await _userService.UpdateUserAsync(id, dto);
+            return Ok(updatedUser);
+        }
+
     }
 }

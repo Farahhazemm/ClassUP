@@ -28,13 +28,14 @@ namespace ClassUP.ApplicationCore.Services.User_Management
             _roleManager = roleManager;
           
         }
+        #region GetAll
         public async Task<IEnumerable<UserDTO>> GetAllAsync()
         {
             var users = await _unitOfWork.Users.GetAllWithRolesAsync();
-           
+
             var result = await Task.WhenAll(users.Select(async user =>
             {
-                
+
                 return new UserDTO
                 {
                     Id = user.Id,
@@ -48,7 +49,9 @@ namespace ClassUP.ApplicationCore.Services.User_Management
 
             return result;
         }
+        #endregion
 
+        #region GetUser
         public async Task<UserDTO> GetUserAsync(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -69,15 +72,18 @@ namespace ClassUP.ApplicationCore.Services.User_Management
             };
         }
 
-        public async Task <UserDTO>CreateUserAsync(CreateUserDTO dto)
+        #endregion
+
+        #region Create
+        public async Task<UserDTO> CreateUserAsync(CreateUserDTO dto)
         {
             var EmailIsExsist = await _userManager.Users.AnyAsync(x => x.Email == dto.Email);
-            if(EmailIsExsist)
+            if (EmailIsExsist)
                 throw new ConflictException("Email already exists");
             // no same user in my db => make dto into AppUser Form 
 
             // validate roles
-            var allowedRoles = await _roleManager.Roles .Select(r => r.Name!).ToListAsync();
+            var allowedRoles = await _roleManager.Roles.Select(r => r.Name!).ToListAsync();
             var invalidRoles = dto.Roles.Except(allowedRoles).ToList();
             if (invalidRoles.Any())
                 throw new ConflictException($"Invalid roles: {string.Join(", ", invalidRoles)}");
@@ -104,6 +110,75 @@ namespace ClassUP.ApplicationCore.Services.User_Management
                 IsDisabled = user.IsDisable,
                 LockoutEnd = user.LockoutEnd?.UtcDateTime,
                 Roles = dto.Roles.ToList()
+            };
+        }
+
+        #endregion
+
+        public async Task<UserDTO> UpdateUserAsync(string id, UpdateUserDTO dto)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+                throw new NotFoundException("User", id);
+
+            
+            if (!string.IsNullOrWhiteSpace(dto.Email))
+            {
+                var emailExists = await _userManager.Users
+                    .AnyAsync(x => x.Email == dto.Email && x.Id != id);
+                if (emailExists)
+                    throw new ConflictException("Email already exists");
+
+                user.Email = dto.Email;
+                user.UserName = dto.Email; 
+            }
+
+            
+            if (!string.IsNullOrWhiteSpace(dto.FirstName))
+                user.FirstName = dto.FirstName;
+
+            if (!string.IsNullOrWhiteSpace(dto.LastName))
+                user.LastName = dto.LastName;
+
+            
+            if (dto.Roles != null && dto.Roles.Any())
+            {
+                var allowedRoles = await _roleManager.Roles
+                    .Select(r => r.Name!)
+                    .ToListAsync();
+
+                var invalidRoles = dto.Roles.Except(allowedRoles).ToList();
+                if (invalidRoles.Any())
+                    throw new ConflictException($"Invalid roles: {string.Join(", ", invalidRoles)}");
+
+                var currentRoles = await _userManager.GetRolesAsync(user);
+
+                var rolesToRemove = currentRoles.Except(dto.Roles).ToList();
+                var rolesToAdd = dto.Roles.Except(currentRoles).ToList();
+
+                if (rolesToRemove.Any())
+                    await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+
+                if (rolesToAdd.Any())
+                    await _userManager.AddToRolesAsync(user, rolesToAdd);
+            }
+
+          
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+                throw new IdentityOperationException(updateResult.Errors.Select(e => e.Description));
+
+            
+            var updatedRoles = await _userManager.GetRolesAsync(user);
+
+            return new UserDTO
+            {
+                Id = user.Id,
+                FullName = $"{user.FirstName} {user.LastName}",
+                Email = user.Email!,
+                IsDisabled = user.IsDisable,
+                LockoutEnd = user.LockoutEnd?.UtcDateTime,
+                Roles = updatedRoles.ToList()
             };
         }
     }

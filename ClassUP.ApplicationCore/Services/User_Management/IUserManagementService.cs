@@ -11,5 +11,6 @@ namespace ClassUP.ApplicationCore.Services.User_Management
         Task<IEnumerable<UserDTO>> GetAllAsync();
         Task<UserDTO> GetUserAsync(string id);
         Task<UserDTO> CreateUserAsync(CreateUserDTO dto);
+        Task<UserDTO> UpdateUserAsync(string id, UpdateUserDTO dto);
     }
 }
