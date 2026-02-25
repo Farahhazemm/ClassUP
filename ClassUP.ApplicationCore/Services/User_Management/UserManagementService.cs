@@ -23,7 +23,7 @@ namespace ClassUP.ApplicationCore.Services.User_Management
            
             var result = await Task.WhenAll(users.Select(async user =>
             {
-                var roles = await _userManager.GetRolesAsync(user);
+                
                 return new UsersDTO
                 {
                     Id = user.Id,
@@ -31,7 +31,7 @@ namespace ClassUP.ApplicationCore.Services.User_Management
                     Email = user.Email!,
                     IsDisabled = user.IsDisable,
                     LockoutEnd = user.LockoutEnd?.UtcDateTime,
-                    Roles = roles.ToList()
+                    Roles = user.Roles
                 };
             }));
 
