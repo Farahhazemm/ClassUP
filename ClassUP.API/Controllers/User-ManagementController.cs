@@ -1,4 +1,5 @@
-﻿using ClassUP.ApplicationCore.Services.User_Management;
+﻿using ClassUP.ApplicationCore.DTOs.Requests.User;
+using ClassUP.ApplicationCore.Services.User_Management;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,12 +26,18 @@ namespace ClassUP.API.Controllers
 
         // GET: /api/users/id
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get([FromRoute] string id)
+        public async Task<IActionResult> GetById([FromRoute] string id)
         {
             var result = await _userService.GetUserAsync(id);
             return Ok(result);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateUserDTO dto)
+        {
+            var user = await _userService.CreateUserAsync(dto);
 
+            return CreatedAtAction( nameof(GetById),  new { id = user.Id },  user);
+        }
     }
 }
