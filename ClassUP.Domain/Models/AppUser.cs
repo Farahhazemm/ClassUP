@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ClassUP.Domain.Models
 {
@@ -11,6 +12,7 @@ namespace ClassUP.Domain.Models
         public string? ProfilePictureUrl { get; set; }
         public string? Bio { get; set; }
         public  bool IsDisable { get; set;  }
+
 
         #endregion
 
@@ -24,5 +26,7 @@ namespace ClassUP.Domain.Models
         #endregion
 
         public List<RefreshToken> RefreshTokens { get; set; } = [];
+        [NotMapped]
+        public List<string> Roles { get; set; } = new List<string>();
     }
 }

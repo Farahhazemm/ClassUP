@@ -9,6 +9,7 @@ using ClassUP.ApplicationCore.Services.LectursProgress;
 using ClassUP.ApplicationCore.Services.Reviws;
 using ClassUP.ApplicationCore.Services.Sections;
 using ClassUP.ApplicationCore.Services.Thumbnail;
+using ClassUP.ApplicationCore.Services.User_Management;
 using ClassUP.ApplicationCore.Services.Videos;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -29,6 +30,7 @@ namespace ClassUP.ApplicationCore
             services.AddScoped<IEnrollmentService, EnrollmentService>();
             services.AddScoped<IProgressService, ProgressService>();
             services.AddScoped<IAccountManagementService, AccountManagementService>();
+            services.AddScoped<IUserManagementService, UserManagementService>();
 
 
 

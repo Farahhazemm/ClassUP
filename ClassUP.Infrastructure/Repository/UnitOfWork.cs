@@ -1,54 +1,46 @@
 ﻿using ClassUP.ApplicationCore.IRepository;
 using ClassUP.Domain.Models;
 using ClassUP.Infrastructure.Contexts;
-using ClassUP.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using ClassUP.Infrastructure.Repository;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
-namespace ClassUP.Infrastructure.Repository
+public class UnitOfWork : IUnitOfWork
 {
-    // not use lazy loading for repositories.
-    // All repositories are added as properties in the Uow 
-    // and initial directly in the ctor.
+    private readonly AppDbContext _db;
 
-    public class UnitOfWork : IUnitOfWork
+    // Inject UserManager here
+    public UnitOfWork(AppDbContext db, UserManager<AppUser> userManager)
     {
-        private readonly AppDbContext _db;
-       
-        public UnitOfWork(  AppDbContext db)
-        {
-            _db = db;
-            Courses = new CourseRepository(_db);
-            Lectures = new LectureRepository(_db);
-            Categorises = new CategoryRepository(_db);
-            Sections =new SectionRepository(_db);
-            Reviews = new ReviewRepository(_db);
-            Enrollments = new EnrollmentRepository(_db);
-            Progresses = new ProgressRepository(_db);
-        }
-        public ICourseRepository Courses { get; }
-        public ILectureRepository Lectures { get; }
+        _db = db;
+        Courses = new CourseRepository(_db);
+        Lectures = new LectureRepository(_db);
+        Categorises = new CategoryRepository(_db);
+        Sections = new SectionRepository(_db);
+        Reviews = new ReviewRepository(_db);
+        Enrollments = new EnrollmentRepository(_db);
+        Progresses = new ProgressRepository(_db);
 
-        public ICategoryRepository Categorises { get; }
+        // Correct way to initialize Users repo
+        Users = new UserRepository(_db, userManager);
+    }
 
-        public ISectionRepository Sections { get; }
-        public IReviewRepository Reviews { get; }
-        public IEnrollmentRepository Enrollments { get; }
+    public ICourseRepository Courses { get; }
+    public ILectureRepository Lectures { get; }
+    public ICategoryRepository Categorises { get; }
+    public ISectionRepository Sections { get; }
+    public IReviewRepository Reviews { get; }
+    public IEnrollmentRepository Enrollments { get; }
+    public IProgressRepository Progresses { get; }
+    public IUserRepository Users { get; }
 
-        public IProgressRepository Progresses { get; }
+    public async Task<int> SaveChangesAsync()
+    {
+        return await _db.SaveChangesAsync();
+    }
 
-        public async Task<int> SaveChangesAsync()
-        {
-            return await _db.SaveChangesAsync();
-        }
-
-
-        public void Dispose()
-        {
-            _db.Dispose();
-
-        }
+    public void Dispose()
+    {
+        _db.Dispose();
     }
 }

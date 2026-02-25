@@ -36,7 +36,8 @@ namespace ClassUP.Infrastructure
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
-            services.AddScoped<IProgressRepository, ProgressRepository>(); 
+            services.AddScoped<IProgressRepository, ProgressRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             #endregion
 
             #region IdentityServices
