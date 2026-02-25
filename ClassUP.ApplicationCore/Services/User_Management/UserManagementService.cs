@@ -115,13 +115,14 @@ namespace ClassUP.ApplicationCore.Services.User_Management
 
         #endregion
 
+        #region Update
         public async Task<UserDTO> UpdateUserAsync(string id, UpdateUserDTO dto)
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
                 throw new NotFoundException("User", id);
 
-            
+
             if (!string.IsNullOrWhiteSpace(dto.Email))
             {
                 var emailExists = await _userManager.Users
@@ -130,17 +131,17 @@ namespace ClassUP.ApplicationCore.Services.User_Management
                     throw new ConflictException("Email already exists");
 
                 user.Email = dto.Email;
-                user.UserName = dto.Email; 
+                user.UserName = dto.Email;
             }
 
-            
+
             if (!string.IsNullOrWhiteSpace(dto.FirstName))
                 user.FirstName = dto.FirstName;
 
             if (!string.IsNullOrWhiteSpace(dto.LastName))
                 user.LastName = dto.LastName;
 
-            
+
             if (dto.Roles != null && dto.Roles.Any())
             {
                 var allowedRoles = await _roleManager.Roles
@@ -163,12 +164,12 @@ namespace ClassUP.ApplicationCore.Services.User_Management
                     await _userManager.AddToRolesAsync(user, rolesToAdd);
             }
 
-          
+
             var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
                 throw new IdentityOperationException(updateResult.Errors.Select(e => e.Description));
 
-            
+
             var updatedRoles = await _userManager.GetRolesAsync(user);
 
             return new UserDTO
@@ -179,6 +180,32 @@ namespace ClassUP.ApplicationCore.Services.User_Management
                 IsDisabled = user.IsDisable,
                 LockoutEnd = user.LockoutEnd?.UtcDateTime,
                 Roles = updatedRoles.ToList()
+            };
+        }
+        #endregion
+
+        public async Task<UserDTO> ToggleAsync(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user is null)
+                throw new NotFoundException("User", id);
+
+            user.IsDisable = !user.IsDisable;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                throw new IdentityOperationException(result.Errors.Select(e => e.Description));
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return new UserDTO
+            {
+                Id = user.Id,
+                FullName = $"{user.FirstName} {user.LastName}",
+                Email = user.Email!,
+                IsDisabled = user.IsDisable,
+                LockoutEnd = user.LockoutEnd?.UtcDateTime,
+                Roles = roles.ToList()
             };
         }
     }

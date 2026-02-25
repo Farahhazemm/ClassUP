@@ -47,5 +47,12 @@ namespace ClassUP.API.Controllers
             return Ok(updatedUser);
         }
 
+        [HttpPatch("{id}/account-status")]
+        public async Task<IActionResult> UpdateAccountStatus(string id)
+        {
+            var result = await _userService.ToggleAsync(id);
+            return Ok(result);
+        }
+
     }
 }

@@ -12,5 +12,6 @@ namespace ClassUP.ApplicationCore.Services.User_Management
         Task<UserDTO> GetUserAsync(string id);
         Task<UserDTO> CreateUserAsync(CreateUserDTO dto);
         Task<UserDTO> UpdateUserAsync(string id, UpdateUserDTO dto);
+         Task<UserDTO> ToggleAsync(string id);
     }
 }

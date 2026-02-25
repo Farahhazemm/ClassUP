@@ -20,8 +20,6 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.User
         [MaxLength(100, ErrorMessage = "Email cannot exceed 100 characters")]
         public string ?Email { get; set; } = null!;
 
-      
-       
         public IList<string>? Roles { get; set; } = [];
     }
 }
