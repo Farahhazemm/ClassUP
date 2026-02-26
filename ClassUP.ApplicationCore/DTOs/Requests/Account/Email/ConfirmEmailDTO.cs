@@ -8,8 +8,9 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Account.Email
     public class ConfirmEmailDTO
     {
         [Required]
-        public string Code { get; set; }
+        public string Code { get; set; } = null!;
 
-        public string UserId { get; set; }  
+        [Required]
+        public string UserId { get; set; } = null!;
     }
 }

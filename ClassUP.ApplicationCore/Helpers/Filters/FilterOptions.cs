@@ -21,8 +21,6 @@ namespace ClassUP.ApplicationCore.Common.Filters
         public int PageSize { get; set; } = 10; 
         #endregion
 
-        //  calc skip 
-        public int Skip => (PageNumber - 1) * PageSize;
     }
 
 }

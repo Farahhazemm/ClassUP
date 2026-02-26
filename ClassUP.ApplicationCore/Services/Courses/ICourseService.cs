@@ -1,6 +1,7 @@
 ﻿using ClassUP.ApplicationCore.Common.Filters;
 using ClassUP.ApplicationCore.DTOs.Requests.Courses;
 using ClassUP.ApplicationCore.DTOs.Responses.Cources;
+using ClassUP.ApplicationCore.Helpers.Filters;
 using ClassUP.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
 {
     public interface ICourseService
     {
-        Task<IEnumerable<AllCoursesDTO>> GetAllCourses(FilterOptions filter); // made for test
+        Task<PaginatedList<AllCoursesDTO>> GetAllCourses(FilterOptions filter); // made for test
         Task<IEnumerable<AllCoursesDTO>> GetInstructorCoursesAsync(string instructorId,FilterOptions filter );
         Task<IEnumerable<AllCoursesDTO>> GetCategoryCourses(int categoryId);
        Task<CourseDetailsDTO> GetByIdAsync(int id);

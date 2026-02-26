@@ -1,6 +1,7 @@
 ﻿using ClassUP.ApplicationCore.Common.Filters;
 using ClassUP.ApplicationCore.DTOs.Requests.Category;
 using ClassUP.ApplicationCore.DTOs.Responses.Categorises;
+using ClassUP.ApplicationCore.Helpers.Filters;
 using ClassUP.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace ClassUP.ApplicationCore.Services.Categorise
 {
     public interface ICategoryServices
     {
-        Task<IEnumerable<CategoryResponseDTO>> GetAllAsync(FilterOptions Op);
+        Task<PaginatedList<CategoryResponseDTO>> GetAllAsync(FilterOptions Op);
         Task<CategoryResponseDTO> GetById(int id); 
 
         Task<CategoryResponseDTO> AddAsync(CategoryDTO category);

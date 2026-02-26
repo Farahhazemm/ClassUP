@@ -108,11 +108,9 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
 
             
             var completedLessons = await _unitOfWork.Progresses
-                .GetAllAsync(null); 
+                .GetAllAsync(null);
 
-            return completedLessons
-                .Where(lp => lp.EnrollmentId == enrollment.Id && lp.IsCompleted)
-                .Select(lp => lp.LectureId);
+            return completedLessons.Items.Where(lp => lp.EnrollmentId == enrollment.Id && lp.IsCompleted) .Select(lp => lp.LectureId);
         }
 
         public async Task<float> RecalculateProgressAsync(int enrollmentId)
@@ -125,9 +123,8 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
          
             var totalLectures = await _unitOfWork.Lectures.GetAllAsync(null);
 
-            
-            int totalCount = totalLectures.Count(l => l.Section != null && l.Section.CourseId == enrollment.CourseId);
 
+            var totalCount = totalLectures.Items.Count(l => l.Section != null && l.Section.CourseId == enrollment.CourseId);
             if (totalCount == 0)
                 return 0;
 
@@ -135,7 +132,7 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
             var allProgress = await _unitOfWork.Progresses.GetAllAsync(null);
 
             
-            int completedLessons = allProgress.Count(lp =>
+            int completedLessons = allProgress.Items.Count(lp =>
                 lp.EnrollmentId == enrollmentId &&
                 lp.IsCompleted &&
                 lp.lecture != null &&

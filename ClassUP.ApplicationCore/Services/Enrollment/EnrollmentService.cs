@@ -22,7 +22,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
             var enrollments = await _unitOfWork.Enrollments
                 .GetAllAsync(null);
 
-            return enrollments.Select(e => new EnrollmentDTO
+            return enrollments.Items.Select(e => new EnrollmentDTO
             {
                 EnrollmentId = e.Id,
                 CourseId = e.CourseId,
@@ -30,7 +30,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
                 EnrolledAt = e.EnrolledAt,
                 ProgressPercentage = e.ProgressPercentage,
                 CompletedAt = e.CompletedAt,
-            
+
             });
         }
         public async Task<EnrollmentDTO> GetByIdAsync(int id)
@@ -51,7 +51,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
                 EnrolledAt = enrollment.EnrolledAt,
                 ProgressPercentage = enrollment.ProgressPercentage,
                 CompletedAt = enrollment.CompletedAt,
-                
+
             };
         }
 
@@ -59,7 +59,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
         {
             var allEnrollments = await _unitOfWork.Enrollments.GetAllAsync(null);
 
-            var enrollments = allEnrollments
+            var enrollments = allEnrollments.Items
                 .Where(e => e.UserId == userId)
                 .Select(e => new EnrollmentDTO
                 {
@@ -102,7 +102,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
             };
         }
 
-        public async Task<EnrollmentDTO> CreateAsync(int CourseId,string UserId)
+        public async Task<EnrollmentDTO> CreateAsync(int CourseId, string UserId)
         {
             if (CourseId <= 0)
                 return null;
@@ -122,7 +122,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
                 EnrolledAt = DateTime.Now,
                 ProgressPercentage = 0,
                 CompletedAt = null,
-              
+
             };
 
             await _unitOfWork.Enrollments.AddAsync(enrollment);
@@ -135,7 +135,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
                 EnrolledAt = enrollment.EnrolledAt,
                 ProgressPercentage = enrollment.ProgressPercentage,
                 CompletedAt = enrollment.CompletedAt,
-               
+
             };
         }
         public async Task UnEnrollAsync(int courseId, string userId)
@@ -144,7 +144,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
                 .GetEnrollmentAsync(userId, courseId);
 
             if (enrollment == null)
-                return ;
+                return;
 
             _unitOfWork.Enrollments.DeleteAsync(enrollment);
             await _unitOfWork.SaveChangesAsync();

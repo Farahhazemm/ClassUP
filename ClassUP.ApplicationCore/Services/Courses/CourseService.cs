@@ -1,6 +1,7 @@
 ﻿using ClassUP.ApplicationCore.Common.Filters;
 using ClassUP.ApplicationCore.DTOs.Requests.Courses;
 using ClassUP.ApplicationCore.DTOs.Responses.Cources;
+using ClassUP.ApplicationCore.Helpers.Filters;
 using ClassUP.ApplicationCore.IRepository;
 using ClassUP.ApplicationCore.Services.Thumbnail;
 using ClassUP.Domain.Constants;
@@ -101,14 +102,23 @@ namespace ClassUP.ApplicationCore.Services.Courses
         #endregion
 
         #region GetAll
-        public async Task<IEnumerable<AllCoursesDTO>> GetAllCourses(FilterOptions filter)
+        public async Task<PaginatedList<AllCoursesDTO>> GetAllCourses(FilterOptions filter)
         {
-            var courses = await _unitOfWork.Courses.GetAllAsync(filter);
+            var courses = await _unitOfWork.Courses.GetAllAsync(filter); 
 
-            if (courses == null || !courses.Any())
-                return Enumerable.Empty<AllCoursesDTO>();
+            if (courses == null || !courses.Items.Any())
+                return new PaginatedList<AllCoursesDTO>(new List<AllCoursesDTO>(), 1, 0, filter.PageSize);
 
-            return courses.Select(MapToAllCoursesDto);
+         
+            var courseDtos = courses.Items.Select(MapToAllCoursesDto).ToList();
+
+         
+            return new PaginatedList<AllCoursesDTO>(
+                courseDtos,
+                courses.PageNumber,
+                courses.TotalPages * courses.Items.Count, 
+                courseDtos.Count
+            );
         }
 
         #endregion

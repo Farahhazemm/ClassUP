@@ -20,19 +20,14 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Courses
         [StringLength(50)]
         public string Language { get; set; } = null!;
 
-       
         [StringLength(50)]
         public string Level { get; set; } = null!;
 
-        
         public bool IsActive { get; set; }
 
-        
-        
         [Range(1, int.MaxValue, ErrorMessage = "CategoryId must be a valid value")]
         public int CategoryId { get; set; }
 
-        
        public IFormFile Thumbnail { get; set; } = null!;
     }
 }

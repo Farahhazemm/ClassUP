@@ -2,6 +2,7 @@
 using ClassUP.ApplicationCore.DTOs.Requests.Lectures;
 using ClassUP.ApplicationCore.DTOs.Responses.Cources;
 using ClassUP.ApplicationCore.DTOs.Responses.Lectures;
+using ClassUP.ApplicationCore.Helpers.Filters;
 using ClassUP.ApplicationCore.IRepository;
 using ClassUP.ApplicationCore.Services.Videos;
 using ClassUP.Domain.Enums;
@@ -27,11 +28,11 @@ namespace ClassUP.ApplicationCore.Services.Lectures
         }
 
         #region GetAll
-        public async Task<IEnumerable<LectureDTO>> GetLecturesAsync(FilterOptions filter)
+        public async Task<PaginatedList<LectureDTO>> GetLecturesAsync(FilterOptions filter)
         {
             var lectures = await _unitOfWork.Lectures.GetAllAsync(filter);
 
-            return lectures.Select(l => new LectureDTO
+            var lectureDtos = lectures.Items.Select(l => new LectureDTO
             {
                 Id = l.Id,
                 Title = l.Title,
@@ -39,7 +40,14 @@ namespace ClassUP.ApplicationCore.Services.Lectures
                 Type = l.Type.ToString(),
                 SectionId = l.SectionId,
                 IsFree = l.IsFree
-            });
+            }).ToList();
+
+            return new PaginatedList<LectureDTO>(
+                lectureDtos,
+                lectures.PageNumber,
+                 lectures.Items.Count,   
+                lectureDtos.Count
+            );
         }
         #endregion
 

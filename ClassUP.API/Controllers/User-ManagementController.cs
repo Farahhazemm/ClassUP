@@ -1,5 +1,7 @@
 ﻿using ClassUP.ApplicationCore.DTOs.Requests.User;
 using ClassUP.ApplicationCore.Services.User_Management;
+using ClassUP.Domain.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,6 +9,7 @@ namespace ClassUP.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = AppRoles.Admin)]
     public class User_ManagementController : ControllerBase
     {
         private readonly IUserManagementService _userService;
@@ -15,7 +18,7 @@ namespace ClassUP.API.Controllers
              _userService = userService;
         }
 
-        // GET: /api/users
+        
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -24,7 +27,7 @@ namespace ClassUP.API.Controllers
         }
 
 
-        // GET: /api/users/id
+        
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] string id)
         {

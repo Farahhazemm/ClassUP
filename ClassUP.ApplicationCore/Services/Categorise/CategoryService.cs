@@ -2,6 +2,7 @@
 using ClassUP.ApplicationCore.DTOs.Requests.Category;
 using ClassUP.ApplicationCore.DTOs.Responses.Categorises;
 using ClassUP.ApplicationCore.DTOs.Responses.Cources;
+using ClassUP.ApplicationCore.Helpers.Filters;
 using ClassUP.ApplicationCore.IRepository;
 using ClassUP.Domain.Models;
 using System;
@@ -18,21 +19,31 @@ namespace ClassUP.ApplicationCore.Services.Categorise
             _unitOfWork = unitOfWork;   
         }
 
-      
+
         #region GetAll
-        public async Task<IEnumerable<CategoryResponseDTO>> GetAllAsync(FilterOptions op)
+        public async Task<PaginatedList<CategoryResponseDTO>> GetAllAsync(FilterOptions op)
         {
-            var categorises = await _unitOfWork.Categorises.GetAllAsync(op);
+            var categories = await _unitOfWork.Categorises.GetAllAsync(op); 
 
-            if (categorises == null || !categorises.Any())
-                return Enumerable.Empty<CategoryResponseDTO>();
+            if (categories == null || !categories.Items.Any())
+                return new PaginatedList<CategoryResponseDTO>(
+                    new List<CategoryResponseDTO>(), 1, 0, op.PageSize);
 
-            return categorises.Select(c => new CategoryResponseDTO
+       
+            var categoryDtos = categories.Items.Select(c => new CategoryResponseDTO
             {
                 Id = c.Id,
                 Name = c.Name,
                 Description = c.Description,
             }).ToList();
+
+       
+            return new PaginatedList<CategoryResponseDTO>(
+                categoryDtos,
+                categories.PageNumber,
+                categories.TotalPages * categories.Items.Count, 
+                categoryDtos.Count
+            );
         }
 
 

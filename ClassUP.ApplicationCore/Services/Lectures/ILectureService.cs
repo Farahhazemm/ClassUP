@@ -1,6 +1,7 @@
 ﻿using ClassUP.ApplicationCore.Common.Filters;
 using ClassUP.ApplicationCore.DTOs.Requests.Lectures;
 using ClassUP.ApplicationCore.DTOs.Responses.Lectures;
+using ClassUP.ApplicationCore.Helpers.Filters;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,8 +10,8 @@ namespace ClassUP.ApplicationCore.Services.Lectures
 {
     public interface ILectureService
     {
-        
-        Task<IEnumerable<LectureDTO>> GetLecturesAsync(FilterOptions filterOptions);
+
+        Task<PaginatedList<LectureDTO>> GetLecturesAsync(FilterOptions filterOptions);
 
     
         Task<LectureDetailDto?> GetByIdAsync(int id);
