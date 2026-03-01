@@ -13,9 +13,6 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Account_Management
         public string? LastName { get; set; }
         [StringLength(1000)]
         public string? Bio { get; set; }
-        //TODO : An supporting image Service "Cloudnary" To return this URL
-        [Url]
-        public string? ProfilePictureUrl { get; set; }
         [Phone]
         public string? PhoneNumber { get; set; }
     }

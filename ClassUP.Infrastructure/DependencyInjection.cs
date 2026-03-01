@@ -2,10 +2,12 @@
 using ClassUP.ApplicationCore.Services.Auth;
 using ClassUP.ApplicationCore.Services.IAccount;
 using ClassUP.ApplicationCore.Services.IIdentity;
+using ClassUP.ApplicationCore.Services.IImage;
 using ClassUP.Infrastructure.Contexts;
 using ClassUP.Infrastructure.Identity.Services;
 using ClassUP.Infrastructure.Identity_Account.Services;
 using ClassUP.Infrastructure.Repository;
+using ClassUP.Infrastructure.Services.Images;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,6 +51,9 @@ namespace ClassUP.Infrastructure
 
 
             #endregion
+
+            services.AddScoped<IImageValidator, ImageValidator>();
+            services.AddScoped<ICloudinaryService, CloudinaryService>();
 
             return services;
         }

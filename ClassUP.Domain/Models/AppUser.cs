@@ -13,7 +13,8 @@ namespace ClassUP.Domain.Models
         public string? Bio { get; set; }
         public  bool IsDisable { get; set;  }
 
-
+        //Cloudinary doesn't delete by URL I need Id 
+        public string? ProfileImagePublicId { get; set; }
         #endregion
 
         #region Busniss navigation 

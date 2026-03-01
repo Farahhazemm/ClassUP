@@ -1,5 +1,6 @@
 ﻿using ClassUP.ApplicationCore.DTOs.Requests.Account_Management;
 using ClassUP.ApplicationCore.DTOs.Responses.User;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,6 +12,8 @@ namespace ClassUP.ApplicationCore.Services.Account_Management
         Task<UserProfileDTO> GetProfileAsync(string userId);
         Task UpdateProfileAsync(string userId, UpdateProfileDTO dto);
         Task ChangePasswordAsync(string userId, ChangePasswordDTO dto);
-      
+        Task UpdateProfileImageAsync(string userId, IFormFile profile);
+
+
     }
 }

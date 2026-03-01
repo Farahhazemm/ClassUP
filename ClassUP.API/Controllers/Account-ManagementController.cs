@@ -1,6 +1,7 @@
 ﻿using ClassUP.API.Extensions;
 using ClassUP.ApplicationCore.DTOs.Requests.Account_Management;
 using ClassUP.ApplicationCore.Services.Account_Management;
+using ClassUP.ApplicationCore.Services.IImage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +31,16 @@ namespace ClassUP.API.Controllers
         {
             await _accountManagementService.UpdateProfileAsync(User.GetUserId()!,dto);
             return NoContent();
+        }
+        [HttpPut("Profile-Image")]
+        public async Task<IActionResult> UpdateProfileImage( [FromForm] UpdateProfileImageDTO dto
+)
+        {
+             var userId = User.GetUserId()!;
+           
+            await _accountManagementService.UpdateProfileImageAsync( userId,dto.Image);
+
+            return Created();
         }
 
         [HttpPut("Change-Password")]

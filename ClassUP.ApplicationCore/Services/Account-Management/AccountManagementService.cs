@@ -3,6 +3,7 @@ using ClassUP.ApplicationCore.DTOs.Responses.User;
 using ClassUP.ApplicationCore.Exceptions;
 using ClassUP.ApplicationCore.Exeptions;
 using ClassUP.ApplicationCore.Services.IAccount;
+using ClassUP.ApplicationCore.Services.IImage;
 using ClassUP.Domain.Models;
 using Mapster;
 using Microsoft.AspNetCore.Http;
@@ -24,12 +25,15 @@ namespace ClassUP.ApplicationCore.Services.Account_Management
         private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<AccountManagementService> _logger;
         private readonly IResetPasswordService _resetPasswordService;
-
-        public AccountManagementService(UserManager<AppUser> userManager, ILogger<AccountManagementService> logger, IResetPasswordService resetPasswordService)
+        private readonly ICloudinaryService _cloudinaryService;
+        private readonly IImageValidator _imageValidator;
+        public AccountManagementService(UserManager<AppUser> userManager, ILogger<AccountManagementService> logger, IResetPasswordService resetPasswordService, IImageValidator imageValidator , ICloudinaryService cloudinaryService)
         {
             _userManager = userManager;
             _logger=logger;
             _resetPasswordService=resetPasswordService;
+            _imageValidator=imageValidator;
+            _cloudinaryService=cloudinaryService;
         }
 
 
@@ -62,7 +66,6 @@ namespace ClassUP.ApplicationCore.Services.Account_Management
             user.FirstName = dto.FirstName ?? user.FirstName;
             user.LastName = dto.LastName ?? user.LastName;
             user.Bio = dto.Bio ?? user.Bio;
-            user.ProfilePictureUrl = dto.ProfilePictureUrl ?? user.ProfilePictureUrl;
             user.PhoneNumber = dto.PhoneNumber ?? user.PhoneNumber;
 
             await _userManager.UpdateAsync(user);
@@ -85,9 +88,30 @@ namespace ClassUP.ApplicationCore.Services.Account_Management
 
             }
         }
+
+
         #endregion
 
-       
+        public async Task UpdateProfileImageAsync(string userId, IFormFile profile)
+        {
+            _imageValidator.Validate(profile);
+            var newImage = await _cloudinaryService.UploadProfileImageAsync(profile , userId);
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            var oldPublicId = user!.ProfileImagePublicId;
+            user.ProfilePictureUrl = newImage.Url;
+            user.ProfileImagePublicId = newImage.PublicId;
+
+            await _userManager.UpdateAsync(user);
+          
+            // delete AFTER successful DB update
+            if (!string.IsNullOrWhiteSpace(oldPublicId))
+                await _cloudinaryService.DeleteAsync(oldPublicId);
+
+        }
+
+
 
 
     }
