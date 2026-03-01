@@ -1,6 +1,6 @@
 #  Project TODO 
 
-## ?? API & Documentation
+##  API & Documentation
 - [ ] **Swagger**
   - [ ] Add XML Comments for Controllers & Actions
   - [ ] Define proper Response Types (Success / Error)
@@ -8,7 +8,7 @@
 
 ---
 
-## ?? Working with Files
+##  Working with Files
 - [ ] **File Validation**
   - [ ] Validate File Size
   - [ ] Validate File Extensions
@@ -25,7 +25,7 @@
 
 ---
 
-## ?? HTTP & External APIs
+##  HTTP & External APIs
 - [ ] **Refit**
   - [ ] Learn HttpClient fundamentals
   - [ ] Create Refit interfaces
@@ -34,7 +34,7 @@
 
 ---
 
-## ?? Payment
+##  Payment
 - [ ] **Paymob Integration**
   - [ ] Understand Paymob payment flow
   - [ ] Configure API keys & tokens
@@ -44,7 +44,7 @@
 
 ---
 
-## ?? Security & Performance
+##  Security & Performance
 - [ ] **Rate Limiting**
   - [ ] Learn rate limiting concepts
   - [ ] Apply rate limiting to APIs
