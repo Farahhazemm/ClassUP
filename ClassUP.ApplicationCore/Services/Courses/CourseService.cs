@@ -1,9 +1,10 @@
 ﻿using ClassUP.ApplicationCore.Common.Filters;
 using ClassUP.ApplicationCore.DTOs.Requests.Courses;
 using ClassUP.ApplicationCore.DTOs.Responses.Cources;
+using ClassUP.ApplicationCore.Exeptions;
 using ClassUP.ApplicationCore.Helpers.Filters;
 using ClassUP.ApplicationCore.IRepository;
-using ClassUP.ApplicationCore.Services.Thumbnail;
+using ClassUP.ApplicationCore.Services.IImage;
 using ClassUP.Domain.Constants;
 using ClassUP.Domain.Enums;
 using ClassUP.Domain.Models;
@@ -18,11 +19,13 @@ namespace ClassUP.ApplicationCore.Services.Courses
     public class CourseService : ICourseService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IThumbnailService _thumbnailService;
-        public CourseService(IUnitOfWork unitOfWork , IThumbnailService thumbnailService)
+        private readonly IImageValidator _imageValidator;
+        private readonly ICloudinaryService _cloudinaryService;
+        public CourseService(IUnitOfWork unitOfWork  , IImageValidator imageValidator , ICloudinaryService cloudinaryService)
         {
             _unitOfWork = unitOfWork;
-            _thumbnailService = thumbnailService;
+           _cloudinaryService = cloudinaryService;
+            _imageValidator = imageValidator;
         }
 
 
@@ -30,20 +33,16 @@ namespace ClassUP.ApplicationCore.Services.Courses
         #region Create
         public async Task<CreateCourseDTO> CreateCourse(CreateCourseRequest request, string userId)
         {
-            if (request.Thumbnail == null)
-                throw new ArgumentException("Thumbnail is required");
+            if (request == null)
+                throw new BadRequestException("Request body is required");
+
+            _imageValidator.Validate(request.Thumbnail);
+            var uploadResult = await _cloudinaryService.UploadAsync(request.Thumbnail, $"courses/{userId}");
+            var thumbnailUrl = uploadResult.Url;
+            var thumbnailPublicId = uploadResult.PublicId;
 
             if (!Enum.TryParse<CourseLevel>(request.Level, true, out var level))
-                throw new ArgumentException("Invalid course level");
-
-            var thumbnailDTO = new ThumbnailDTO
-            {
-                FileStream = request.Thumbnail.OpenReadStream(),
-                MimeType = request.Thumbnail.ContentType,
-                FileSize = request.Thumbnail.Length
-            };
-
-            var thumbnailUrl = await _thumbnailService.SaveAsync(thumbnailDTO, "courses");
+                throw new BadRequestException("Invalid course level");
 
             var course = new Course
             {
@@ -55,6 +54,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
                 IsActive = request.IsActive,
                 UserId = userId,
                 ThumbnailUrl = thumbnailUrl,
+                ThumbnailPublicId = thumbnailPublicId, 
                 CategoryId = request.CategoryId
             };
 
@@ -66,9 +66,13 @@ namespace ClassUP.ApplicationCore.Services.Courses
                 Id = course.Id,
                 Title = course.Title,
                 Level = course.Level.ToString(),
+                Description= course.Description,
                 Price = course.Price,
                 Language = course.Language,
-                ThumbnailUrl = course.ThumbnailUrl
+                ThumbnailUrl = course.ThumbnailUrl,
+                IsActive= course.IsActive,
+                CategoryId = course.CategoryId
+
             };
         }
 
@@ -84,17 +88,20 @@ namespace ClassUP.ApplicationCore.Services.Courses
            
             var course = await _unitOfWork.Courses.GetByIdAsync(courseId);
             if (course == null)
-                throw new KeyNotFoundException($"Course with id {courseId} not found");
+                throw new NotFoundException("Course", courseId);
 
-            
+
             if (course.UserId != userId && !isAdmin)
-                throw new UnauthorizedAccessException("Not authorized to delete this course");
+                throw new BadRequestException("You are not allowed to delete this course");
 
-           
+
             await _unitOfWork.Courses.DeleteAsync(course);
-            await _thumbnailService.DeleteAsync(course.ThumbnailUrl);
+            if (!string.IsNullOrWhiteSpace(course.ThumbnailPublicId))
+            {
+                await _cloudinaryService.DeleteAsync(course.ThumbnailPublicId);
+            }
 
-           
+
             await _unitOfWork.SaveChangesAsync();
         }
 
@@ -130,7 +137,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
             var courses = await _unitOfWork.Courses.GetCategoryCoursesAsync(categoryId);
 
             if (courses == null || !courses.Any())
-                return Enumerable.Empty<AllCoursesDTO>();
+                throw new NotFoundException("category", categoryId);
 
             return courses.Select(MapToAllCoursesDto);
         } 
@@ -141,7 +148,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
          {
              var Course= await _unitOfWork.Courses.GetByIdAsync(id);
             if (Course == null)
-                throw new KeyNotFoundException($"Course with id {id} not found");
+                throw new NotFoundException("Course", id);
 
 
             return MapToCourseDetailsDto(Course); 
@@ -172,15 +179,14 @@ namespace ClassUP.ApplicationCore.Services.Courses
         public async Task UpdateCourse(string userId, bool isAdmin, UpdateCourseRequest request)
         {
             if (request == null)
-                throw new ArgumentNullException(nameof(request));
+                throw new BadRequestException("Request body is required");
 
             var course = await _unitOfWork.Courses.GetByIdAsync(request.courseId);
             if (course == null)
-                throw new KeyNotFoundException($"Course with ID {request.courseId} not found");
-
+                throw new NotFoundException("Course", request.courseId);
             //  Auth check
             if (course.UserId != userId && !isAdmin)
-                throw new UnauthorizedAccessException("Not authorized to update this course");
+                throw new BadRequestException("You are not allowed to update this course");
 
             // Partial Update
             course.Title = string.IsNullOrWhiteSpace(request.Title) ? course.Title : request.Title;
@@ -193,27 +199,24 @@ namespace ClassUP.ApplicationCore.Services.Courses
             if (!string.IsNullOrWhiteSpace(request.Level))
             {
                 if (!Enum.TryParse<CourseLevel>(request.Level, true, out var level))
-                    throw new ArgumentException("Invalid course level");
-
+                    throw new BadRequestException("Invalid course level");
                 course.Level = level;
             }
 
             // Thumb
             if (request.Thumbnail != null)
             {
-                var oldThumbnail = course.ThumbnailUrl;
-                var thumbnailDTO = new ThumbnailDTO
-                {
-                    FileStream = request.Thumbnail.OpenReadStream(),
-                    MimeType = request.Thumbnail.ContentType,
-                    FileSize = request.Thumbnail.Length
-                };
+                var oldPublicId = course.ThumbnailPublicId;
 
-                course.ThumbnailUrl = await _thumbnailService.SaveAsync(thumbnailDTO, "courses");
+                _imageValidator.Validate(request.Thumbnail);
+                var uploadResult = await _cloudinaryService.UploadAsync(request.Thumbnail, $"courses/{course.UserId}");
 
-                if (!string.IsNullOrWhiteSpace(oldThumbnail) && oldThumbnail != course.ThumbnailUrl)
+                course.ThumbnailUrl = uploadResult.Url;
+                course.ThumbnailPublicId = uploadResult.PublicId;
+
+                if (!string.IsNullOrWhiteSpace(oldPublicId) && oldPublicId != course.ThumbnailPublicId)
                 {
-                    await _thumbnailService.DeleteAsync(oldThumbnail);
+                    await _cloudinaryService.DeleteAsync(oldPublicId);
                 }
             }
 

@@ -8,7 +8,6 @@ using ClassUP.ApplicationCore.Services.Lectures;
 using ClassUP.ApplicationCore.Services.LectursProgress;
 using ClassUP.ApplicationCore.Services.Reviws;
 using ClassUP.ApplicationCore.Services.Sections;
-using ClassUP.ApplicationCore.Services.Thumbnail;
 using ClassUP.ApplicationCore.Services.User_Management;
 using ClassUP.ApplicationCore.Services.Videos;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +21,6 @@ namespace ClassUP.ApplicationCore
             this IServiceCollection services)
         {
             services.AddScoped<ICourseService, CourseService>();
-            services.AddScoped<IThumbnailService, ThumbnailService>();
             services.AddScoped<ILectureService, LectureService>();
             services.AddScoped<ICategoryServices,CategoryService>();
             services.AddScoped<ISectionService, SectionService>();

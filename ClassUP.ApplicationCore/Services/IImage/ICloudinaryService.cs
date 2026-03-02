@@ -8,7 +8,7 @@ namespace ClassUP.ApplicationCore.Services.IImage
 {
     public interface ICloudinaryService
     {
-        Task<ImageUploadDTO> UploadProfileImageAsync(IFormFile file, string userId);
+        Task<ImageUploadDTO> UploadAsync(IFormFile file, string folder);
         Task DeleteAsync(string publicId);
 
     }

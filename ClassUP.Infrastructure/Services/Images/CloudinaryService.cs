@@ -32,27 +32,24 @@ namespace ClassUP.Infrastructure.Services.Images
         }
 
         #region Upload
-        public async Task<ImageUploadDTO> UploadProfileImageAsync(IFormFile file, string userId)
+        public async Task<ImageUploadDTO> UploadAsync(IFormFile file, string folder)
         {
             await using var stream = file.OpenReadStream();
 
             var uploadParams = new ImageUploadParams
             {
                 File = new FileDescription(file.FileName, stream),
-                Folder = $"users/{userId}",
+                Folder = folder,  //users/{userId} Or courses/{courseId}
                 Transformation = new Transformation()
-                    .Width(400)
-                    .Height(400)
-                    .Crop("fill")
-                    .Gravity("face")
+                    .Width(800) 
+                    .Height(800)
+                    .Crop("limit") 
             };
 
             var result = await _cloudinary.UploadAsync(uploadParams);
 
             if (result.StatusCode != HttpStatusCode.OK && result.StatusCode != HttpStatusCode.Created)
-            {
                 throw new BadRequestException("Failed to upload image");
-            }
 
             return new ImageUploadDTO
             {

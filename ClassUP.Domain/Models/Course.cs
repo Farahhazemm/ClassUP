@@ -31,7 +31,7 @@ namespace ClassUP.Domain.Models
         public string? PreviewVideoUrl { get; set; }
         public bool IsPublished { get; set; }
         public DateTime? PublishedAt { get; set; }
-        
+        public string? ThumbnailPublicId { get; set; } // For Cloudnary del
         public string UserId { get; set; }
         public int CategoryId { get; set; }
 

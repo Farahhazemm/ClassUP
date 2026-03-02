@@ -92,10 +92,11 @@ namespace ClassUP.ApplicationCore.Services.Account_Management
 
         #endregion
 
+        #region UpdateImage
         public async Task UpdateProfileImageAsync(string userId, IFormFile profile)
         {
             _imageValidator.Validate(profile);
-            var newImage = await _cloudinaryService.UploadProfileImageAsync(profile , userId);
+            var newImage = await _cloudinaryService.UploadAsync(profile, $"users/{userId}");
 
             var user = await _userManager.FindByIdAsync(userId);
 
@@ -104,13 +105,14 @@ namespace ClassUP.ApplicationCore.Services.Account_Management
             user.ProfileImagePublicId = newImage.PublicId;
 
             await _userManager.UpdateAsync(user);
-          
+
             // delete AFTER successful DB update
             if (!string.IsNullOrWhiteSpace(oldPublicId))
                 await _cloudinaryService.DeleteAsync(oldPublicId);
 
         }
 
+        #endregion
 
 
 
