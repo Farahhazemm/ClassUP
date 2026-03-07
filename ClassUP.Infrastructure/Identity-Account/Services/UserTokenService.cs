@@ -1,11 +1,13 @@
 ﻿using ClassUP.ApplicationCore.DTOs.Responses.Auth.Refresh;
 using ClassUP.ApplicationCore.Exeptions;
+using ClassUP.ApplicationCore.Helpers.JWT;
 using ClassUP.ApplicationCore.Services.IIdentity;
 using ClassUP.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,12 +20,13 @@ namespace ClassUP.Infrastructure.Identity.Services
     public class UserTokenService : IUserTokenService
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly IConfiguration _configuration;
-
-        public UserTokenService(UserManager<AppUser> userManager, IConfiguration configuration)
+        
+        private readonly JwtOptions _jwtOptions;
+        public UserTokenService(UserManager<AppUser> userManager, IOptions<JwtOptions> jwtOptions)
         {
             _userManager = userManager;
-            _configuration = configuration;
+           
+            _jwtOptions = jwtOptions.Value;
         }
 
         #region JWT_Token
@@ -46,17 +49,17 @@ namespace ClassUP.Infrastructure.Identity.Services
 
 
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SigningKey"]));
+            var key = new SymmetricSecurityKey(
+             Encoding.UTF8.GetBytes(_jwtOptions.SigningKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            
-            var lifetimeMinutes = Convert.ToDouble(_configuration["JWT:Lifetime"]);
-            var expiration = DateTime.UtcNow.AddMinutes(lifetimeMinutes);
 
-       
+            var expiration = DateTime.UtcNow.AddMinutes(_jwtOptions.Lifetime);
+
+
             var token = new JwtSecurityToken(
-                issuer: _configuration["JWT:Issuer"],
-                audience: _configuration["JWT:Audience"],
+                issuer: _jwtOptions.Issuer,
+                audience: _jwtOptions.Audience,
                 claims: userClaims,
                 expires: expiration,
                 signingCredentials: creds

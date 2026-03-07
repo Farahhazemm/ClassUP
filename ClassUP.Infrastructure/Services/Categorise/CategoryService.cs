@@ -2,9 +2,11 @@
 using ClassUP.ApplicationCore.DTOs.Requests.Category;
 using ClassUP.ApplicationCore.DTOs.Responses.Categorises;
 using ClassUP.ApplicationCore.DTOs.Responses.Cources;
+using ClassUP.ApplicationCore.Exeptions;
 using ClassUP.ApplicationCore.Helpers.Filters;
 using ClassUP.ApplicationCore.IRepository;
 using ClassUP.Domain.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -55,7 +57,7 @@ namespace ClassUP.ApplicationCore.Services.Categorise
         {
             var category = await _unitOfWork.Categorises.GetByIdAsync(id);
             if (category == null)
-                throw new KeyNotFoundException($"Category with id {id} not found");
+                throw new BadRequestException($"Category with id {id} not found");
             return new CategoryResponseDTO
             {
                 Id = category.Id,
@@ -70,7 +72,7 @@ namespace ClassUP.ApplicationCore.Services.Categorise
         public async Task<CategoryResponseDTO> AddAsync(CategoryDTO category)
         {
             if (category == null)
-                throw new KeyNotFoundException("Categuory info Not found");
+                throw new BadRequestException("Category  info Not found");
 
             var cat = new Category
             {
@@ -97,7 +99,7 @@ namespace ClassUP.ApplicationCore.Services.Categorise
         public async Task UpdateAsync(int id, UpdateCategoryRequestDTO category)
         {
             if (category == null)
-                throw new ArgumentNullException(nameof(category));
+                throw new BadRequestException("Category  info Not found");
 
             var categoryFromDb = await _unitOfWork.Categorises.GetByIdAsync(id);
             // Partial Update
@@ -119,7 +121,7 @@ namespace ClassUP.ApplicationCore.Services.Categorise
             var category = await _unitOfWork.Categorises.GetByIdAsync(id);
             if (category == null)
             {
-                throw new KeyNotFoundException($"Category with id {id} not found");
+                throw new NotFoundException("Category" ,id);
             }
             await _unitOfWork.Categorises.DeleteAsync(category);
             await _unitOfWork.SaveChangesAsync();

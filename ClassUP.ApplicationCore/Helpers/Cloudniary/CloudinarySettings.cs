@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ClassUP.ApplicationCore.DTOs.Requests.Lectures
+namespace ClassUP.ApplicationCore.Helpers.Cloudniary
 {
     public class CloudinarySettings
     {

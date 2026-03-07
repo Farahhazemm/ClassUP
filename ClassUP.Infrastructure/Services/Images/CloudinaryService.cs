@@ -1,6 +1,6 @@
-﻿using ClassUP.ApplicationCore.DTOs.Requests.Lectures;
-using ClassUP.ApplicationCore.DTOs.Responses.Account_Management;
+﻿using ClassUP.ApplicationCore.DTOs.Responses.Account_Management;
 using ClassUP.ApplicationCore.Exeptions;
+using ClassUP.ApplicationCore.Helpers.Cloudniary;
 using ClassUP.ApplicationCore.Services.IImage;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;

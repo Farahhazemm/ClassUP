@@ -6,11 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using ClassUP.ApplicationCore.DTOs.Requests.Lectures;
 using ClassUP.ApplicationCore.DTOs.Responses.Lectures;
 using ClassUP.ApplicationCore.Services.Videos;
+using ClassUP.ApplicationCore.Helpers.Cloudniary;
 
-namespace ClassUP.Infrastructure.ExternalServices
+namespace ClassUP.Infrastructure.Services.Videos
 {
     public class VideoService : IVideoService
     {

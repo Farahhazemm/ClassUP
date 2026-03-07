@@ -2,14 +2,15 @@
 using ClassUP.API.Extensions;
 using ClassUP.API.Middlewares;
 using ClassUP.ApplicationCore;
-using ClassUP.ApplicationCore.DTOs.Requests.Lectures;
+using ClassUP.ApplicationCore.Helpers.Cloudniary;
+using ClassUP.ApplicationCore.Helpers.JWT;
 using ClassUP.ApplicationCore.Services.Videos;
 using ClassUP.Domain.Models;
 using ClassUP.Infrastructure;
 using ClassUP.Infrastructure.Contexts;
-using ClassUP.Infrastructure.ExternalServices;
 using ClassUP.Infrastructure.Identity.DataSeeder;
 using ClassUP.Infrastructure.Identity_Account.Email.Settings;
+using ClassUP.Infrastructure.Services.Videos;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -24,7 +25,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add Services
 
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddApplication();
+//builder.Services.AddApplication();
 
 builder.Services.AddControllers()
     .AddJsonOptions(opt =>
@@ -37,29 +38,37 @@ builder.Services.ConfigureIdentity(); // Identity + EF DbContext
 
 
 // JWT Authentication
+builder.Services.Configure<JwtOptions>(
+    builder.Configuration.GetSection("JWT"));
 
-var jwtKey = builder.Configuration["JWT:SigningKey"];
-var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
+var jwtOptions = builder.Configuration
+    .GetSection("JWT")
+    .Get<JwtOptions>();
+
+var keyBytes = Encoding.UTF8.GetBytes(jwtOptions.SigningKey);
 var signingKey = new SymmetricSecurityKey(keyBytes);
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(options =>
 {
     options.SaveToken = true;
     options.RequireHttpsMetadata = false;
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidIssuer = jwtOptions.Issuer,
+
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["JWT:Audience"],
+        ValidAudience = jwtOptions.Audience,
+
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = signingKey,
+
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };

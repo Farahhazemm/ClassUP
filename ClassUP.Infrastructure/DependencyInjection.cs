@@ -1,8 +1,17 @@
 ﻿using ClassUP.ApplicationCore.IRepository;
+using ClassUP.ApplicationCore.Services.Account_Management;
 using ClassUP.ApplicationCore.Services.Auth;
+using ClassUP.ApplicationCore.Services.Categorise;
+using ClassUP.ApplicationCore.Services.Courses;
+using ClassUP.ApplicationCore.Services.Enrollment;
 using ClassUP.ApplicationCore.Services.IAccount;
 using ClassUP.ApplicationCore.Services.IIdentity;
 using ClassUP.ApplicationCore.Services.IImage;
+using ClassUP.ApplicationCore.Services.Lectures;
+using ClassUP.ApplicationCore.Services.LectursProgress;
+using ClassUP.ApplicationCore.Services.Reviws;
+using ClassUP.ApplicationCore.Services.Sections;
+using ClassUP.ApplicationCore.Services.User_Management;
 using ClassUP.Infrastructure.Contexts;
 using ClassUP.Infrastructure.Identity.Services;
 using ClassUP.Infrastructure.Identity_Account.Services;
@@ -41,6 +50,22 @@ namespace ClassUP.Infrastructure
             services.AddScoped<IProgressRepository, ProgressRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             #endregion
+
+            #region Services
+            services.AddScoped<IAccountManagementService, AccountManagementService>();
+            services.AddScoped<ICategoryServices, CategoryService>();
+            services.AddScoped<ICourseService, CourseService>();
+            services.AddScoped<IEnrollmentService, EnrollmentService>();
+            services.AddScoped<ILectureService, LectureService>();
+            services.AddScoped<ISectionService, SectionService>();
+            services.AddScoped<IReviewService, ReviewService>();
+            services.AddScoped<IProgressService, ProgressService>();
+            services.AddScoped<IUserManagementService, UserManagementService>();
+
+
+
+            #endregion
+
 
             #region IdentityServices
             services.AddScoped<IAuthService, AuthService>();
