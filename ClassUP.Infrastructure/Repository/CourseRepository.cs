@@ -32,6 +32,16 @@ namespace ClassUP.Infrastructure.Repository
 
         }
 
+        public async Task<Course?> GetCourseDetailsAsync(int id)
+        {
+            return await _db.Courses
+                .Include(c => c.Category)
+                .Include(c => c.Sections)
+                .Include(c => c.Enrollments)
+                .Include(c => c.Reviews)
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
+
         public async Task<IEnumerable<Course>> GetCategoryCoursesAsync(int categoryId)
         {
             return await _db.Courses

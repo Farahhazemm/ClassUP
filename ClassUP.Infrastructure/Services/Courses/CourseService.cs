@@ -146,7 +146,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
         #region GetById
         public async Task<CourseDetailsDTO> GetByIdAsync(int id)
          {
-             var Course= await _unitOfWork.Courses.GetByIdAsync(id);
+             var Course= await _unitOfWork.Courses.GetCourseDetailsAsync(id);
             if (Course == null)
                 throw new NotFoundException("Course", id);
 
