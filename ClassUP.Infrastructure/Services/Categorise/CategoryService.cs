@@ -121,7 +121,7 @@ namespace ClassUP.ApplicationCore.Services.Categorise
             var category = await _unitOfWork.Categorises.GetByIdAsync(id);
             if (category == null)
             {
-                throw new NotFoundException("Category" ,id);
+                throw new NotFoundException("Category");
             }
             await _unitOfWork.Categorises.DeleteAsync(category);
             await _unitOfWork.SaveChangesAsync();

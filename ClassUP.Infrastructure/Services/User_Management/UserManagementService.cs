@@ -57,7 +57,7 @@ namespace ClassUP.ApplicationCore.Services.User_Management
             var user = await _userManager.FindByIdAsync(id);
 
             if (user == null)
-                throw new NotFoundException("User", id);
+                throw new NotFoundException("User");
 
             var userRoles = await _userManager.GetRolesAsync(user);
 
@@ -120,7 +120,7 @@ namespace ClassUP.ApplicationCore.Services.User_Management
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
-                throw new NotFoundException("User", id);
+                throw new NotFoundException("User");
 
 
             if (!string.IsNullOrWhiteSpace(dto.Email))
@@ -188,7 +188,7 @@ namespace ClassUP.ApplicationCore.Services.User_Management
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user is null)
-                throw new NotFoundException("User", id);
+                throw new NotFoundException("User");
 
             user.IsDisable = !user.IsDisable;
 

@@ -1,4 +1,5 @@
 ﻿using ClassUP.API.Extensions;
+using ClassUP.ApplicationCore.Common.Filters;
 using ClassUP.ApplicationCore.Services.Enrollment;
 using ClassUP.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -31,12 +32,15 @@ namespace ClassUP.API.Controllers
         #region Get Current Student Enrollments
         [HttpGet("get-student-enrollments")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetMyEnrollments()
+        public async Task<IActionResult> GetMyEnrollments([FromQuery] FilterOptions filter)
         {
-            var userId = User.GetUserId(); // from JWT claims
-            var enrollments = await _enrollmentService.GetStudentEnrollmentsAsync(userId);
+            var userId = User.GetUserId();
+
+            var enrollments = await _enrollmentService
+                .GetStudentEnrollmentsAsync(userId, filter);
+
             return Ok(enrollments);
-        } 
+        }
         #endregion
 
         #region  Enroll in a Course

@@ -1,6 +1,8 @@
 ﻿using ClassUP.ApplicationCore.Common.Filters;
 using ClassUP.ApplicationCore.DTOs.Responses.Enrollment;
 using ClassUP.ApplicationCore.DTOs.Responses.Enrollments;
+using ClassUP.ApplicationCore.Exeptions;
+using ClassUP.ApplicationCore.Helpers.Filters;
 using ClassUP.ApplicationCore.IRepository;
 using ClassUP.Domain.Models;
 using System;
@@ -17,31 +19,47 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<IEnumerable<EnrollmentDTO>> GetAllAsync()
+        public async Task<PaginatedList<EnrollmentDTO>> GetAllAsync(FilterOptions filter)
         {
-            var enrollments = await _unitOfWork.Enrollments
-                .GetAllAsync(null);
+          
+            filter.PageNumber = filter.PageNumber <= 0 ? 1 : filter.PageNumber;
+            filter.PageSize = filter.PageSize <= 0 ? 10 : filter.PageSize;
 
-            return enrollments.Items.Select(e => new EnrollmentDTO
+           
+            var enrollments = await _unitOfWork.Enrollments.GetAllAsync(filter);
+
+           
+            if (enrollments == null || !enrollments.Items.Any())
+                return new PaginatedList<EnrollmentDTO>(new List<EnrollmentDTO>(), 0, filter.PageNumber, filter.PageSize);
+
+           
+            var dtoList = enrollments.Items.Select(e => new EnrollmentDTO
             {
                 EnrollmentId = e.Id,
                 CourseId = e.CourseId,
                 StudentId = e.UserId,
                 EnrolledAt = e.EnrolledAt,
                 ProgressPercentage = e.ProgressPercentage,
-                CompletedAt = e.CompletedAt,
+                CompletedAt = e.CompletedAt
+            }).ToList();
 
-            });
+           
+            return new PaginatedList<EnrollmentDTO>(
+                dtoList,
+                enrollments.TotalCount, 
+                enrollments.PageNumber,
+                enrollments.PageSize
+            );
         }
         public async Task<EnrollmentDTO> GetByIdAsync(int id)
         {
             if (id <= 0)
-                return null;
+               throw new BadRequestException ("This Id Is Not Valid");
 
             var enrollment = await _unitOfWork.Enrollments.GetByIdAsync(id);
 
             if (enrollment == null)
-                return null;
+                throw new NotFoundException("Enrollment");  
 
             return new EnrollmentDTO
             {
@@ -55,24 +73,30 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
             };
         }
 
-        public async Task<IEnumerable<EnrollmentDTO>> GetStudentEnrollmentsAsync(string userId)
+        public async Task<PaginatedList<EnrollmentDTO>> GetStudentEnrollmentsAsync(string userId, FilterOptions filter)
         {
-            var allEnrollments = await _unitOfWork.Enrollments.GetAllAsync(null);
+            var enrollments = await _unitOfWork.Enrollments
+                .GetStudentEnrollmentsAsync(userId, filter);
 
-            var enrollments = allEnrollments.Items
-                .Where(e => e.UserId == userId)
-                .Select(e => new EnrollmentDTO
-                {
-                    EnrollmentId = e.Id,
-                    CourseId = e.CourseId,
-                    StudentId = e.UserId,
-                    EnrolledAt = e.EnrolledAt,
-                    ProgressPercentage = e.ProgressPercentage,
-                    CompletedAt = e.CompletedAt,
-                });
+            var dtoList = enrollments.Items.Select(e => new EnrollmentDTO
+            {
+                EnrollmentId = e.Id,
+                CourseId = e.CourseId,
+                StudentId = e.UserId,
+                EnrolledAt = e.EnrolledAt,
+                ProgressPercentage = e.ProgressPercentage,
+                CompletedAt = e.CompletedAt,
+            }).ToList();
 
-            return enrollments;
+            return new PaginatedList<EnrollmentDTO>(
+                dtoList,
+                enrollments.TotalCount,
+                enrollments.PageNumber,
+                enrollments.PageSize
+            );
         }
+
+
 
         public async Task<CheckEnrollmentResponse> IsEnrolledAsync(int courseId, string userId)
         {
@@ -105,21 +129,21 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
         public async Task<EnrollmentDTO> CreateAsync(int CourseId, string UserId)
         {
             if (CourseId <= 0)
-                return null;
+                throw new BadRequestException("Invalid course id");
 
             var alreadyEnrolled = await _unitOfWork.Enrollments
                .IsEnrolledAsync(UserId, CourseId);
             if (alreadyEnrolled)
-                return null;
+                throw new BadRequestException("Already enrolled");
             var course = await _unitOfWork.Courses
                .GetByIdAsync(CourseId);
             if (course == null)
-                return null;
+                throw new NotFoundException("Course");
             var enrollment = new Domain.Models.Enrollment
             {
                 CourseId = CourseId,
                 UserId = UserId,
-                EnrolledAt = DateTime.Now,
+                EnrolledAt = DateTime.UtcNow,
                 ProgressPercentage = 0,
                 CompletedAt = null,
 
@@ -144,9 +168,9 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
                 .GetEnrollmentAsync(userId, courseId);
 
             if (enrollment == null)
-                return;
+                throw new NotFoundException("Enrollment");
 
-            _unitOfWork.Enrollments.DeleteAsync(enrollment);
+            await _unitOfWork.Enrollments.DeleteAsync(enrollment);
             await _unitOfWork.SaveChangesAsync();
         }
     }

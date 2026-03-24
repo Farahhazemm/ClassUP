@@ -88,7 +88,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
            
             var course = await _unitOfWork.Courses.GetByIdAsync(courseId);
             if (course == null)
-                throw new NotFoundException("Course", courseId);
+                throw new NotFoundException("Course");
 
 
             if (course.UserId != userId && !isAdmin)
@@ -137,7 +137,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
             var courses = await _unitOfWork.Courses.GetCategoryCoursesAsync(categoryId);
 
             if (courses == null || !courses.Any())
-                throw new NotFoundException("category", categoryId);
+                throw new NotFoundException("category");
 
             return courses.Select(MapToAllCoursesDto);
         } 
@@ -148,7 +148,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
          {
              var Course= await _unitOfWork.Courses.GetCourseDetailsAsync(id);
             if (Course == null)
-                throw new NotFoundException("Course", id);
+                throw new NotFoundException("Course");
 
 
             return MapToCourseDetailsDto(Course); 
@@ -183,7 +183,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
 
             var course = await _unitOfWork.Courses.GetByIdAsync(request.courseId);
             if (course == null)
-                throw new NotFoundException("Course", request.courseId);
+                throw new NotFoundException("Course");
             //  Auth check
             if (course.UserId != userId && !isAdmin)
                 throw new BadRequestException("You are not allowed to update this course");
