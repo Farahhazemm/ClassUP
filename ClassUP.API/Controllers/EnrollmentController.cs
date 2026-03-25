@@ -22,9 +22,9 @@ namespace ClassUP.API.Controllers
         [Authorize(Roles = AppRoles.Admin)]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(FilterOptions filter)
         {
-            var enrollments = await _enrollmentService.GetAllAsync();
+            var enrollments = await _enrollmentService.GetAllAsync(filter);
             return Ok(enrollments);
         }
         #endregion

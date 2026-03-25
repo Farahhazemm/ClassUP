@@ -1,4 +1,5 @@
 ﻿using ClassUP.ApplicationCore.IRepository;
+using ClassUP.ApplicationCore.IServices.Payments;
 using ClassUP.ApplicationCore.Services.Account_Management;
 using ClassUP.ApplicationCore.Services.Auth;
 using ClassUP.ApplicationCore.Services.Categorise;
@@ -15,6 +16,7 @@ using ClassUP.ApplicationCore.Services.User_Management;
 using ClassUP.Infrastructure.Contexts;
 using ClassUP.Infrastructure.Identity.Services;
 using ClassUP.Infrastructure.Identity_Account.Services;
+using ClassUP.Infrastructure.Payments;
 using ClassUP.Infrastructure.Repository;
 using ClassUP.Infrastructure.Services.Images;
 using Microsoft.EntityFrameworkCore;
@@ -48,7 +50,9 @@ namespace ClassUP.Infrastructure
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
             services.AddScoped<IProgressRepository, ProgressRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
             #endregion
 
             #region Services
@@ -60,6 +64,8 @@ namespace ClassUP.Infrastructure
             services.AddScoped<ISectionService, SectionService>();
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<IProgressService, ProgressService>();
+            services.AddScoped<IPaymentService, PaymobService>();
+            services.AddScoped<PaymobHmacService>();
             services.AddScoped<IUserManagementService, UserManagementService>();
 
 

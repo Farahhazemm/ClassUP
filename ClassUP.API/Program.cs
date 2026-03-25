@@ -4,12 +4,14 @@ using ClassUP.API.Middlewares;
 using ClassUP.ApplicationCore;
 using ClassUP.ApplicationCore.Helpers.Cloudniary;
 using ClassUP.ApplicationCore.Helpers.JWT;
+using ClassUP.ApplicationCore.IServices.Payments;
 using ClassUP.ApplicationCore.Services.Videos;
 using ClassUP.Domain.Models;
 using ClassUP.Infrastructure;
 using ClassUP.Infrastructure.Contexts;
 using ClassUP.Infrastructure.Identity.DataSeeder;
 using ClassUP.Infrastructure.Identity_Account.Email.Settings;
+using ClassUP.Infrastructure.Payments;
 using ClassUP.Infrastructure.Services.Videos;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -18,6 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using Refit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,6 +102,16 @@ builder.Services.Configure<MailSettings>(
 
 builder.Services.AddScoped<IVideoService, VideoService>();
 builder.Services.AddHttpContextAccessor();
+
+// DI For Payment
+
+builder.Services.Configure<PaymobSettings>(
+    builder.Configuration.GetSection("Paymob"));
+
+builder.Services.AddRefitClient<IPaymobClient>()
+    .ConfigureHttpClient(c =>
+        c.BaseAddress = new Uri("https://accept.paymob.com"));
+
 
 var app = builder.Build();
 

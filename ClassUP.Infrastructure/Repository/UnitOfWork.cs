@@ -20,8 +20,8 @@ public class UnitOfWork : IUnitOfWork
         Reviews = new ReviewRepository(_db);
         Enrollments = new EnrollmentRepository(_db);
         Progresses = new ProgressRepository(_db);
-
-        // Correct way to initialize Users repo
+        Payments = new PaymentRepository(_db);
+        Orders = new OrderRepository(_db);
         Users = new UserRepository(_db, userManager);
     }
 
@@ -33,7 +33,8 @@ public class UnitOfWork : IUnitOfWork
     public IEnrollmentRepository Enrollments { get; }
     public IProgressRepository Progresses { get; }
     public IUserRepository Users { get; }
-
+    public IPaymentRepository Payments { get; } 
+    public IOrderRepository Orders { get; }
     public async Task<int> SaveChangesAsync()
     {
         return await _db.SaveChangesAsync();
