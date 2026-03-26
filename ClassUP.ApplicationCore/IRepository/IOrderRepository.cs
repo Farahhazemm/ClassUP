@@ -7,5 +7,6 @@ namespace ClassUP.ApplicationCore.IRepository
 {
      public interface IOrderRepository : IBaseRepository<Order>
     {
+        Task<Order?> GetByIdWithItemsAsync(int id);
     }
 }

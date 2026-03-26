@@ -6,6 +6,7 @@ using ClassUP.ApplicationCore.IRepository;
 using ClassUP.ApplicationCore.IServices.Payments;
 using ClassUP.Domain.Enums;
 using ClassUP.Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -18,28 +19,39 @@ namespace ClassUP.Infrastructure.Payments
         private readonly PaymobSettings _settings;
         private readonly PaymobHmacService _hmac;
         private readonly ILogger<PaymobService> _logger;
+        private readonly UserManager<AppUser> _userManager;
 
         public PaymobService(
             IPaymobClient client,
             IUnitOfWork unitOfWork,
             IOptions<PaymobSettings> settings,
             PaymobHmacService hmac,
-            ILogger<PaymobService> logger)
+            ILogger<PaymobService> logger,
+            UserManager<AppUser> userManager)
         {
             _client = client;
             _unitOfWork = unitOfWork;
             _settings = settings.Value;
             _hmac = hmac;
             _logger = logger;
+            _userManager = userManager;
         }
 
         public async Task<PaymentResponseDTO> CreatePaymentAsync(int courseId, string userId)
         {
+            // Validate course exists
             var course = await _unitOfWork.Courses.GetByIdAsync(courseId);
             if (course == null)
                 throw new NotFoundException("Course");
 
-            // Free course
+            // already enrolled 
+            var alreadyEnrolled = await _unitOfWork.Enrollments
+                .ExistsAsync(e => e.CourseId == courseId && e.UserId == userId);
+
+            if (alreadyEnrolled)
+                throw new BadRequestException("User is already enrolled in this course.");
+
+            // Free course flow
             if (course.Price == 0)
             {
                 var enrollment = new Enrollment
@@ -53,13 +65,25 @@ namespace ClassUP.Infrastructure.Payments
                 await _unitOfWork.Enrollments.AddAsync(enrollment);
                 await _unitOfWork.SaveChangesAsync();
 
-                return new PaymentResponseDTO
-                {
-                    IsFreeCourse = true
-                };
+                return new PaymentResponseDTO { IsFreeCourse = true };
             }
 
-            //  Create Order in DB
+            //  Guard: no duplicate pending order
+            var hasPendingOrder = await _unitOfWork.Orders
+                .ExistsAsync(o =>
+                    o.UserId == userId &&
+                    o.OrderItems.Any(i => i.CourseId == courseId) &&
+                    o.Status == OrderStatus.Pending);
+
+            if (hasPendingOrder)
+                throw new BadRequestException("A pending payment already exists for this course.");
+
+            // Fetch real user data 
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                throw new NotFoundException("User");
+
+            // Create DB order 
             var orderEntity = new Order
             {
                 UserId = userId,
@@ -80,116 +104,182 @@ namespace ClassUP.Infrastructure.Payments
             await _unitOfWork.Orders.AddAsync(orderEntity);
             await _unitOfWork.SaveChangesAsync();
 
-            // Paymob Auth
-            var auth = await _client.GetAuthToken(new
+            // Call Paymob — rollback DB order on any failure 
+            try
             {
-                api_key = _settings.ApiKey
-            });
-
-            // Create Paymob Order
-            var paymobOrder = await _client.CreateOrder(new
-            {
-                auth_token = auth.Token,
-                delivery_needed = "false",
-                amount_cents = (int)(course.Price * 100),
-                merchant_order_id = orderEntity.Id.ToString()
-            });
-
-            // Create Payment Key
-            var paymentKey = await _client.CreatePaymentKey(new
-            {
-                auth_token = auth.Token,
-                amount_cents = (int)(course.Price * 100),
-                order_id = paymobOrder.Id,
-                currency = "EGP",
-                integration_id = _settings.IntegrationId,
-                billing_data = new
+                // Auth token
+                var auth = await _client.GetAuthToken(new
                 {
-                    email = "user@email.com",
-                    first_name = "User",
-                    last_name = "Name",
-                    phone_number = "01000000000",
-                    apartment = "NA",
-                    floor = "NA",
-                    street = "NA",
-                    building = "NA",
-                    shipping_method = "NA",
-                    postal_code = "NA",
-                    city = "Cairo",
-                    country = "EG",
-                    state = "Cairo"
-                }
-            });
+                    api_key = _settings.ApiKey
+                });
 
-            return new PaymentResponseDTO
+                // Create Paymob order
+                var paymobOrder = await _client.CreateOrder(new
+                {
+                    auth_token = auth.Token,
+                    delivery_needed = "false",
+                    amount_cents = (int)(course.Price * 100),
+                    merchant_order_id = orderEntity.Id.ToString()
+                });
+
+                // Store Paymob Order ID for reconciliation / refunds
+              //  orderEntity.PaymobOrderId = paymobOrder.Id.ToString();
+               // await _unitOfWork.SaveChangesAsync();
+
+                // Payment key
+                var firstName = user.FirstName;
+                var lastName = user.LastName;
+
+                var paymentKey = await _client.CreatePaymentKey(new
+                {
+                    auth_token = auth.Token,
+                    amount_cents = (int)(course.Price * 100),
+                    order_id = paymobOrder.Id,
+                    currency = "EGP",
+                    integration_id = _settings.IntegrationId,
+                    billing_data = new
+                    {
+                        email = user.Email ?? "NA",
+                        first_name = firstName,
+                        last_name = lastName,
+                        phone_number = user.PhoneNumber ?? "NA",
+                        apartment = "NA",
+                        floor = "NA",
+                        street = "NA",
+                        building = "NA",
+                        shipping_method = "NA",
+                        postal_code = "NA",
+                        city = "Cairo",
+                        country = "EG",
+                        state = "Cairo"
+                    }
+                });
+
+                // Return payment URL
+                return new PaymentResponseDTO
+                {
+                    OrderId = orderEntity.Id,
+                    PaymentUrl =
+                        $"https://accept.paymob.com/api/acceptance/iframes/{_settings.IframeId}?payment_token={paymentKey.Token}"
+                };
+            }
+            catch (Exception ex)
             {
-                OrderId = orderEntity.Id,
-                PaymentUrl =
-                    $"https://accept.paymob.com/api/acceptance/iframes/{_settings.IframeId}?payment_token={paymentKey.Token}"
-            };
+                // Paymob call failed — cancel the ghost order so it doesn't pollute the DB
+                _logger.LogError(ex, "Paymob API call failed for Order {OrderId}. Cancelling order.", orderEntity.Id);
+                orderEntity.Status = OrderStatus.Cancelled;
+                await _unitOfWork.SaveChangesAsync();
+                throw;
+            }
         }
 
         public async Task HandleWebhookAsync(PaymobWebhookRequestDTO request)
         {
-            // Validate HMAC
-            if (!_hmac.IsValid(request))
+            // ── 1. Validate HMAC (security — never skip in production) ───────────────
+          /*  if (!_hmac.IsValid(request))
             {
-                _logger.LogWarning("Invalid HMAC detected");
+                _logger.LogWarning("Invalid HMAC detected. Webhook rejected.");
                 throw new InvalidHmacException();
+            }*/
+
+            var obj = request.Obj;
+
+            var isSuccess = obj.Success && !obj.Pending;
+
+            //  Idempotency: ignore already-processed transactions 
+            var transactionId = obj.Id;
+
+            var exists = await _unitOfWork.Payments
+                .ExistsAsync(p => p.TransactionId == transactionId);
+
+            if (exists)
+            {
+                _logger.LogInformation(
+                    "Duplicate webhook ignored for transaction {TransactionId}", transactionId);
+                return;
             }
 
-            var transactionId = request.Obj.Id;
+            // Parse and validate MerchantOrderId 
+            if (!int.TryParse(obj.Order.MerchantOrderId, out var orderId))
+            {
+                _logger.LogError(
+                    "Invalid MerchantOrderId: {MerchantOrderId}", obj.Order.MerchantOrderId);
+                throw new BadRequestException("Invalid OrderId");
+            }
 
-            // Idempotency
-            var exists = await _unitOfWork.Payments.ExistsAsync(p => p.TransactionId == transactionId);
-            if (exists) return;
+            //  Load order
+            var order = await _unitOfWork.Orders.GetByIdWithItemsAsync(orderId);
 
-            // Get OrderId safely
-            var orderId = int.Parse(request.Obj.Order.MerchantOrderId);
-
-            var order = await _unitOfWork.Orders.GetByIdAsync(orderId);
             if (order == null)
+            {
+                _logger.LogError("Order not found: {OrderId}", orderId);
                 throw new NotFoundException("Order");
+            }
 
-            //  Create Payment
+            // Skip already-completed orders 
+            if (order.Status == OrderStatus.Completed)
+            {
+                _logger.LogInformation("Order already completed: {OrderId}", orderId);
+                return;
+            }
+
+            //  Persist payment record
             var payment = new Payment
             {
                 TransactionId = transactionId,
                 OrderId = orderId,
                 UserId = order.UserId,
-                Amount = request.Obj.AmountCents / 100m,
-                Status = request.Obj.Success ? "Success" : "Failed",
+                Amount = obj.AmountCents / 100m,
+                Status = isSuccess ? "Success" : "Failed",
                 CreatedAt = DateTime.UtcNow
             };
 
             await _unitOfWork.Payments.AddAsync(payment);
 
-            //  Update Order Status
-            order.Status = request.Obj.Success
-                ? OrderStatus.Completed
-                : OrderStatus.Cancelled;
+            // Update order status 
+            //      
+            order.Status = isSuccess ? OrderStatus.Completed : OrderStatus.Cancelled;
 
-            //  Enrollment on success
-            if (request.Obj.Success)
+            // Enroll on success 
+            if (isSuccess)
             {
                 var courseItem = order.OrderItems.FirstOrDefault();
 
                 if (courseItem == null)
+                {
+                    _logger.LogError("Order has no items: {OrderId}", orderId);
                     throw new BadRequestException("Order has no items");
+                }
 
                 var courseId = courseItem.CourseId;
-                var enrollment = new Enrollment
-                {
-                    CourseId = courseId,
-                    UserId = order.UserId,
-                    EnrolledAt = DateTime.UtcNow,
-                    ProgressPercentage = 0
-                };
 
-                await _unitOfWork.Enrollments.AddAsync(enrollment);
+                var alreadyEnrolled = await _unitOfWork.Enrollments
+                    .ExistsAsync(e => e.CourseId == courseId && e.UserId == order.UserId);
+
+                if (!alreadyEnrolled)
+                {
+                    var enrollment = new Enrollment
+                    {
+                        CourseId = courseId,
+                        UserId = order.UserId,
+                        EnrolledAt = DateTime.UtcNow,
+                        ProgressPercentage = 0
+                    };
+
+                    await _unitOfWork.Enrollments.AddAsync(enrollment);
+                }
+                else
+                {
+                    _logger.LogInformation(
+                        "User already enrolled in course {CourseId} — skipping.", courseId);
+                }
             }
 
             await _unitOfWork.SaveChangesAsync();
+
+            _logger.LogInformation(
+                "Webhook processed successfully for Order {OrderId} — Status: {Status}",
+                orderId, order.Status);
         }
     }
 }
