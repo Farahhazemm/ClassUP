@@ -17,7 +17,7 @@ namespace ClassUP.Infrastructure.Payments
         private readonly IPaymobClient _client;
         private readonly IUnitOfWork _unitOfWork;
         private readonly PaymobSettings _settings;
-        private readonly PaymobHmacService _hmac;
+        //private readonly PaymobHmacService _hmac;
         private readonly ILogger<PaymobService> _logger;
         private readonly UserManager<AppUser> _userManager;
 
@@ -25,14 +25,14 @@ namespace ClassUP.Infrastructure.Payments
             IPaymobClient client,
             IUnitOfWork unitOfWork,
             IOptions<PaymobSettings> settings,
-            PaymobHmacService hmac,
+            //PaymobHmacService hmac,
             ILogger<PaymobService> logger,
             UserManager<AppUser> userManager)
         {
             _client = client;
             _unitOfWork = unitOfWork;
             _settings = settings.Value;
-            _hmac = hmac;
+           // _hmac = hmac;
             _logger = logger;
             _userManager = userManager;
         }
@@ -182,12 +182,18 @@ namespace ClassUP.Infrastructure.Payments
                 throw new InvalidHmacException();
             }*/
 
-            var obj = request.Obj;
+
+
+            var obj = request.obj;
+
+            _logger.LogInformation(
+       "Webhook values — Success: {Success}, Pending: {Pending}, MerchantOrderId: {OrderId}, AmountCents: {Amount}",
+       obj.Success, obj.Pending, obj.Order?.MerchantOrderId, obj.AmountCents);
 
             var isSuccess = obj.Success && !obj.Pending;
 
             //  Idempotency: ignore already-processed transactions 
-            var transactionId = obj.Id;
+            var transactionId = obj.Id.ToString();
 
             var exists = await _unitOfWork.Payments
                 .ExistsAsync(p => p.TransactionId == transactionId);

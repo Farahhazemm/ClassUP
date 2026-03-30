@@ -18,9 +18,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Refit;
 using System.Security.Claims;
 using System.Text;
-using Refit;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,9 +44,11 @@ builder.Services.AddControllers()
     {
         opt.JsonSerializerOptions.Converters.Add(
             new System.Text.Json.Serialization.JsonStringEnumConverter());
+        opt.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+        opt.JsonSerializerOptions.PropertyNameCaseInsensitive = true; 
     });
 
-builder.Services.ConfigureIdentity(); // Identity + EF DbContext
+builder.Services.ConfigureIdentity(); 
 
 
 // JWT Authentication

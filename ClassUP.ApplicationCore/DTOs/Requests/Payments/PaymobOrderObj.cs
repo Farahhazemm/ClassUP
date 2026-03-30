@@ -5,10 +5,10 @@ using System.Text.Json.Serialization;
 
 namespace ClassUP.ApplicationCore.DTOs.Requests.Payments
 {
-    public class PaymobOrder
+    public class PaymobOrderObj
     {
         [JsonPropertyName("id")]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [JsonPropertyName("merchant_order_id")]
         public string MerchantOrderId { get; set; } = null!;
