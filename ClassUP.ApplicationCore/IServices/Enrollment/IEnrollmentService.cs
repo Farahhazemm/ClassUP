@@ -11,7 +11,7 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
 {
     public interface IEnrollmentService
     {
-        Task<EnrollmentDTO> CreateAsync(int CourseId, string UserId);
+        //Task<EnrollmentDTO> CreateAsync(int CourseId, string UserId);
         Task<EnrollmentDTO> GetByIdAsync(int id);
         Task<PaginatedList<EnrollmentDTO>> GetStudentEnrollmentsAsync(string userId, FilterOptions filter);
         Task<PaginatedList<EnrollmentDTO>> GetAllAsync(FilterOptions filter);

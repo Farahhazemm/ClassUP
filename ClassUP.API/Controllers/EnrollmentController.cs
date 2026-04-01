@@ -45,15 +45,15 @@ namespace ClassUP.API.Controllers
 
         #region  Enroll in a Course
 
-        [HttpPost("enroll/{courseId}")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> EnrollStudent(int courseId)
-        {
-            var userId = User.GetUserId();
-            var enroll = await _enrollmentService.CreateAsync(courseId,userId);
-            return CreatedAtAction("GetById", new { id = enroll.EnrollmentId }, enroll);
-        } 
+        //[HttpPost("enroll/{courseId}")]
+        //[ProducesResponseType(StatusCodes.Status201Created)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //public async Task<IActionResult> EnrollStudent(int courseId)
+        //{
+        //    var userId = User.GetUserId();
+        //    var enroll = await _enrollmentService.CreateAsync(courseId,userId);
+        //    return CreatedAtAction("GetById", new { id = enroll.EnrollmentId }, enroll);
+        //} 
         #endregion
 
         #region Get Enrollment By Id

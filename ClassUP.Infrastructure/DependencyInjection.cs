@@ -65,7 +65,7 @@ namespace ClassUP.Infrastructure
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<IProgressService, ProgressService>();
             services.AddScoped<IPaymentService, PaymobService>();
-            //services.AddScoped<PaymobHmacService>();
+            services.AddScoped<PaymobHmacService>();
             services.AddScoped<IUserManagementService, UserManagementService>();
 
 

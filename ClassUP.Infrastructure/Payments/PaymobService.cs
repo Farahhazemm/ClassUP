@@ -17,22 +17,16 @@ namespace ClassUP.Infrastructure.Payments
         private readonly IPaymobClient _client;
         private readonly IUnitOfWork _unitOfWork;
         private readonly PaymobSettings _settings;
-        //private readonly PaymobHmacService _hmac;
+        private readonly PaymobHmacService _hmac;
         private readonly ILogger<PaymobService> _logger;
         private readonly UserManager<AppUser> _userManager;
 
-        public PaymobService(
-            IPaymobClient client,
-            IUnitOfWork unitOfWork,
-            IOptions<PaymobSettings> settings,
-            //PaymobHmacService hmac,
-            ILogger<PaymobService> logger,
-            UserManager<AppUser> userManager)
+        public PaymobService( IPaymobClient client,IUnitOfWork unitOfWork, IOptions<PaymobSettings> settings, PaymobHmacService hmac,  ILogger<PaymobService> logger, UserManager<AppUser> userManager)
         {
             _client = client;
             _unitOfWork = unitOfWork;
             _settings = settings.Value;
-           // _hmac = hmac;
+            _hmac = hmac;
             _logger = logger;
             _userManager = userManager;
         }
@@ -68,7 +62,7 @@ namespace ClassUP.Infrastructure.Payments
                 return new PaymentResponseDTO { IsFreeCourse = true };
             }
 
-            //  Guard: no duplicate pending order
+            //  no duplicate pending order
             var hasPendingOrder = await _unitOfWork.Orders
                 .ExistsAsync(o =>
                     o.UserId == userId &&
@@ -104,7 +98,7 @@ namespace ClassUP.Infrastructure.Payments
             await _unitOfWork.Orders.AddAsync(orderEntity);
             await _unitOfWork.SaveChangesAsync();
 
-            // Call Paymob — rollback DB order on any failure 
+            // Call Paymob rollback DB order on any failure 
             try
             {
                 // Auth token
@@ -165,7 +159,7 @@ namespace ClassUP.Infrastructure.Payments
             }
             catch (Exception ex)
             {
-                // Paymob call failed — cancel the ghost order so it doesn't pollute the DB
+                // Paymob call failed => cancel order 
                 _logger.LogError(ex, "Paymob API call failed for Order {OrderId}. Cancelling order.", orderEntity.Id);
                 orderEntity.Status = OrderStatus.Cancelled;
                 await _unitOfWork.SaveChangesAsync();
@@ -175,24 +169,17 @@ namespace ClassUP.Infrastructure.Payments
 
         public async Task HandleWebhookAsync(PaymobWebhookRequestDTO request)
         {
-            // ── 1. Validate HMAC (security — never skip in production) ───────────────
-          /*  if (!_hmac.IsValid(request))
+            // Validate HMAC 
+            if (!_hmac.IsValid(request))
             {
                 _logger.LogWarning("Invalid HMAC detected. Webhook rejected.");
                 throw new InvalidHmacException();
-            }*/
-
-
-
+            }
             var obj = request.obj;
-
-            _logger.LogInformation(
-       "Webhook values — Success: {Success}, Pending: {Pending}, MerchantOrderId: {OrderId}, AmountCents: {Amount}",
-       obj.Success, obj.Pending, obj.Order?.MerchantOrderId, obj.AmountCents);
 
             var isSuccess = obj.Success && !obj.Pending;
 
-            //  Idempotency: ignore already-processed transactions 
+            //  Idempotency => ignore alreadyprocessed transactions 
             var transactionId = obj.Id.ToString();
 
             var exists = await _unitOfWork.Payments
@@ -200,8 +187,8 @@ namespace ClassUP.Infrastructure.Payments
 
             if (exists)
             {
-                _logger.LogInformation(
-                    "Duplicate webhook ignored for transaction {TransactionId}", transactionId);
+                //_logger.LogDebug(
+                //    "Duplicate webhook ignored for transaction {TransactionId}", transactionId);
                 return;
             }
 
@@ -225,7 +212,7 @@ namespace ClassUP.Infrastructure.Payments
             // Skip already-completed orders 
             if (order.Status == OrderStatus.Completed)
             {
-                _logger.LogInformation("Order already completed: {OrderId}", orderId);
+                //_logger.LogInformation("Order already completed: {OrderId}", orderId);
                 return;
             }
 
@@ -243,7 +230,7 @@ namespace ClassUP.Infrastructure.Payments
             await _unitOfWork.Payments.AddAsync(payment);
 
             // Update order status 
-            //      
+               
             order.Status = isSuccess ? OrderStatus.Completed : OrderStatus.Cancelled;
 
             // Enroll on success 
@@ -274,11 +261,11 @@ namespace ClassUP.Infrastructure.Payments
 
                     await _unitOfWork.Enrollments.AddAsync(enrollment);
                 }
-                else
-                {
-                    _logger.LogInformation(
-                        "User already enrolled in course {CourseId} — skipping.", courseId);
-                }
+                //else
+                //{
+                //    _logger.LogInformation(
+                //        "User already enrolled in course {CourseId} — skipping.", courseId);
+                //}
             }
 
             await _unitOfWork.SaveChangesAsync();

@@ -126,42 +126,42 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
             };
         }
 
-        public async Task<EnrollmentDTO> CreateAsync(int CourseId, string UserId)
-        {
-            if (CourseId <= 0)
-                throw new BadRequestException("Invalid course id");
+        //public async Task<EnrollmentDTO> CreateAsync(int CourseId, string UserId)
+        //{
+        //    if (CourseId <= 0)
+        //        throw new BadRequestException("Invalid course id");
 
-            var alreadyEnrolled = await _unitOfWork.Enrollments
-               .IsEnrolledAsync(UserId, CourseId);
-            if (alreadyEnrolled)
-                throw new BadRequestException("Already enrolled");
-            var course = await _unitOfWork.Courses
-               .GetByIdAsync(CourseId);
-            if (course == null)
-                throw new NotFoundException("Course");
-            var enrollment = new Domain.Models.Enrollment
-            {
-                CourseId = CourseId,
-                UserId = UserId,
-                EnrolledAt = DateTime.UtcNow,
-                ProgressPercentage = 0,
-                CompletedAt = null,
+        //    var alreadyEnrolled = await _unitOfWork.Enrollments
+        //       .IsEnrolledAsync(UserId, CourseId);
+        //    if (alreadyEnrolled)
+        //        throw new BadRequestException("Already enrolled");
+        //    var course = await _unitOfWork.Courses
+        //       .GetByIdAsync(CourseId);
+        //    if (course == null)
+        //        throw new NotFoundException("Course");
+        //    var enrollment = new Domain.Models.Enrollment
+        //    {
+        //        CourseId = CourseId,
+        //        UserId = UserId,
+        //        EnrolledAt = DateTime.UtcNow,
+        //        ProgressPercentage = 0,
+        //        CompletedAt = null,
 
-            };
+        //    };
 
-            await _unitOfWork.Enrollments.AddAsync(enrollment);
-            await _unitOfWork.SaveChangesAsync();
-            return new EnrollmentDTO
-            {
-                EnrollmentId = enrollment.Id,
-                CourseId = enrollment.CourseId,
-                StudentId = enrollment.UserId,
-                EnrolledAt = enrollment.EnrolledAt,
-                ProgressPercentage = enrollment.ProgressPercentage,
-                CompletedAt = enrollment.CompletedAt,
+        //    await _unitOfWork.Enrollments.AddAsync(enrollment);
+        //    await _unitOfWork.SaveChangesAsync();
+        //    return new EnrollmentDTO
+        //    {
+        //        EnrollmentId = enrollment.Id,
+        //        CourseId = enrollment.CourseId,
+        //        StudentId = enrollment.UserId,
+        //        EnrolledAt = enrollment.EnrolledAt,
+        //        ProgressPercentage = enrollment.ProgressPercentage,
+        //        CompletedAt = enrollment.CompletedAt,
 
-            };
-        }
+        //    };
+        //}
         public async Task UnEnrollAsync(int courseId, string userId)
         {
             var enrollment = await _unitOfWork.Enrollments
