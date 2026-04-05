@@ -23,7 +23,7 @@ namespace ClassUP.Infrastructure.Repository
                 .AsNoTracking()
                 .Include(r => r.User)
                 .Where(r => r.CourseId == courseId)
-                .OrderByDescending(r => r.CreatedAt)
+                .OrderByDescending(r => r.CreatedOn)
                 .ToListAsync();
         }
     }

@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace ClassUP.Domain.Models
 {
-    public class Wishlist
+    public class Wishlist : BaseEntity
     {
-        public int Id { get; set; }
-        public string UserId { get; set; }
+        public string UserId { get; set; } = null!;
         public int CourseId { get; set; }
-        public DateTime AddedAt { get; set; }
-        public AppUser User { get; set; }
-        public Course Course { get; set; }
+        //public DateTime AddedAt { get; set; }
+        public AppUser User { get; set; } = null!;
+        public Course Course { get; set; } = null!;
     }
 }

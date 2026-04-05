@@ -10,7 +10,7 @@ namespace ClassUP.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] 
+    [Authorize]
     public class EnrollmentController : ControllerBase
     {
         private readonly IEnrollmentService _enrollmentService;
@@ -64,7 +64,7 @@ namespace ClassUP.API.Controllers
         {
             var enrollment = await _enrollmentService.GetByIdAsync(id);
             return Ok(enrollment);
-        } 
+        }
         #endregion
 
         #region Check if Current User is Enrolled
@@ -80,7 +80,7 @@ namespace ClassUP.API.Controllers
                 UserId = userId,
                 IsEnrolled = isEnrolled
             });
-        } 
+        }
         #endregion
 
         #region Unenroll
@@ -92,7 +92,7 @@ namespace ClassUP.API.Controllers
             var userId = User.GetUserId(); // from JWT claims
             await _enrollmentService.UnEnrollAsync(courseId, userId);
             return NoContent();
-        } 
+        }
         #endregion
     }
 }

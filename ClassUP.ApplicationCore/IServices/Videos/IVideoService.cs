@@ -6,11 +6,11 @@ using System.Text;
 
 namespace ClassUP.ApplicationCore.Services.Videos
 {
-  
-        public interface IVideoService
-        {
+
+    public interface IVideoService
+    {
         Task<VideoResult> UploadAsync(IFormFile file);
         Task DeleteAsync(string publicId);
-         }
- }
+    }
+}
 

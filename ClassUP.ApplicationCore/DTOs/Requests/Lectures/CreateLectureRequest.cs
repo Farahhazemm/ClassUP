@@ -11,7 +11,7 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Lectures
     public class CreateLectureRequest
     {
         [Required]
-    public string Title { get; set; } = null!;
+        public string Title { get; set; } = null!;
 
         [Required]
         public string Description { get; set; } = null!;

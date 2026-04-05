@@ -16,7 +16,7 @@ namespace ClassUP.ApplicationCore.Services.Reviws
         {
             _unitOfWork = unitOfWork;
         }
-       
+
         public async Task<List<CourseReviewResponseDTO>> GetAllAsync(int courseId)
         {
             //  safe check  >> remember Do it at  User  in Add review
@@ -30,7 +30,7 @@ namespace ClassUP.ApplicationCore.Services.Reviws
                 ReviewId = r.Id,
                 Rating = r.Rating,
                 Comment = r.Comment,
-                CreatedAt = r.CreatedAt,
+                CreatedAt = r.CreatedOn,
 
                 UserId = r.UserId,
                 UserFullName = $"{r.User.FirstName} {r.User.LastName}"

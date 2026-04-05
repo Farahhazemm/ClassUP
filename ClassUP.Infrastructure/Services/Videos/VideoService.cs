@@ -26,7 +26,7 @@ namespace ClassUP.Infrastructure.Services.Videos
 
             _cloudinary = new Cloudinary(account);
             _cloudinary.Api.Secure = true;
-            
+
 
 
         }

@@ -16,8 +16,8 @@ namespace ClassUP.ApplicationCore.DTOs.Responses.Cources
         public string ThumbnailUrl { get; set; } = string.Empty;
         public string? PreviewVideoUrl { get; set; }
         public bool IsPublished { get; set; }
-        public DateTime? PublishedAt{get; set; } 
-    #endregion
+        public DateTime? PublishedAt { get; set; }
+        #endregion
 
         #region Instructor Info
 
@@ -34,7 +34,7 @@ namespace ClassUP.ApplicationCore.DTOs.Responses.Cources
         public int TotalSections { get; set; }
         public int TotalEnrollments { get; set; }
         public int TotalReviews { get; set; }
-        public double AverageRating { get; set; } 
+        public double AverageRating { get; set; }
         #endregion
     }
 }

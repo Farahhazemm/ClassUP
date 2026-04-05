@@ -13,12 +13,12 @@ namespace ClassUP.API.Controllers
     public class User_ManagementController : ControllerBase
     {
         private readonly IUserManagementService _userService;
-        public User_ManagementController( IUserManagementService userService)
+        public User_ManagementController(IUserManagementService userService)
         {
-             _userService = userService;
+            _userService = userService;
         }
 
-        
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -27,7 +27,7 @@ namespace ClassUP.API.Controllers
         }
 
 
-        
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] string id)
         {
@@ -40,7 +40,7 @@ namespace ClassUP.API.Controllers
         {
             var user = await _userService.CreateUserAsync(dto);
 
-            return CreatedAtAction( nameof(GetById),  new { id = user.Id },  user);
+            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
         }
 
         [HttpPut("{id}")]

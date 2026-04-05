@@ -24,7 +24,7 @@ namespace ClassUP.API.Controllers
     {
         private readonly IAuthService _authservice;
         private readonly IUserTokenService _userTokenService;
-        public AccountController(IAuthService authservice , UserManager<AppUser> userManager,IUserTokenService userTokenService)
+        public AccountController(IAuthService authservice, UserManager<AppUser> userManager, IUserTokenService userTokenService)
         {
             _authservice = authservice;
             _userTokenService = userTokenService;
@@ -94,7 +94,7 @@ namespace ClassUP.API.Controllers
             return Ok(result);
         }
 
-       
+
 
 
         private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)
@@ -118,7 +118,7 @@ namespace ClassUP.API.Controllers
             await _authservice.SendResetPasswordCode(dto.Email);
             return NoContent();
         }
-        #endregion
+
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO dto)
@@ -126,6 +126,7 @@ namespace ClassUP.API.Controllers
             await _authservice.ResetPasswordAsync(dto);
             return NoContent();
         }
+        #endregion
 
 
 

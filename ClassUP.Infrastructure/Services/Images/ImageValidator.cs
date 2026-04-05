@@ -12,7 +12,7 @@ namespace ClassUP.Infrastructure.Services.Images
     public class ImageValidator : IImageValidator
     {
         // White listing => Content Validation
-        
+
 
         public void Validate(IFormFile file)
         {
@@ -24,7 +24,7 @@ namespace ClassUP.Infrastructure.Services.Images
                     $"Image size must be less than {ImageSettings.MaxFileSizeInMB}MB");
 
             // avoid new folder generate 
-            if (file.FileName.Contains("/") ||file.FileName.Contains("\\") || file.FileName.Contains(".."))
+            if (file.FileName.Contains("/") || file.FileName.Contains("\\") || file.FileName.Contains(".."))
             {
                 throw new BadRequestException("Invalid file name");
             }

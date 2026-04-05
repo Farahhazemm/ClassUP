@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace ClassUP.Domain.Models
 {
-    public class ArticleContent
+    public class ArticleContent : BaseEntity
     {
         public int Id { get; set; }
         public int LectureId { get; set; }
-        public Lecture lecture { get; set; }
-        public string Content { get; set; } 
-       
+        public Lecture lecture { get; set; } = null!;
+        public string Content { get; set; } = string.Empty;
+
     }
 }

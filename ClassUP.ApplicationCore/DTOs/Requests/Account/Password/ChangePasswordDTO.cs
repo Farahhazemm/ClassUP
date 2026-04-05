@@ -16,7 +16,7 @@ public class ChangePasswordDTO : IValidatableObject
     )]
     public string NewPassword { get; set; } = null!;
 
-     // i should Ensure oldpass != newPass
+    // i should Ensure oldpass != newPass
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (CurrentPassword != null && NewPassword != null && CurrentPassword == NewPassword)

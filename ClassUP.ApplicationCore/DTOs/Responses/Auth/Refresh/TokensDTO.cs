@@ -7,9 +7,9 @@ namespace ClassUP.ApplicationCore.DTOs.Responses.Auth.Refresh
 {
     public class TokensDTO
     {
-         public string JwtToken {  get; set; }
+        public string JwtToken { get; set; }
 
-         public   DateTime JwtTokenExpiresOn {  get; set; }
+        public DateTime JwtTokenExpiresOn { get; set; }
 
         [JsonIgnore]
         public string? RefreshToken { get; set; }

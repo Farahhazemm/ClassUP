@@ -21,7 +21,7 @@ namespace ClassUP.Infrastructure.Payments
         private readonly ILogger<PaymobService> _logger;
         private readonly UserManager<AppUser> _userManager;
 
-        public PaymobService( IPaymobClient client,IUnitOfWork unitOfWork, IOptions<PaymobSettings> settings, PaymobHmacService hmac,  ILogger<PaymobService> logger, UserManager<AppUser> userManager)
+        public PaymobService(IPaymobClient client, IUnitOfWork unitOfWork, IOptions<PaymobSettings> settings, PaymobHmacService hmac, ILogger<PaymobService> logger, UserManager<AppUser> userManager)
         {
             _client = client;
             _unitOfWork = unitOfWork;
@@ -83,7 +83,7 @@ namespace ClassUP.Infrastructure.Payments
                 UserId = userId,
                 Total = course.Price,
                 Status = OrderStatus.Pending,
-                CreatedAt = DateTime.UtcNow,
+                CreatedOn = DateTime.UtcNow,
                 OrderItems = new List<OrderItem>
                 {
                     new OrderItem
@@ -117,8 +117,8 @@ namespace ClassUP.Infrastructure.Payments
                 });
 
                 // Store Paymob Order ID for reconciliation / refunds
-              //  orderEntity.PaymobOrderId = paymobOrder.Id.ToString();
-               // await _unitOfWork.SaveChangesAsync();
+                //  orderEntity.PaymobOrderId = paymobOrder.Id.ToString();
+                // await _unitOfWork.SaveChangesAsync();
 
                 // Payment key
                 var firstName = user.FirstName;
@@ -224,13 +224,13 @@ namespace ClassUP.Infrastructure.Payments
                 UserId = order.UserId,
                 Amount = obj.AmountCents / 100m,
                 Status = isSuccess ? "Success" : "Failed",
-                CreatedAt = DateTime.UtcNow
+                CreatedOn = DateTime.UtcNow
             };
 
             await _unitOfWork.Payments.AddAsync(payment);
 
             // Update order status 
-               
+
             order.Status = isSuccess ? OrderStatus.Completed : OrderStatus.Cancelled;
 
             // Enroll on success 

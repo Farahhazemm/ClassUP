@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace ClassUP.Domain.Models
 {
-    public class Review
+    public class Review : BaseEntity
     {
-        public int Id { get; set; }
+
         public int CourseId { get; set; }
-        public string UserId { get; set; }
+        public string UserId { get; set; } = null!;
         public int Rating { get; set; } // 1-5
-        public string Comment { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public AppUser User { get; set; }
-        public Course Course { get; set; }
+        public string Comment { get; set; } = null!;
+
+        public AppUser User { get; set; } = null!;
+        public Course Course { get; set; } = null!;
 
     }
 }

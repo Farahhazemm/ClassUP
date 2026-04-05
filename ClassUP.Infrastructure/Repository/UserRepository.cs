@@ -14,7 +14,7 @@ namespace ClassUP.Infrastructure.Repository
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly AppDbContext _db;
-        public UserRepository(AppDbContext db , UserManager<AppUser> userManager) : base(db)
+        public UserRepository(AppDbContext db, UserManager<AppUser> userManager) : base(db)
         {
             _userManager = userManager;
             _db = db;

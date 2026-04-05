@@ -13,42 +13,42 @@ namespace ClassUP.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Enrollment> builder)
         {
-            
+
             builder.ToTable("Enrollments");
 
-         
+
             builder.HasKey(e => e.Id);
             builder.Property(e => e.Id)
                 .ValueGeneratedOnAdd();
 
-            
+
             builder.Property(e => e.UserId)
                 .IsRequired();
 
             builder.Property(e => e.CourseId)
                 .IsRequired();
 
-         
+
             builder.Property(e => e.EnrolledAt)
                 .IsRequired()
-                .HasDefaultValueSql("GETDATE()"); 
+                .HasDefaultValueSql("GETDATE()");
 
             builder.Property(e => e.CompletedAt)
-                .IsRequired(false); 
+                .IsRequired(false);
 
             builder.HasIndex(e => new { e.UserId, e.CourseId })
                 .IsUnique();
 
-          
+
 
 
             builder.Property(e => e.ProgressPercentage)
                 .IsRequired()
                 .HasDefaultValue(0);
-                
+
 
             #region Relationships
-           
+
 
             builder.HasOne(e => e.User)
                 .WithMany(u => u.Enrollments)
@@ -68,8 +68,8 @@ namespace ClassUP.Infrastructure.Data.Configurations
 
             #endregion
 
-            
-           
+
+
         }
     }
 }

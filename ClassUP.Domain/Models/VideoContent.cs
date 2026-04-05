@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace ClassUP.Domain.Models
 {
-    public class VideoContent
+    public class VideoContent : BaseEntity
     {
-        public int Id { get; set; }
         public int LectureId { get; set; }
-        public Lecture lecture { get; set; }
-        public string VideoUrl { get; set; }
+        public Lecture lecture { get; set; } = null!;
+        public string VideoUrl { get; set; } = null!;
         public string PublicId { get; set; } = null!;
 
     }

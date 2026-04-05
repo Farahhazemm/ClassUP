@@ -11,7 +11,7 @@ namespace ClassUP.Domain.Models
         public string LastName { get; set; } = String.Empty;
         public string? ProfilePictureUrl { get; set; }
         public string? Bio { get; set; }
-        public  bool IsDisable { get; set;  }
+        public bool IsDisable { get; set; }
 
         //Cloudinary doesn't delete by URL I need Id 
         public string? ProfileImagePublicId { get; set; }
@@ -23,7 +23,7 @@ namespace ClassUP.Domain.Models
         public List<Review> Reviews { get; set; } = [];
         public List<Wishlist> Wishlists { get; set; } = [];
         public List<Order> Orders { get; set; } = [];
-        public List<Payment> Payments { get; set; } = []; 
+        public List<Payment> Payments { get; set; } = [];
         #endregion
 
         public List<RefreshToken> RefreshTokens { get; set; } = [];

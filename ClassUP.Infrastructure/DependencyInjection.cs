@@ -31,7 +31,7 @@ namespace ClassUP.Infrastructure
             this IServiceCollection services,
             IConfiguration configuration)
         {
-           
+
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
                     configuration.GetConnectionString("MyConc"),
@@ -40,7 +40,7 @@ namespace ClassUP.Infrastructure
             );
 
             #region UnitOfWork
-            services.AddScoped<IUnitOfWork, UnitOfWork>(); 
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             #endregion
 
             #region Repositories

@@ -7,9 +7,9 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Account_Management
 {
     public class UpdateProfileDTO
     {
-        [StringLength(50)] 
+        [StringLength(50)]
         public string? FirstName { get; set; }
-        [StringLength(50)] 
+        [StringLength(50)]
         public string? LastName { get; set; }
         [StringLength(1000)]
         public string? Bio { get; set; }

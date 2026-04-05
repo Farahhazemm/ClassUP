@@ -36,7 +36,7 @@ namespace ClassUP.API.Controllers
             return Ok(); // Paymob pings this to verify the URL
         }
 
-       
+
         [HttpPost("webhook")]
         [AllowAnonymous]
         public async Task<IActionResult> Webhook([FromQuery] string hmac)

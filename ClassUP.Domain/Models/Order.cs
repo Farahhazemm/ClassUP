@@ -7,17 +7,15 @@ using System.Threading.Tasks;
 
 namespace ClassUP.Domain.Models
 {
-    public class Order
+    public class Order : BaseEntity
     {
-        public int Id { get; set; }
-        public string UserId { get; set; }
+        public string UserId { get; set; } = null!;
         public decimal Total { get; set; }
         public OrderStatus Status { get; set; }
-        public DateTime CreatedAt { get; set; }
 
         // Navigation properties
-        public AppUser User { get; set; }
-        public List<OrderItem> OrderItems { get; set; }
-        public Payment Payment { get; set; }
+        public AppUser User { get; set; } = null!;
+        public List<OrderItem> OrderItems { get; set; } = [];
+        public Payment Payment { get; set; } = null!;
     }
 }

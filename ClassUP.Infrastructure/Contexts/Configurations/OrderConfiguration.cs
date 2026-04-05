@@ -16,8 +16,10 @@ namespace ClassUP.Infrastructure.Data.Configurations
         {
             builder.ToTable("Orders");
 
+            // PK
             builder.HasKey(o => o.Id);
 
+            // Properties
             builder.Property(o => o.Total)
                    .IsRequired()
                    .HasColumnType("decimal(18,2)");
@@ -26,8 +28,18 @@ namespace ClassUP.Infrastructure.Data.Configurations
                    .HasConversion<string>()
                    .IsRequired();
 
-            builder.Property(o => o.CreatedAt)
+            // BaseEntity mapping
+            builder.Property(o => o.CreatedOn)
                    .IsRequired();
+
+            builder.Property(o => o.UpdatedOn)
+                   .IsRequired(false);
+
+            // FK
+            builder.Property(o => o.UserId)
+                   .IsRequired();
+
+            // Relationships
 
             builder.HasOne(o => o.User)
                    .WithMany(u => u.Orders)
@@ -42,7 +54,8 @@ namespace ClassUP.Infrastructure.Data.Configurations
             builder.HasOne(o => o.Payment)
                    .WithOne(p => p.Order)
                    .HasForeignKey<Payment>(p => p.OrderId)
-                   .OnDelete(DeleteBehavior.Restrict);
+                   .OnDelete(DeleteBehavior.Cascade)
+                   .IsRequired();
         }
     }
 }

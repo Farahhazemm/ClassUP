@@ -6,18 +6,17 @@ using System.Threading.Tasks;
 
 namespace ClassUP.Domain.Models
 {
-    public class Section
+    public class Section : BaseEntity
     {
         #region My properties
-        public int Id { get; set; }
-        public string Title { get; set; }
+        public string Title { get; set; } = null!;
         public int CourseId { get; set; }
         public int OrderIndex { get; set; }
         #endregion
 
         #region Navigation properties
-       
-        public Course Course { get; set; }
+
+        public Course Course { get; set; } = null!;
         public List<Lecture> Lectures { get; set; } = new();
         #endregion
     }

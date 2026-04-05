@@ -43,45 +43,45 @@ namespace ClassUP.Infrastructure.Contexts.Configurations
                 .IsRequired(false);
             #endregion
 
-            
+
             #region Relationships
-      
-            
+
+
             builder.HasMany(u => u.Courses)
-                .WithOne(c => c.user) 
-                .HasForeignKey(c => c.UserId) 
-                .OnDelete(DeleteBehavior.Restrict); 
+                .WithOne(c => c.user)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasMany(u => u.Enrollments)
-                .WithOne(e => e.User) 
+                .WithOne(e => e.User)
                 .HasForeignKey(e => e.UserId)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
 
-             
+
             builder.HasMany(u => u.Reviews)
-                .WithOne(r => r.User) 
+                .WithOne(r => r.User)
                 .HasForeignKey(r => r.UserId)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(u => u.Wishlists)
-                .WithOne(w => w.User) 
+                .WithOne(w => w.User)
                 .HasForeignKey(w => w.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(u => u.Orders)
-                .WithOne(o => o.User) 
+                .WithOne(o => o.User)
                 .HasForeignKey(o => o.UserId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Restrict);
 
-            
+
             builder.HasMany(u => u.Payments)
-                .WithOne(p => p.User) 
+                .WithOne(p => p.User)
                 .HasForeignKey(p => p.UserId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Restrict);
 
-           
+
             builder.HasIndex(u => u.Email)
-                .IsUnique(); 
+                .IsUnique();
             #endregion
         }
     }

@@ -9,10 +9,10 @@ namespace ClassUP.Domain.Models
     public class CourseObjective
     {
         public int Id { get; set; }
-        public string ObjectiveText { get; set; }
+        public string ObjectiveText { get; set; } = string.Empty;
         public int OrderIndex { get; set; }
         public int CourseId { get; set; }
-        public Course Course { get; set; }
-        
+        public Course Course { get; set; } = null!;
+
     }
 }

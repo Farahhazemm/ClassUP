@@ -21,12 +21,12 @@ namespace ClassUP.API.Extensions
                 options.SignIn.RequireConfirmedEmail = true;
                 options.User.RequireUniqueEmail = true;
 
-              
+
             })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
         }
 
-      
+
     }
 }

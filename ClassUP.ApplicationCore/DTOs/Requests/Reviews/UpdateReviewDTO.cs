@@ -9,8 +9,8 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Reviews
     {
         [Required, Range(1, int.MaxValue)]
         public int ReviewId { get; set; }
-   
-        [Range(1, 5)] 
+
+        [Range(1, 5)]
         public int? Rating { get; set; }
         [StringLength(1000)]
         public string? Comment { get; set; }

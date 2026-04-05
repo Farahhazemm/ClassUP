@@ -7,9 +7,9 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Category
 {
     public class UpdateCategoryRequestDTO
     {
-        [StringLength(100)] 
+        [StringLength(100)]
         public string? Name { get; set; }
-        [StringLength(1000)] 
+        [StringLength(1000)]
         public string? Description { get; set; }
     }
 }

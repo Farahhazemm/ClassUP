@@ -15,11 +15,7 @@ namespace ClassUP.Infrastructure.Data.Configurations
         {
             builder.ToTable("Categories");
 
-
-            #region My Properties
             builder.HasKey(c => c.Id);
-            builder.Property(c => c.Id)
-                .ValueGeneratedOnAdd();
 
             builder.Property(c => c.Name)
                 .IsRequired()
@@ -33,25 +29,18 @@ namespace ClassUP.Infrastructure.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(500);
 
-           
+            // BaseEntity fields
+            builder.Property(c => c.CreatedOn)
+                .IsRequired();
 
-            #endregion
+            builder.Property(c => c.UpdatedOn)
+                .IsRequired(false);
 
-
-            #region Relationships
-
-            
-            if (typeof(Category).GetProperty("Courses") != null)
-            {
-                builder.HasMany(c => c.Courses)
-                    .WithOne(co => co.Category) 
-                    .HasForeignKey(co => co.CategoryId)
-                    .OnDelete(DeleteBehavior.Restrict); 
-            }
-
-            #endregion
-            
-            
+            // Relationship
+            builder.HasMany(c => c.Courses)
+                .WithOne(co => co.Category)
+                .HasForeignKey(co => co.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

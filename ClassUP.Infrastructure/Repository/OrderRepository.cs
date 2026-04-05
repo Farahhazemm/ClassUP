@@ -23,4 +23,4 @@ namespace ClassUP.Infrastructure.Repository
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
     }
-    }
+}

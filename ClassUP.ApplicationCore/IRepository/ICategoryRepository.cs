@@ -7,6 +7,6 @@ namespace ClassUP.ApplicationCore.IRepository
 {
     public interface ICategoryRepository : IBaseRepository<Category>
     {
-       
+
     }
 }

@@ -21,15 +21,15 @@ namespace ClassUP.API.Controllers
         [HttpPost("confirm-email")]
         public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailDTO request)
         {
-           
-         
+
+
             await _authService.ConfirmEmailAsync(request);
             return Ok(new { success = true, message = "Email confirmed successfully." });
         }
 
         [AllowAnonymous]
         [HttpPost("resend-confirmation-email")]
-        public async Task<IActionResult> ResendConfirmationEmail( [FromBody] ResendConfirmationEmailDTO request)
+        public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationEmailDTO request)
         {
             await _authService.ResendConfirmationEmailAsync(request);
 

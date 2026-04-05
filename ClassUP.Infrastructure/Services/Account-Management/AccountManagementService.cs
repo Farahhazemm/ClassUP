@@ -27,13 +27,13 @@ namespace ClassUP.ApplicationCore.Services.Account_Management
         private readonly IResetPasswordService _resetPasswordService;
         private readonly ICloudinaryService _cloudinaryService;
         private readonly IImageValidator _imageValidator;
-        public AccountManagementService(UserManager<AppUser> userManager, ILogger<AccountManagementService> logger, IResetPasswordService resetPasswordService, IImageValidator imageValidator , ICloudinaryService cloudinaryService)
+        public AccountManagementService(UserManager<AppUser> userManager, ILogger<AccountManagementService> logger, IResetPasswordService resetPasswordService, IImageValidator imageValidator, ICloudinaryService cloudinaryService)
         {
             _userManager = userManager;
-            _logger=logger;
-            _resetPasswordService=resetPasswordService;
-            _imageValidator=imageValidator;
-            _cloudinaryService=cloudinaryService;
+            _logger = logger;
+            _resetPasswordService = resetPasswordService;
+            _imageValidator = imageValidator;
+            _cloudinaryService = cloudinaryService;
         }
 
 

@@ -41,9 +41,9 @@ namespace ClassUP.Infrastructure.Services.Images
                 File = new FileDescription(file.FileName, stream),
                 Folder = folder,  //users/{userId} Or courses/{courseId}
                 Transformation = new Transformation()
-                    .Width(800) 
+                    .Width(800)
                     .Height(800)
-                    .Crop("limit") 
+                    .Crop("limit")
             };
 
             var result = await _cloudinary.UploadAsync(uploadParams);
@@ -69,7 +69,7 @@ namespace ClassUP.Infrastructure.Services.Images
             {
                 ResourceType = ResourceType.Image
             });
-        } 
+        }
         #endregion
     }
 }

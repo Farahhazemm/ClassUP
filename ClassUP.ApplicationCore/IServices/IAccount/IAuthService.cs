@@ -15,7 +15,7 @@ namespace ClassUP.ApplicationCore.Services.Auth
         Task<LoginResponseDTO> LoginAsync(LoginDTO dto);
         Task<UserDTO> RegisterAsync(RegisterDTO dto);
 
-        Task ConfirmEmailAsync(ConfirmEmailDTO request );
+        Task ConfirmEmailAsync(ConfirmEmailDTO request);
 
         Task ResendConfirmationEmailAsync(ResendConfirmationEmailDTO request);
         Task SendResetPasswordCode(string Email);

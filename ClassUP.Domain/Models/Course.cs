@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ClassUP.Domain.Models
 {
-    public class Course
+    public class Course : BaseEntity
     {
         public Course()
         {
@@ -17,37 +17,36 @@ namespace ClassUP.Domain.Models
             CourseTags = new List<CourseTag>();
             Reviews = new List<Review>();
             Enrollments = new List<Enrollment>();
-            
+
         }
         #region MY Properties
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public bool IsActive { get; set; }
-        public string Language { get; set; }
+        public string Language { get; set; } = string.Empty;
         public CourseLevel Level { get; set; }
         public decimal Price { get; set; }
-        public string ThumbnailUrl { get; set; }
+        public string ThumbnailUrl { get; set; } = string.Empty;
         public string? PreviewVideoUrl { get; set; }
         public bool IsPublished { get; set; }
         public DateTime? PublishedAt { get; set; }
         public string? ThumbnailPublicId { get; set; } // For Cloudnary del
-        public string UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public int CategoryId { get; set; }
 
         #endregion
 
         #region Navigation properties
         public AppUser user { get; set; }
-        public Category  Category { get; set; }
+        public Category Category { get; set; }
         public List<Section> Sections { get; set; }
         public List<CourseRequirement> Requirements { get; set; }
         public List<CourseObjective> Objectives { get; set; }
         public List<CourseTag> CourseTags { get; set; }
         public List<Review> Reviews { get; set; }
         public List<Enrollment> Enrollments { get; set; }
-       
-        public List<Wishlist> CourseWishlists { get; set; } = new();
+
+        public List<Wishlist> CourseWishlists { get; set; }
 
         #endregion
     }

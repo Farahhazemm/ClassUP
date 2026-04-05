@@ -9,10 +9,10 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Reviews
     {
         [Required, Range(1, int.MaxValue)]
         public int CourseId { get; set; }
-        
-        [Required, Range(1, 5)] 
+
+        [Required, Range(1, 5)]
         public int Rating { get; set; }
-        [StringLength(1000)] 
+        [StringLength(1000)]
         public string? Comment { get; set; }
     }
 }

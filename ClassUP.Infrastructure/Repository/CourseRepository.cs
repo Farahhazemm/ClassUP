@@ -13,7 +13,7 @@ namespace ClassUP.Infrastructure.Repository
     public class CourseRepository : BaseRepository<Course>, ICourseRepository
     {
         private readonly AppDbContext _db;
-        public CourseRepository(AppDbContext db)  :base(db) 
+        public CourseRepository(AppDbContext db) : base(db)
         {
             _db = db;
         }

@@ -21,12 +21,12 @@ namespace ClassUP.Infrastructure.Identity_Account.Services
         private readonly IWebHostEnvironment _env;
         private readonly IEmailService _emailService;
         public ResetPasswordService(UserManager<AppUser> userManager,
-            ILogger<EmailVerificationService> logger, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment env,IEmailService emailService)
+            ILogger<EmailVerificationService> logger, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment env, IEmailService emailService)
         {
             _userManager = userManager;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
-            _env= env;
+            _env = env;
             _emailService = emailService;
         }
         public async Task<string> GenerateResetPasswordCodeAsync(AppUser user)

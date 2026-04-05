@@ -45,7 +45,7 @@ namespace ClassUP.ApplicationCore.Services.Lectures
             return new PaginatedList<LectureDTO>(
                 lectureDtos,
                 lectures.PageNumber,
-                 lectures.Items.Count,   
+                 lectures.Items.Count,
                 lectureDtos.Count
             );
         }

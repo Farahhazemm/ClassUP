@@ -18,12 +18,12 @@ namespace ClassUP.API.Controllers
     public class CoursesController : ControllerBase
     {
         private readonly ICourseService _courseService;
-        public CoursesController( ICourseService courseService)
+        public CoursesController(ICourseService courseService)
         {
             _courseService = courseService;
         }
 
-       
+
 
         #region Read Actions
         [HttpGet("GetAllCourses")]
@@ -37,7 +37,7 @@ namespace ClassUP.API.Controllers
 
         [Authorize]
         [HttpGet("my-courses")]
-        public async Task<IActionResult> GetInstructorCoursesAsync( [FromQuery] FilterOptions filter)
+        public async Task<IActionResult> GetInstructorCoursesAsync([FromQuery] FilterOptions filter)
         {
             var userId = User.GetUserId();
 
@@ -56,7 +56,7 @@ namespace ClassUP.API.Controllers
         public async Task<IActionResult> GetCourseById(int courseId)
         {
             var Course = await _courseService.GetByIdAsync(courseId);
-            
+
             return Ok(Course);
         }
 

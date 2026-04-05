@@ -21,7 +21,7 @@ namespace ClassUP.Infrastructure.Data.Configurations
             builder.Property(lp => lp.EnrollmentId).IsRequired();
             builder.Property(lp => lp.LectureId).IsRequired();
             builder.Property(lp => lp.IsCompleted).IsRequired().HasDefaultValue(false);
-          
+
             builder.Property(lp => lp.CompletedAt).IsRequired(false);
 
             builder.HasOne(lp => lp.enrollment)
@@ -34,7 +34,7 @@ namespace ClassUP.Infrastructure.Data.Configurations
                 .HasForeignKey(lp => lp.LectureId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            
+
         }
     }
 }

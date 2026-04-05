@@ -43,18 +43,31 @@ namespace ClassUP.Infrastructure.Contexts
             modelBuilder.ApplyConfiguration(new SectionConfiguration());
             modelBuilder.ApplyConfiguration(new LectureConfiguration());
             modelBuilder.ApplyConfiguration(new VideoContentConfiguration());
-            
+
             modelBuilder.ApplyConfiguration(new ArticleContentConfiguration());
             modelBuilder.ApplyConfiguration(new CourseRequirementConfiguration());
             modelBuilder.ApplyConfiguration(new CourseObjectiveConfiguration());
             modelBuilder.ApplyConfiguration(new EnrollmentConfiguration());
-           modelBuilder.ApplyConfiguration(new LectureProgressConfiguration());
-            
+            modelBuilder.ApplyConfiguration(new LectureProgressConfiguration());
+
             modelBuilder.ApplyConfiguration(new ReviewConfiguration());
             modelBuilder.ApplyConfiguration(new WishlistConfiguration());
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
             modelBuilder.ApplyConfiguration(new PaymentConfiguration());
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker.Entries<BaseEntity>();
+            foreach (var entry in entries)
+            {
+                if (entry.State == EntityState.Modified)
+                {
+                    entry.Property(x => x.UpdatedOn).CurrentValue = DateTime.UtcNow;
+                }
+            }
+            return base.SaveChangesAsync(cancellationToken);
         }
     }
 }

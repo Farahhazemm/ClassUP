@@ -6,7 +6,7 @@ namespace ClassUP.ApplicationCore.Exceptions
     public class InvalidCodeException : AppException
     {
         public InvalidCodeException(string message)
-            : base(message, HttpStatusCode.BadRequest) 
+            : base(message, HttpStatusCode.BadRequest)
         {
         }
     }

@@ -20,4 +20,4 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Auth.Register
         public string Password { get; set; } = null!;
     }
 }
-    
+

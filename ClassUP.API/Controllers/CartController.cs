@@ -12,7 +12,7 @@ namespace ClassUP.API.Controllers
     {
         private readonly ICartService _cartService;
         private readonly ICourseService _courseServices;
-        public CartController(ICartService cartService , ICourseService courseService)
+        public CartController(ICartService cartService, ICourseService courseService)
         {
             _courseServices = courseService;
             _cartService = cartService;

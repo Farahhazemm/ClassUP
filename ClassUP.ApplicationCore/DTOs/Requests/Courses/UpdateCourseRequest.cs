@@ -28,10 +28,10 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Courses
 
         public bool? IsActive { get; set; }
 
-        public int courseId { get;set;}
+        public int courseId { get; set; }
 
 
-       public IFormFile? Thumbnail { get; set; }
+        public IFormFile? Thumbnail { get; set; }
 
     }
 }

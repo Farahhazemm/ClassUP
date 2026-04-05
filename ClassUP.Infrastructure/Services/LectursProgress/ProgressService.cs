@@ -24,7 +24,7 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
                  .GetEnrollmentAsync(userId, lecture.Section.CourseId);
             if (enrollment == null)
                 throw new Exception("User is not enrolled in this course");
-            var progress = await _unitOfWork.Progresses .GetByEnrollmentAndLectureAsync(enrollment.Id, lectureId);
+            var progress = await _unitOfWork.Progresses.GetByEnrollmentAndLectureAsync(enrollment.Id, lectureId);
             if (progress != null)
             {
                 // already exists => mark completed if not
@@ -32,7 +32,7 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
                 {
                     progress.IsCompleted = true;
                     progress.CompletedAt = DateTime.UtcNow;
-                   
+
                 }
 
                 await _unitOfWork.SaveChangesAsync();
@@ -56,21 +56,21 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
             if (lectureId <= 0)
                 throw new ArgumentException("Invalid lesson ID");
 
-           
+
             var enrollment = await _unitOfWork.Enrollments
                 .GetEnrollmentAsync(userId, lectureId);
 
             if (enrollment == null)
                 throw new Exception("User is not enrolled in this course");
 
-            
+
             var progress = await _unitOfWork.Progresses
                 .GetByEnrollmentAndLectureAsync(enrollment.Id, lectureId);
 
             if (progress == null)
                 throw new Exception("Progress not found");
 
-            
+
             progress.IsCompleted = false;
             progress.CompletedAt = null;
 
@@ -79,14 +79,14 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
 
         public async Task<bool> IsLessonCompletedAsync(int lectureId, string userId)
         {
-            
+
             var enrollment = await _unitOfWork.Enrollments
-                .GetEnrollmentAsync(userId, lectureId); 
+                .GetEnrollmentAsync(userId, lectureId);
 
             if (enrollment == null)
                 throw new Exception("User is not enrolled in this course");
 
-           
+
             var progress = await _unitOfWork.Progresses
                 .GetByEnrollmentAndLectureAsync(enrollment.Id, lectureId);
 
@@ -99,18 +99,18 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
 
         public async Task<IEnumerable<int>> GetCompletedLessonsAsync(int courseId, string userId)
         {
-            
+
             var enrollment = await _unitOfWork.Enrollments
                 .GetEnrollmentAsync(userId, courseId);
 
             if (enrollment == null)
                 throw new Exception("User is not enrolled in this course");
 
-            
+
             var completedLessons = await _unitOfWork.Progresses
                 .GetAllAsync(null);
 
-            return completedLessons.Items.Where(lp => lp.EnrollmentId == enrollment.Id && lp.IsCompleted) .Select(lp => lp.LectureId);
+            return completedLessons.Items.Where(lp => lp.EnrollmentId == enrollment.Id && lp.IsCompleted).Select(lp => lp.LectureId);
         }
 
         public async Task<float> RecalculateProgressAsync(int enrollmentId)
@@ -120,7 +120,7 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
             if (enrollment == null)
                 throw new Exception("Enrollment not found");
 
-         
+
             var totalLectures = await _unitOfWork.Lectures.GetAllAsync(null);
 
 
@@ -128,10 +128,10 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
             if (totalCount == 0)
                 return 0;
 
-            
+
             var allProgress = await _unitOfWork.Progresses.GetAllAsync(null);
 
-            
+
             int completedLessons = allProgress.Items.Count(lp =>
                 lp.EnrollmentId == enrollmentId &&
                 lp.IsCompleted &&
@@ -139,17 +139,17 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
                 lp.lecture.Section != null &&
                 lp.lecture.Section.CourseId == enrollment.CourseId);
 
-            
+
             float progressPercentage = totalCount > 0
                 ? ((float)completedLessons / totalCount) * 100
                 : 0;
 
             progressPercentage = (float)Math.Round(progressPercentage);
 
-            
+
             enrollment.ProgressPercentage = progressPercentage;
 
-           
+
             if (Math.Abs(progressPercentage - 100) < 0.01)
             {
                 enrollment.Status = "Completed";
@@ -161,7 +161,7 @@ namespace ClassUP.ApplicationCore.Services.LectursProgress
                 enrollment.CompletedAt = null;
             }
 
-            
+
             await _unitOfWork.SaveChangesAsync();
 
             return progressPercentage;

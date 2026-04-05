@@ -9,9 +9,9 @@ namespace ClassUP.Domain.Models
     public class Tag
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         // Navigation properties
-        public List<CourseTag> CourseTags { get; set; }
+        public List<CourseTag> CourseTags { get; set; } = null!;
     }
 }

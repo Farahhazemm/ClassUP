@@ -8,6 +8,6 @@ namespace ClassUP.ApplicationCore.DTOs.Responses.Payments
     public class AuthResponse
     {
         [JsonPropertyName("token")]
-        public string Token { get; set; } =null!;
+        public string Token { get; set; } = null!;
     }
 }

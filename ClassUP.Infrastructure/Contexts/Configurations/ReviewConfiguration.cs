@@ -16,8 +16,10 @@ namespace ClassUP.Infrastructure.Data.Configurations
         {
             builder.ToTable("Reviews");
 
+            // PK
             builder.HasKey(r => r.Id);
 
+            // Properties
             builder.Property(r => r.Rating)
                    .IsRequired();
 
@@ -25,20 +27,24 @@ namespace ClassUP.Infrastructure.Data.Configurations
                    .IsRequired()
                    .HasMaxLength(2000);
 
-            builder.Property(r => r.CreatedAt)
+            // BaseEntity
+            builder.Property(r => r.CreatedOn)
                    .IsRequired();
+
+            builder.Property(r => r.UpdatedOn)
+                   .IsRequired(false);
+
+            // Relationships
 
             builder.HasOne(r => r.User)
                    .WithMany(u => u.Reviews)
                    .HasForeignKey(r => r.UserId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(r => r.Course)
                    .WithMany(c => c.Reviews)
                    .HasForeignKey(r => r.CourseId)
                    .OnDelete(DeleteBehavior.Cascade);
-
-            
         }
     }
 }

@@ -14,7 +14,7 @@ namespace ClassUP.Infrastructure.Repository
         private readonly AppDbContext _db;
         public SectionRepository(AppDbContext db) : base(db)
         {
-            _db = db;   
+            _db = db;
         }
 
         public async Task<IEnumerable<Section>> GetByCourseIdAsync(int id)

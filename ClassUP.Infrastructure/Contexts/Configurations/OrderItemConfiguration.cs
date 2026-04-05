@@ -1,36 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using ClassUP.Domain.Models;
+﻿using ClassUP.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ClassUP.Infrastructure.Data.Configurations
+public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
 {
-    public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
+    public void Configure(EntityTypeBuilder<OrderItem> builder)
     {
-        public void Configure(EntityTypeBuilder<OrderItem> builder)
-        {
-            builder.ToTable("OrderItems");
+        builder.ToTable("OrderItems");
 
-            builder.HasKey(oi => oi.Id);
+        // PK
+        builder.HasKey(oi => oi.Id);
 
-            builder.Property(oi => oi.CourseTitle)
-                   .IsRequired()
-                   .HasMaxLength(200);
+        // Properties
+        builder.Property(oi => oi.CourseTitle)
+               .IsRequired()
+               .HasMaxLength(200);
 
-            builder.Property(oi => oi.Price)
-                   .IsRequired()
-                   .HasColumnType("decimal(18,2)");
+        builder.Property(oi => oi.Price)
+               .IsRequired()
+               .HasColumnType("decimal(18,2)");
 
-            builder.HasOne(oi => oi.Order)
-                   .WithMany(o => o.OrderItems)
-                   .HasForeignKey(oi => oi.OrderId)
-                   .OnDelete(DeleteBehavior.Cascade);
-        }
+        builder.Property(oi => oi.CourseId)
+               .IsRequired();
+
+        // BaseEntity
+        builder.Property(oi => oi.CreatedOn)
+               .IsRequired();
+
+        builder.Property(oi => oi.UpdatedOn)
+               .IsRequired(false);
+
+        // Relationships
+        builder.HasOne(oi => oi.Order)
+               .WithMany(o => o.OrderItems)
+               .HasForeignKey(oi => oi.OrderId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+        //  Course relationship
+        builder.HasOne<Course>()
+               .WithMany()
+               .HasForeignKey(oi => oi.CourseId)
+               .OnDelete(DeleteBehavior.Restrict);
     }
 }
-

@@ -21,12 +21,12 @@ namespace ClassUP.ApplicationCore.Services.User_Management
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        public UserManagementService(IUnitOfWork unitOfWork , UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
+        public UserManagementService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _roleManager = roleManager;
-          
+
         }
         #region GetAll
         public async Task<IEnumerable<UserDTO>> GetAllAsync()

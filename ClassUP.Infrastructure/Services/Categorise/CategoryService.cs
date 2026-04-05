@@ -18,20 +18,20 @@ namespace ClassUP.ApplicationCore.Services.Categorise
         private readonly IUnitOfWork _unitOfWork;
         public CategoryService(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork;   
+            _unitOfWork = unitOfWork;
         }
 
 
         #region GetAll
         public async Task<PaginatedList<CategoryResponseDTO>> GetAllAsync(FilterOptions op)
         {
-            var categories = await _unitOfWork.Categorises.GetAllAsync(op); 
+            var categories = await _unitOfWork.Categorises.GetAllAsync(op);
 
             if (categories == null || !categories.Items.Any())
                 return new PaginatedList<CategoryResponseDTO>(
                     new List<CategoryResponseDTO>(), 1, 0, op.PageSize);
 
-       
+
             var categoryDtos = categories.Items.Select(c => new CategoryResponseDTO
             {
                 Id = c.Id,
@@ -39,11 +39,11 @@ namespace ClassUP.ApplicationCore.Services.Categorise
                 Description = c.Description,
             }).ToList();
 
-       
+
             return new PaginatedList<CategoryResponseDTO>(
                 categoryDtos,
                 categories.PageNumber,
-                categories.TotalPages * categories.Items.Count, 
+                categories.TotalPages * categories.Items.Count,
                 categoryDtos.Count
             );
         }
@@ -76,7 +76,7 @@ namespace ClassUP.ApplicationCore.Services.Categorise
 
             var cat = new Category
             {
-               
+
                 Name = category.Name,
                 Description = category.Description,
             };
@@ -126,7 +126,7 @@ namespace ClassUP.ApplicationCore.Services.Categorise
             await _unitOfWork.Categorises.DeleteAsync(category);
             await _unitOfWork.SaveChangesAsync();
 
-        } 
+        }
         #endregion
 
     }

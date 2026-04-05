@@ -20,19 +20,19 @@ namespace ClassUP.Infrastructure.Identity.Services
     public class UserTokenService : IUserTokenService
     {
         private readonly UserManager<AppUser> _userManager;
-        
+
         private readonly JwtOptions _jwtOptions;
         public UserTokenService(UserManager<AppUser> userManager, IOptions<JwtOptions> jwtOptions)
         {
             _userManager = userManager;
-           
+
             _jwtOptions = jwtOptions.Value;
         }
 
         #region JWT_Token
         public async Task<(string Token, DateTime Expiration)> GenerateJwtAsync(AppUser user)
         {
-            
+
             var userClaims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -73,14 +73,14 @@ namespace ClassUP.Infrastructure.Identity.Services
         #endregion
 
         #region GetRefreshToken
-        public async Task<TokensDTO> RefreshTokenAsync(string Token )
+        public async Task<TokensDTO> RefreshTokenAsync(string Token)
         {
             var tokens = new TokensDTO();
 
             var user = await _userManager.Users.Include(u => u.RefreshTokens).SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == Token));
 
             if (user == null)
-                    throw new SecurityException("Invalid refresh token");
+                throw new SecurityException("Invalid refresh token");
 
             if (user.IsDisable)
                 throw new DisabledUserException();
@@ -100,7 +100,7 @@ namespace ClassUP.Infrastructure.Identity.Services
             //1 : Revoke an old token 
             //2 : generate a new refresh token 
             //3 : Generate a new JWT TOken 
-      
+
             refreshtoken.RevokedOn = DateTime.UtcNow;
 
             var newrefreshtoken = GenerateRefreshToken(user.Id);

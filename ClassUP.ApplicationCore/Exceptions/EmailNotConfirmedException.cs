@@ -5,13 +5,13 @@ using System.Text;
 
 namespace ClassUP.ApplicationCore.Exeptions
 {
-   
-        public sealed class EmailNotConfirmedException : AppException
+
+    public sealed class EmailNotConfirmedException : AppException
+    {
+        public EmailNotConfirmedException()
+            : base("Email is not confirmed", HttpStatusCode.Forbidden)
         {
-            public EmailNotConfirmedException()
-                : base("Email is not confirmed", HttpStatusCode.Forbidden)
-            {
-            }
         }
-    
+    }
+
 }

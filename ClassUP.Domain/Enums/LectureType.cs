@@ -7,6 +7,6 @@ namespace ClassUP.Domain.Enums
     public enum LectureType
     {
         Video,
-        Article 
+        Article
     }
 }

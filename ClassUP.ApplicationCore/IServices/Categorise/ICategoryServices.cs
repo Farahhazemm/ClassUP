@@ -13,12 +13,12 @@ namespace ClassUP.ApplicationCore.Services.Categorise
     public interface ICategoryServices
     {
         Task<PaginatedList<CategoryResponseDTO>> GetAllAsync(FilterOptions Op);
-        Task<CategoryResponseDTO> GetById(int id); 
+        Task<CategoryResponseDTO> GetById(int id);
 
         Task<CategoryResponseDTO> AddAsync(CategoryDTO category);
 
-        Task UpdateAsync(int id ,UpdateCategoryRequestDTO category);  
+        Task UpdateAsync(int id, UpdateCategoryRequestDTO category);
 
-        Task DeleteAsync(int id); 
+        Task DeleteAsync(int id);
     }
 }

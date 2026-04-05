@@ -8,9 +8,9 @@ namespace ClassUP.Domain.Enums
 {
     public enum OrderStatus
     {
-        Pending,        
-        Completed,      
-        Cancelled,      
-        Refunded        
+        Pending,
+        Completed,
+        Cancelled,
+        Refunded
     }
 }

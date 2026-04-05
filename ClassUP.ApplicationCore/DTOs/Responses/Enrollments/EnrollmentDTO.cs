@@ -12,6 +12,6 @@ namespace ClassUP.ApplicationCore.DTOs.Responses.Enrollment
         public DateTime EnrolledAt { get; set; }
         public float ProgressPercentage { get; set; }
         public DateTime? CompletedAt { get; set; }
-     
+
     }
 }

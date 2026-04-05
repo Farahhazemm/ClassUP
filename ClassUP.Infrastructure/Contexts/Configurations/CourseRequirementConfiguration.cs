@@ -29,7 +29,7 @@ namespace ClassUP.Infrastructure.Data.Configurations
                    .HasForeignKey(cr => cr.CourseId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            
+
         }
     }
 }

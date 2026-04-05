@@ -37,7 +37,7 @@ namespace ClassUP.Infrastructure.Repository
 
         public async Task RemoveVideoContent(VideoContent video)
         {
-             _dbSet.VideoContents.Remove(video);
+            _dbSet.VideoContents.Remove(video);
         }
 
         public async Task<Lecture?> GetLectureWithSectionAndCourseAsync(int lectureId)

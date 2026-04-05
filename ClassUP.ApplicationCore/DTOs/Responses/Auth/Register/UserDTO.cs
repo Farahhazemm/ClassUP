@@ -20,4 +20,3 @@ namespace ClassUP.ApplicationCore.DTOs.Responses.Auth.Register
         } = null!;
     }
 }
-    

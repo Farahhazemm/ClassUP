@@ -25,8 +25,8 @@ namespace ClassUP.ApplicationCore.Services.Auth
         private readonly ILogger<AuthService> _logger;
         private readonly IResetPasswordService _resetPasswordService;
         private readonly SignInManager<AppUser> _signInManager;
-        public AuthService(UserManager<AppUser> userManager, IUserTokenService tokenService , IEmailVerificationService emailVerificationService , ILogger<AuthService> logger,
-        IResetPasswordService resetPasswordService , SignInManager<AppUser> signInManager)
+        public AuthService(UserManager<AppUser> userManager, IUserTokenService tokenService, IEmailVerificationService emailVerificationService, ILogger<AuthService> logger,
+        IResetPasswordService resetPasswordService, SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
             _tokenService = tokenService;

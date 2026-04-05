@@ -33,7 +33,7 @@ public class UnitOfWork : IUnitOfWork
     public IEnrollmentRepository Enrollments { get; }
     public IProgressRepository Progresses { get; }
     public IUserRepository Users { get; }
-    public IPaymentRepository Payments { get; } 
+    public IPaymentRepository Payments { get; }
     public IOrderRepository Orders { get; }
     public async Task<int> SaveChangesAsync()
     {

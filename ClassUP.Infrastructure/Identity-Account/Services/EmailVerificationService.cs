@@ -55,18 +55,18 @@ namespace ClassUP.Infrastructure.Identity.Services
 
             var confirmationLink = $"{origin}/auth/emailConfirmation?userId={user.Id}&code={code}";
 
-          
+
             var templatePath = Path.Combine(
-                _env.WebRootPath,              
-                "EmailTemplates",              
+                _env.WebRootPath,
+                "EmailTemplates",
                 "EmailConfirmation.html"
             );
 
-           
+
 
             if (!File.Exists(templatePath))
             {
-             
+
                 throw new FileNotFoundException("Email template not found at " + templatePath);
             }
 

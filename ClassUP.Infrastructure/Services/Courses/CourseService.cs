@@ -21,10 +21,10 @@ namespace ClassUP.ApplicationCore.Services.Courses
         private readonly IUnitOfWork _unitOfWork;
         private readonly IImageValidator _imageValidator;
         private readonly ICloudinaryService _cloudinaryService;
-        public CourseService(IUnitOfWork unitOfWork  , IImageValidator imageValidator , ICloudinaryService cloudinaryService)
+        public CourseService(IUnitOfWork unitOfWork, IImageValidator imageValidator, ICloudinaryService cloudinaryService)
         {
             _unitOfWork = unitOfWork;
-           _cloudinaryService = cloudinaryService;
+            _cloudinaryService = cloudinaryService;
             _imageValidator = imageValidator;
         }
 
@@ -54,7 +54,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
                 IsActive = request.IsActive,
                 UserId = userId,
                 ThumbnailUrl = thumbnailUrl,
-                ThumbnailPublicId = thumbnailPublicId, 
+                ThumbnailPublicId = thumbnailPublicId,
                 CategoryId = request.CategoryId
             };
 
@@ -66,11 +66,11 @@ namespace ClassUP.ApplicationCore.Services.Courses
                 Id = course.Id,
                 Title = course.Title,
                 Level = course.Level.ToString(),
-                Description= course.Description,
+                Description = course.Description,
                 Price = course.Price,
                 Language = course.Language,
                 ThumbnailUrl = course.ThumbnailUrl,
-                IsActive= course.IsActive,
+                IsActive = course.IsActive,
                 CategoryId = course.CategoryId
 
             };
@@ -85,7 +85,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
         // search how implement Soft Delete 
         public async Task DeleteCourse(int courseId, string userId, bool isAdmin)
         {
-           
+
             var course = await _unitOfWork.Courses.GetByIdAsync(courseId);
             if (course == null)
                 throw new NotFoundException("Course");
@@ -111,19 +111,19 @@ namespace ClassUP.ApplicationCore.Services.Courses
         #region GetAll
         public async Task<PaginatedList<AllCoursesDTO>> GetAllCourses(FilterOptions filter)
         {
-            var courses = await _unitOfWork.Courses.GetAllAsync(filter); 
+            var courses = await _unitOfWork.Courses.GetAllAsync(filter);
 
             if (courses == null || !courses.Items.Any())
                 return new PaginatedList<AllCoursesDTO>(new List<AllCoursesDTO>(), 1, 0, filter.PageSize);
 
-         
+
             var courseDtos = courses.Items.Select(MapToAllCoursesDto).ToList();
 
-         
+
             return new PaginatedList<AllCoursesDTO>(
                 courseDtos,
                 courses.PageNumber,
-                courses.TotalPages * courses.Items.Count, 
+                courses.TotalPages * courses.Items.Count,
                 courseDtos.Count
             );
         }
@@ -140,21 +140,21 @@ namespace ClassUP.ApplicationCore.Services.Courses
                 throw new NotFoundException("category");
 
             return courses.Select(MapToAllCoursesDto);
-        } 
+        }
         #endregion
 
         #region GetById
         public async Task<CourseDetailsDTO> GetByIdAsync(int id)
-         {
-             var Course= await _unitOfWork.Courses.GetCourseDetailsAsync(id);
+        {
+            var Course = await _unitOfWork.Courses.GetCourseDetailsAsync(id);
             if (Course == null)
                 throw new NotFoundException("Course");
 
 
-            return MapToCourseDetailsDto(Course); 
-         }
+            return MapToCourseDetailsDto(Course);
+        }
 
-       
+
 
         #endregion
 
@@ -162,7 +162,7 @@ namespace ClassUP.ApplicationCore.Services.Courses
 
         #region GetCorsesByInstractor
         public async Task<IEnumerable<AllCoursesDTO>> GetInstructorCoursesAsync(string instructorId, FilterOptions filter)
-         {
+        {
             var courses = await _unitOfWork.Courses.GetInstructorCoursesAsync(instructorId, filter);
 
             if (courses == null || !courses.Any())

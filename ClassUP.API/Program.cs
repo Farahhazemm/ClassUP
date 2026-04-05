@@ -45,10 +45,10 @@ builder.Services.AddControllers()
         opt.JsonSerializerOptions.Converters.Add(
             new System.Text.Json.Serialization.JsonStringEnumConverter());
         opt.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-        opt.JsonSerializerOptions.PropertyNameCaseInsensitive = true; 
+        opt.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     });
 
-builder.Services.ConfigureIdentity(); 
+builder.Services.ConfigureIdentity();
 
 
 // JWT Authentication

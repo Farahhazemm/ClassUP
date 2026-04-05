@@ -10,9 +10,9 @@ namespace ClassUP.Domain.Models
     {
         public int Id { get; set; }
         public int EnrollmentId { get; set; }
-        public Enrollment enrollment { get; set; }
+        public Enrollment enrollment { get; set; } = null!;
         public int LectureId { get; set; }
-        public Lecture lecture { get; set; }
+        public Lecture lecture { get; set; } = null!;
         public bool IsCompleted { get; set; }
         public DateTime? CompletedAt { get; set; }
     }

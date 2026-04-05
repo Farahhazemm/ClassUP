@@ -10,7 +10,7 @@ namespace ClassUP.ApplicationCore.DTOs.Requests.Section
         [Required, StringLength(150)]
         public string Title { get; set; } = null!;
 
-        [Range(1, int.MaxValue)] 
+        [Range(1, int.MaxValue)]
         public int OrderIndex { get; set; }
 
     }

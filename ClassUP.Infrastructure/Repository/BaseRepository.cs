@@ -106,12 +106,12 @@ namespace ClassUP.Infrastructure.Repositories
 
         #region Private Helpers
 
-       
+
         private IQueryable<T> ApplyFiltering(IQueryable<T> query, FilterOptions filter)
         {
             if (!string.IsNullOrWhiteSpace(filter.FilterBy) && !string.IsNullOrWhiteSpace(filter.FilterValue))
             {
-            
+
                 var filterBy = filter.FilterBy.Trim();
                 var filterValue = $"%{filter.FilterValue.Trim()}%";
 
@@ -128,7 +128,7 @@ namespace ClassUP.Infrastructure.Repositories
             return query;
         }
 
-     
+
         private IQueryable<T> ApplySorting(IQueryable<T> query, FilterOptions filter)
         {
             if (!string.IsNullOrWhiteSpace(filter.SortBy))
@@ -151,7 +151,7 @@ namespace ClassUP.Infrastructure.Repositories
             return idProp != null ? query.OrderBy(e => EF.Property<object>(e, "Id")) : query;
         }
 
-       
+
         #endregion
     }
 }

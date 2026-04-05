@@ -8,7 +8,7 @@ namespace ClassUP.Domain.Models
     [Owned]
     public class RefreshToken
     {
-        
+
         public string Token { get; set; } = null!;
         public DateTime ExpiresOn { get; set; }
         public bool IsExpired => DateTime.UtcNow >= ExpiresOn;
@@ -16,7 +16,7 @@ namespace ClassUP.Domain.Models
         public DateTime? RevokedOn { get; set; }
         public bool IsRevoked => RevokedOn != null;
         public bool IsActive => !IsRevoked && !IsExpired;
-        public string UserId { get; set; }
-        public AppUser User { get; set; }
+        public string UserId { get; set; } = null!;
+        public AppUser User { get; set; } = null!;
     }
 }

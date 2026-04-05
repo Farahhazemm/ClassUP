@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace ClassUP.Domain.Models
 {
-    public class OrderItem
+    public class OrderItem : BaseEntity
     {
-        public int Id { get; set; }
         public int OrderId { get; set; }
         public int CourseId { get; set; }
-        public string CourseTitle { get; set; }
+        public string CourseTitle { get; set; } = string.Empty;
         public decimal Price { get; set; }
-        public Order Order { get; set; }
+        public Order Order { get; set; } = null!;
 
     }
 }

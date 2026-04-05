@@ -21,18 +21,18 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
         }
         public async Task<PaginatedList<EnrollmentDTO>> GetAllAsync(FilterOptions filter)
         {
-          
+
             filter.PageNumber = filter.PageNumber <= 0 ? 1 : filter.PageNumber;
             filter.PageSize = filter.PageSize <= 0 ? 10 : filter.PageSize;
 
-           
+
             var enrollments = await _unitOfWork.Enrollments.GetAllAsync(filter);
 
-           
+
             if (enrollments == null || !enrollments.Items.Any())
                 return new PaginatedList<EnrollmentDTO>(new List<EnrollmentDTO>(), 0, filter.PageNumber, filter.PageSize);
 
-           
+
             var dtoList = enrollments.Items.Select(e => new EnrollmentDTO
             {
                 EnrollmentId = e.Id,
@@ -43,10 +43,10 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
                 CompletedAt = e.CompletedAt
             }).ToList();
 
-           
+
             return new PaginatedList<EnrollmentDTO>(
                 dtoList,
-                enrollments.TotalCount, 
+                enrollments.TotalCount,
                 enrollments.PageNumber,
                 enrollments.PageSize
             );
@@ -54,12 +54,12 @@ namespace ClassUP.ApplicationCore.Services.Enrollment
         public async Task<EnrollmentDTO> GetByIdAsync(int id)
         {
             if (id <= 0)
-               throw new BadRequestException ("This Id Is Not Valid");
+                throw new BadRequestException("This Id Is Not Valid");
 
             var enrollment = await _unitOfWork.Enrollments.GetByIdAsync(id);
 
             if (enrollment == null)
-                throw new NotFoundException("Enrollment");  
+                throw new NotFoundException("Enrollment");
 
             return new EnrollmentDTO
             {

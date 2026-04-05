@@ -14,7 +14,7 @@ namespace ClassUP.API.Controllers
     public class Account_ManagementController : ControllerBase
     {
         private readonly IAccountManagementService _accountManagementService;
-        public Account_ManagementController( IAccountManagementService accountManagementService)
+        public Account_ManagementController(IAccountManagementService accountManagementService)
         {
             _accountManagementService = accountManagementService;
         }
@@ -27,18 +27,18 @@ namespace ClassUP.API.Controllers
         }
 
         [HttpPut("Info")]
-        public async Task<IActionResult>UpdateProfile([FromBody] UpdateProfileDTO dto)
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDTO dto)
         {
-            await _accountManagementService.UpdateProfileAsync(User.GetUserId()!,dto);
+            await _accountManagementService.UpdateProfileAsync(User.GetUserId()!, dto);
             return NoContent();
         }
         [HttpPut("Profile-Image")]
-        public async Task<IActionResult> UpdateProfileImage( [FromForm] UpdateProfileImageDTO dto
+        public async Task<IActionResult> UpdateProfileImage([FromForm] UpdateProfileImageDTO dto
 )
         {
-             var userId = User.GetUserId()!;
-           
-            await _accountManagementService.UpdateProfileImageAsync( userId,dto.Image);
+            var userId = User.GetUserId()!;
+
+            await _accountManagementService.UpdateProfileImageAsync(userId, dto.Image);
 
             return Created();
         }

@@ -14,7 +14,7 @@ namespace ClassUP.ApplicationCore.DTOs.Responses.Lectures
         public int Duration { get; set; }
         public int OrderIndex { get; set; }
         public int SectionId { get; set; }
-        public bool IsFree { get; set; } 
+        public bool IsFree { get; set; }
         #endregion
 
         #region OP :Video or Article details
@@ -24,8 +24,8 @@ namespace ClassUP.ApplicationCore.DTOs.Responses.Lectures
         #endregion
 
         #region Progress info
-       
-        public List<LectureProgressDTO> LectureProgresses { get; set; } = new List<LectureProgressDTO>(); 
+
+        public List<LectureProgressDTO> LectureProgresses { get; set; } = new List<LectureProgressDTO>();
         #endregion
 
     }

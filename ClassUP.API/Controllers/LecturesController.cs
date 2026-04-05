@@ -57,7 +57,7 @@ namespace ClassUP.API.Controllers
         {
             var userId = User.GetUserId();
             var isAdmin = User.IsInRole(AppRoles.Admin);
-            var lecture = await _lectureService.AddAsync(request, userId,isAdmin);
+            var lecture = await _lectureService.AddAsync(request, userId, isAdmin);
             return CreatedAtAction("GetById", new { lectureId = lecture.Id }, lecture);
         }
         #endregion

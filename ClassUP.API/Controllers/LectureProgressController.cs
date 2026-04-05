@@ -8,7 +8,7 @@ namespace ClassUP.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    
+
     public class LectureProgressController : ControllerBase
     {
         private readonly IProgressService _progressService;
@@ -20,7 +20,7 @@ namespace ClassUP.API.Controllers
         [HttpPost("complete-lecture/{lectureId}")]
         public async Task<IActionResult> MarkASCompleted(int lectureId)
         {
-            var userId = User.GetUserId(); 
+            var userId = User.GetUserId();
             await _progressService.MarkLessonAsCompletedAsync(lectureId, userId);
             return Ok(new { message = "Lecture marked as completed" });
         }
@@ -29,7 +29,7 @@ namespace ClassUP.API.Controllers
         [HttpDelete("uncomplete-lecture/{lectureId}")]
         public async Task<IActionResult> UnCompleteLesson(int lectureId)
         {
-            var userId = User.GetUserId(); 
+            var userId = User.GetUserId();
             await _progressService.UnCompleteLessonAsync(lectureId, userId);
             return Ok("Lecture uncompleted successfully.");
         }
@@ -38,7 +38,7 @@ namespace ClassUP.API.Controllers
         [HttpGet("is-lecture-completed/{lectureId}")]
         public async Task<IActionResult> IsLessonCompleted(int lectureId)
         {
-            var userId = User.GetUserId(); 
+            var userId = User.GetUserId();
             var isCompleted = await _progressService.IsLessonCompletedAsync(lectureId, userId);
             return Ok(new { isCompleted });
         }
@@ -47,7 +47,7 @@ namespace ClassUP.API.Controllers
         [HttpGet("completed-lecture/{courseId}")]
         public async Task<IActionResult> GetCompletedLessons(int courseId)
         {
-            var userId = User.GetUserId(); 
+            var userId = User.GetUserId();
             var completedLessonIds = await _progressService.GetCompletedLessonsAsync(courseId, userId);
             return Ok(completedLessonIds);
         }
