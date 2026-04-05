@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Refit;
+using Serilog;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
@@ -115,6 +116,11 @@ builder.Services.AddRefitClient<IPaymobClient>()
     .ConfigureHttpClient(c =>
         c.BaseAddress = new Uri("https://accept.paymob.com"));
 
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration)
+);
+
+
 
 var app = builder.Build();
 
@@ -128,7 +134,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
