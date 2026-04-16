@@ -14,6 +14,9 @@ using ClassUP.Infrastructure.Identity_Account.Email.Settings;
 using ClassUP.Infrastructure.Payments;
 using ClassUP.Infrastructure.Services.Videos;
 using CloudinaryDotNet;
+using Hangfire;
+using Hangfire.Dashboard;
+using HangfireBasicAuthenticationFilter;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -133,7 +136,26 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
 }
+
+// Hangfire Dashboard with Basic Authentication
+
+app.UseHangfireDashboard("/jobs", new DashboardOptions
+{
+    Authorization =
+       [
+        new HangfireCustomBasicAuthenticationFilter
+        {
+        User = app.Configuration.GetValue<string>("HangfireSettings:username"),
+        Pass = app.Configuration.GetValue<string>("HangfireSettings:password")
+
+    }
+        ],
+    DashboardTitle = "ClassUP Background Jobs",
+    IsReadOnlyFunc = (DashboardContext context) => true // Make the dashboard read-only
+
+});
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseAuthentication();

@@ -3,6 +3,7 @@ using ClassUP.ApplicationCore.Services.Auth;
 using ClassUP.ApplicationCore.Services.IAccount;
 using ClassUP.Domain.Models;
 using ClassUP.Infrastructure.Identity_Account.Email.Helpers;
+using Hangfire;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -79,11 +80,13 @@ namespace ClassUP.Infrastructure.Identity.Services
                 }
             );
 
-            await _emailService.SendAsync(
+            BackgroundJob.Enqueue(() => _emailService.SendAsync(
                 user.Email!,
                 "✅ ClassUP: Email Confirmation",
                 emailBody
-            );
+            ));
+
+            await Task.CompletedTask;
 
             _logger.LogInformation("Confirmation email sent to {Email}", user.Email);
         }

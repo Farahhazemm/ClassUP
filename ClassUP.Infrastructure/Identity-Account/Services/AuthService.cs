@@ -10,6 +10,7 @@ using ClassUP.ApplicationCore.Services.IAccount;
 using ClassUP.ApplicationCore.Services.IIdentity;
 using ClassUP.Domain.Constants;
 using ClassUP.Domain.Models;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
@@ -66,6 +67,7 @@ namespace ClassUP.ApplicationCore.Services.Auth
 
             //  Send verification email
 
+            // send email in background job 
             await _emailVerificationService.SendConfirmationEmailAsync(user, verificationCode);
 
             //  Get roles => for return in DTO

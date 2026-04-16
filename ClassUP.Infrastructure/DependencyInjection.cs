@@ -19,6 +19,7 @@ using ClassUP.Infrastructure.Identity_Account.Services;
 using ClassUP.Infrastructure.Payments;
 using ClassUP.Infrastructure.Repository;
 using ClassUP.Infrastructure.Services.Images;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +39,7 @@ namespace ClassUP.Infrastructure
                     sqlOptions => sqlOptions.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
                 )
             );
+
 
             #region UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -85,6 +87,25 @@ namespace ClassUP.Infrastructure
 
             services.AddScoped<IImageValidator, ImageValidator>();
             services.AddScoped<ICloudinaryService, CloudinaryService>();
+            services.AddBackgroundConfig(configuration);
+
+            return services;
+        }
+
+        public static IServiceCollection AddBackgroundConfig(
+     this IServiceCollection services,
+     IConfiguration configuration)
+        {
+            services.AddHangfire(config => config
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(
+                    configuration.GetConnectionString("Hangfire")
+                )
+            );
+
+            services.AddHangfireServer();
 
             return services;
         }
