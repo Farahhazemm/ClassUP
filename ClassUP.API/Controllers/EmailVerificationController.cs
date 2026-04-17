@@ -4,11 +4,13 @@ using ClassUP.ApplicationCore.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ClassUP.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableRateLimiting("iplimit")]
     public class EmailVerificationController : ControllerBase
     {
         private readonly IAuthService _authService;

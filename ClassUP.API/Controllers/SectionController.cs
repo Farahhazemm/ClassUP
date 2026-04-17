@@ -4,6 +4,7 @@ using ClassUP.ApplicationCore.Services.Sections;
 using ClassUP.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ClassUP.API.Controllers
 {
@@ -21,6 +22,7 @@ namespace ClassUP.API.Controllers
         #region Create
         [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
         [HttpPost("courses/{courseId}/sections")]
+        [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> Create(int courseId, [FromBody] CreateSectionRequest request)
         {
             var userId = User.GetUserId();
@@ -35,6 +37,7 @@ namespace ClassUP.API.Controllers
         #region Update
         [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
         [HttpPut("sections/{id}")]
+        [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateSectionRequest request)
         {
             var userId = User.GetUserId();
@@ -49,6 +52,7 @@ namespace ClassUP.API.Controllers
         #region Delete
         [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
         [HttpDelete("sections/{id}")]
+        [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> Delete(int id)
         {
             var userId = User.GetUserId();

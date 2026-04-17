@@ -6,6 +6,7 @@ using ClassUP.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ClassUP.API.Controllers
 {
@@ -53,6 +54,7 @@ namespace ClassUP.API.Controllers
         #region Create
         [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
         [HttpPost("section/lectures")]
+        [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> Create([FromBody] CreateLectureRequest request)
         {
             var userId = User.GetUserId();
@@ -65,6 +67,7 @@ namespace ClassUP.API.Controllers
         #region Update
         [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
         [HttpPatch("lectures/{lectureId}")]
+        [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> UpdateLecture(int lectureId, [FromBody] UpdateLectureRequest request)
         {
             var userId = User.GetUserId();
@@ -78,6 +81,7 @@ namespace ClassUP.API.Controllers
         #region Delete
         [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
         [HttpDelete("{lectureId}")]
+        [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> DeleteLecture(int lectureId)
         {
             var userId = User.GetUserId();
@@ -90,6 +94,7 @@ namespace ClassUP.API.Controllers
 
         #region UploadVideo
         [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
+        [EnableRateLimiting("userlimit")]
         [HttpPost("{lectureId}/video")]
         public async Task<IActionResult> UploadVideo(int lectureId, IFormFile file)
         {
@@ -104,6 +109,7 @@ namespace ClassUP.API.Controllers
         #region DeleteVideo
         [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
         [HttpDelete("lecture/video/{lectureId}")]
+        [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> DeleteVideo(int lectureId)
         {
             var userId = User.GetUserId();

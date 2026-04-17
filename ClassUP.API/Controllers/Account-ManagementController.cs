@@ -5,12 +5,14 @@ using ClassUP.ApplicationCore.Services.IImage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ClassUP.API.Controllers
 {
     [Route("Me")]
     [ApiController]
     [Authorize]
+    [EnableRateLimiting("userlimit")]
     public class Account_ManagementController : ControllerBase
     {
         private readonly IAccountManagementService _accountManagementService;

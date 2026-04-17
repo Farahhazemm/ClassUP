@@ -3,6 +3,7 @@ using ClassUP.ApplicationCore.DTOs.Requests.Payments;
 using ClassUP.ApplicationCore.IServices.Payments;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Text.Json;
 
 namespace ClassUP.API.Controllers
@@ -21,6 +22,8 @@ namespace ClassUP.API.Controllers
         }
 
         [HttpPost("create/{courseId}")]
+        [EnableRateLimiting("userlimit")]
+
         public async Task<IActionResult> Create(int courseId)
         {
             var userId = User.GetUserId();
@@ -30,6 +33,7 @@ namespace ClassUP.API.Controllers
 
 
         [HttpGet("webhook")]
+        [EnableRateLimiting("iplimit")]
         [AllowAnonymous]
         public IActionResult WebhookGet()
         {

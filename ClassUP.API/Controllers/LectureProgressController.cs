@@ -3,6 +3,7 @@ using ClassUP.ApplicationCore.Services.LectursProgress;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ClassUP.API.Controllers
 {
@@ -27,6 +28,8 @@ namespace ClassUP.API.Controllers
 
         [Authorize]
         [HttpDelete("uncomplete-lecture/{lectureId}")]
+        [EnableRateLimiting("userlimit")]
+
         public async Task<IActionResult> UnCompleteLesson(int lectureId)
         {
             var userId = User.GetUserId();
@@ -45,6 +48,8 @@ namespace ClassUP.API.Controllers
 
         [Authorize]
         [HttpGet("completed-lecture/{courseId}")]
+        [EnableRateLimiting("userlimit")]
+
         public async Task<IActionResult> GetCompletedLessons(int courseId)
         {
             var userId = User.GetUserId();
@@ -54,6 +59,7 @@ namespace ClassUP.API.Controllers
 
         [Authorize]
         [HttpPost("recalculate-progress/{enrollmentId}")]
+        [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> RecalculateProgress(int enrollmentId)
         {
             var progress = await _progressService.RecalculateProgressAsync(enrollmentId);

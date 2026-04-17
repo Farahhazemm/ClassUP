@@ -5,6 +5,7 @@ using ClassUP.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ClassUP.API.Controllers
 {
@@ -87,6 +88,7 @@ namespace ClassUP.API.Controllers
         [HttpDelete("unenroll/{courseId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> UnEnroll(int courseId)
         {
             var userId = User.GetUserId(); // from JWT claims

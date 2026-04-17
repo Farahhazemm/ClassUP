@@ -19,6 +19,7 @@ using Hangfire.Dashboard;
 using HangfireBasicAuthenticationFilter;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Refit;
@@ -26,6 +27,7 @@ using Serilog;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -122,9 +124,60 @@ builder.Services.AddRefitClient<IPaymobClient>()
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
 );
+// Rate Limiting
+builder.Services.AddRateLimiter(rateLimiterOptions =>
+{
+    rateLimiterOptions.RejectionStatusCode = 429; // Too Many Requests
+
+    rateLimiterOptions.AddPolicy("iplimit", HttpContext =>
+    RateLimitPartition.GetFixedWindowLimiter(
+        partitionKey: HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        factory: _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 10,
+            Window = TimeSpan.FromMinutes(1)
+        })
+    );
+
+    rateLimiterOptions.AddPolicy("userlimit", HttpContext =>
+    RateLimitPartition.GetFixedWindowLimiter(
+        partitionKey: HttpContext.User.GetUserId(),
+        factory: _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 10,
+            Window = TimeSpan.FromMinutes(1)
+        })
+    );
 
 
+    //rateLimiterOptions.AddConcurrencyLimiter("concurrency", options =>
+    //{
+    //    options.PermitLimit = 10; // Maximum number of concurrent requests
+    //    options.QueueLimit = 5; // No queuing, reject immediately when limit is reached 
+    //    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst; // Process queued requests in the order they were received
+    //});
 
+    //rateLimiterOptions.AddTokenBucketLimiter("tokenBucket", options =>
+    //{
+    //    options.TokenLimit = 100; // Maximum number of tokens in the bucket
+    //    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst; // Process queued requests in the order they were received
+    //    options.QueueLimit = 0; // No queuing, reject immediately when limit is reached 
+    //    options.ReplenishmentPeriod = TimeSpan.FromMinutes(1); // Replenish tokens every minute
+    //    options.TokensPerPeriod = 100; // Number of tokens to add each replenishment period
+    //    options.AutoReplenishment = true; // Automatically replenish tokens 
+    //});
+
+
+    //rateLimiterOptions.AddSlidingWindowLimiter("slidingWindow", options =>
+    //{
+    //    options.Window = TimeSpan.FromSeconds(30); // Time window for rate limiting
+    //    options.SegmentsPerWindow = 6; // Number of segments within the window
+    //    options.PermitLimit = 20; // Maximum number of requests allowed within the time window
+    //    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst; // Process queued requests in the order they were received
+    //    options.QueueLimit = 0; // No queuing, reject immediately when limit is reached
+    //});
+
+});
 var app = builder.Build();
 
 
@@ -138,6 +191,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 
 }
+
+app.UseRateLimiter();
 
 // Hangfire Dashboard with Basic Authentication
 

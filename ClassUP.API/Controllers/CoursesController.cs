@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ClassUP.API.Controllers
 {
@@ -76,6 +77,7 @@ namespace ClassUP.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(CreateCourseDTO), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> CreateCourse([FromForm] CreateCourseRequest request)
         {
             var userId = User.GetUserId();
@@ -98,6 +100,7 @@ namespace ClassUP.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> UpdateCourse([FromForm] UpdateCourseRequest request, [FromRoute] int courseId)
         {
             var userId = User.GetUserId();
@@ -117,6 +120,7 @@ namespace ClassUP.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> DeleteCourse([FromRoute] int courseId)
         {
             var userId = User.GetUserId();

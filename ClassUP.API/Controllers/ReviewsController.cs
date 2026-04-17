@@ -4,6 +4,7 @@ using ClassUP.ApplicationCore.Services.Reviws;
 using ClassUP.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ClassUP.API.Controllers
 {
@@ -21,6 +22,7 @@ namespace ClassUP.API.Controllers
         #region Add Review
         [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
         [HttpPost("add-course-review")]
+        [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> AddReview([FromBody] CourseReviewDTO reviewDTO)
         {
             var userId = User.GetUserId(); // From Claims
@@ -41,6 +43,7 @@ namespace ClassUP.API.Controllers
         #region Update Review
         [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
         [HttpPatch("update-course-review")]
+        [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> UpdateReview([FromBody] UpdateReviewDTO reviewDTO)
         {
             var userId = User.GetUserId(); // From Claims
@@ -52,6 +55,7 @@ namespace ClassUP.API.Controllers
         #region Delete Review
         [Authorize(Roles = AppRoles.User + "," + AppRoles.Admin)]
         [HttpDelete("delete-course-review/{reviewId}")]
+        [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> DeleteReview(int reviewId)
         {
             var userId = User.GetUserId(); // From Claims
