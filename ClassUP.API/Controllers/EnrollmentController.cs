@@ -1,5 +1,7 @@
 ﻿using ClassUP.API.Extensions;
 using ClassUP.ApplicationCore.Common.Filters;
+using ClassUP.ApplicationCore.DTOs.Responses.Enrollment;
+using ClassUP.ApplicationCore.Helpers.Filters;
 using ClassUP.ApplicationCore.Services.Enrollment;
 using ClassUP.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -9,30 +11,44 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace ClassUP.API.Controllers
 {
+    /// <summary>
+    /// Handles course enrollment operations (admin & student actions).
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class EnrollmentController : ControllerBase
     {
         private readonly IEnrollmentService _enrollmentService;
+
         public EnrollmentController(IEnrollmentService enrollmentService)
         {
             _enrollmentService = enrollmentService;
         }
-        #region Get All Enrollments (Admin)
+
+        #region Admin - Get All Enrollments
+
+        /// <summary>
+        /// Retrieves all enrollments (Admin only).
+        /// </summary>
         [Authorize(Roles = AppRoles.Admin)]
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedList<EnrollmentDTO>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll(FilterOptions filter)
         {
             var enrollments = await _enrollmentService.GetAllAsync(filter);
             return Ok(enrollments);
         }
+
         #endregion
 
-        #region Get Current Student Enrollments
+        #region Student - My Enrollments
+
+        /// <summary>
+        /// Retrieves current logged-in student's enrollments.
+        /// </summary>
         [HttpGet("get-student-enrollments")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedList<EnrollmentDTO>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMyEnrollments([FromQuery] FilterOptions filter)
         {
             var userId = User.GetUserId();
@@ -42,39 +58,38 @@ namespace ClassUP.API.Controllers
 
             return Ok(enrollments);
         }
-        #endregion
 
-        #region  Enroll in a Course
-
-        //[HttpPost("enroll/{courseId}")]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //public async Task<IActionResult> EnrollStudent(int courseId)
-        //{
-        //    var userId = User.GetUserId();
-        //    var enroll = await _enrollmentService.CreateAsync(courseId,userId);
-        //    return CreatedAtAction("GetById", new { id = enroll.EnrollmentId }, enroll);
-        //} 
         #endregion
 
         #region Get Enrollment By Id
+
+        /// <summary>
+        /// Retrieves enrollment by ID.
+        /// </summary>
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(EnrollmentDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int id)
         {
             var enrollment = await _enrollmentService.GetByIdAsync(id);
             return Ok(enrollment);
         }
+
         #endregion
 
-        #region Check if Current User is Enrolled
+        #region Check Enrollment
+
+        /// <summary>
+        /// Checks if current user is enrolled in a course.
+        /// </summary>
         [HttpGet("check/{courseId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> CheckEnrollment(int courseId)
         {
-            var userId = User.GetUserId(); // from JWT claims
+            var userId = User.GetUserId();
+
             var isEnrolled = await _enrollmentService.IsEnrolledAsync(courseId, userId);
+
             return Ok(new
             {
                 CourseId = courseId,
@@ -82,19 +97,27 @@ namespace ClassUP.API.Controllers
                 IsEnrolled = isEnrolled
             });
         }
+
         #endregion
 
         #region Unenroll
+
+        /// <summary>
+        /// Unenrolls current user from a course.
+        /// </summary>
         [HttpDelete("unenroll/{courseId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [EnableRateLimiting("userlimit")]
         public async Task<IActionResult> UnEnroll(int courseId)
         {
-            var userId = User.GetUserId(); // from JWT claims
+            var userId = User.GetUserId();
+
             await _enrollmentService.UnEnrollAsync(courseId, userId);
+
             return NoContent();
         }
+
         #endregion
     }
 }

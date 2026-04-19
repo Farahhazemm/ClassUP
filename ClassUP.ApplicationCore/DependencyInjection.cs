@@ -12,8 +12,8 @@ namespace ClassUP.ApplicationCore
 {
     public static class DependencyInjection
     {
-     public static IServiceCollection AddApplicationConfig(this IServiceCollection services,
-     IConfiguration configuration)
+        public static IServiceCollection AddApplicationConfig(this IServiceCollection services,
+        IConfiguration configuration)
         {
 
             #region Services

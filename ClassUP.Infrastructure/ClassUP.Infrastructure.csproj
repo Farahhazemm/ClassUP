@@ -29,15 +29,4 @@
 		<ProjectReference Include="..\ClassUP.ApplicationCore\ClassUP.ApplicationCore.csproj" />
 	</ItemGroup>
 
-
-	<ItemGroup>
-	  <Folder Include="Services\Categorise\" />
-	  <Folder Include="Services\Courses\" />
-	  <Folder Include="Services\Enrollment\" />
-	  <Folder Include="Services\Lectures\" />
-	  <Folder Include="Services\LectursProgress\" />
-	  <Folder Include="Services\Reviws\" />
-	  <Folder Include="Services\Sections\" />
-	</ItemGroup>
-
 </Project>

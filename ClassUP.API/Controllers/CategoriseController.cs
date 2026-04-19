@@ -9,52 +9,80 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClassUP.API.Controllers
 {
+    /// <summary>
+    /// Handles category management operations (CRUD + listing).
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriseController : ControllerBase
     {
         private readonly ICategoryServices _categoryService;
+
         public CategoriseController(ICategoryServices categoryServices)
         {
             _categoryService = categoryServices;
         }
 
         #region GetAll
+
+        /// <summary>
+        /// Retrieves all categories with optional filtering and pagination.
+        /// </summary>
         [AllowAnonymous]
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllCategories([FromQuery] FilterOptions filter)
         {
             var categories = await _categoryService.GetAllAsync(filter);
             return Ok(categories);
         }
+
         #endregion
 
         #region GetById
+
+        /// <summary>
+        /// Retrieves a category by its ID.
+        /// </summary>
         [AllowAnonymous]
         [HttpGet("{categoryId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CategoryResponseDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int categoryId)
         {
             var category = await _categoryService.GetById(categoryId);
             return Ok(category);
         }
+
         #endregion
 
-        #region AddCategory
+        #region Add
+
+        /// <summary>
+        /// Creates a new category (Admin only).
+        /// </summary>
         [Authorize(Roles = AppRoles.Admin)]
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CategoryResponseDTO), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddCategory([FromBody] CategoryDTO category)
         {
             var result = await _categoryService.AddAsync(category);
-            return CreatedAtAction("GetById", new { categoryId = result.Id }, result);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { categoryId = result.Id },
+                result
+            );
         }
+
         #endregion
 
-        #region UpdateCategory
+        #region Update
+
+        /// <summary>
+        /// Updates an existing category (Admin only).
+        /// </summary>
         [Authorize(Roles = AppRoles.Admin)]
         [HttpPatch("{categoryId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -65,9 +93,14 @@ namespace ClassUP.API.Controllers
             await _categoryService.UpdateAsync(categoryId, category);
             return NoContent();
         }
+
         #endregion
 
-        #region DeleteCategory
+        #region Delete
+
+        /// <summary>
+        /// Deletes a category by ID (Admin only).
+        /// </summary>
         [Authorize(Roles = AppRoles.Admin)]
         [HttpDelete("{categoryId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -77,6 +110,7 @@ namespace ClassUP.API.Controllers
             await _categoryService.DeleteAsync(categoryId);
             return NoContent();
         }
+
         #endregion
     }
 }

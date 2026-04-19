@@ -7,8 +7,10 @@ using ClassUP.Infrastructure.Payments;
 using ClassUP.Infrastructure.Services.Videos;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using Refit;
 using Serilog;
+using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 using System.Text.Json;
 using System.Threading.RateLimiting;
@@ -22,7 +24,7 @@ namespace ClassUP.API
             IConfiguration configuration,
             IHostBuilder host)
         {
-            // CORS
+            // CORS (DEV ONLY)
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll",
@@ -37,6 +39,7 @@ namespace ClassUP.API
                 {
                     opt.JsonSerializerOptions.Converters.Add(
                         new System.Text.Json.Serialization.JsonStringEnumConverter());
+
                     opt.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
                     opt.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                 });
@@ -45,25 +48,18 @@ namespace ClassUP.API
             services.ConfigureIdentity();
 
             // JWT
-            services.Configure<JwtOptions>(
-                configuration.GetSection("JWT"));
+            services.Configure<JwtOptions>(configuration.GetSection("JWT"));
 
-            var jwtOptions = configuration
-                .GetSection("JWT")
-                .Get<JwtOptions>();
+            var jwtOptions = configuration.GetSection("JWT").Get<JwtOptions>();
 
             var keyBytes = Encoding.UTF8.GetBytes(jwtOptions.SigningKey);
             var signingKey = new SymmetricSecurityKey(keyBytes);
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
                 options.SaveToken = true;
-                options.RequireHttpsMetadata = false;
+                options.RequireHttpsMetadata = true; // ⚠️ production recommended
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -83,56 +79,91 @@ namespace ClassUP.API
 
             // Swagger
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "ClassUP API",
+                    Version = "v1",
+                    Description = "E-learning API for courses, categories, lectures, users",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Farah Hazem",
+                        Email = "farahhazem58@gmail.com"
+                    }
+                });
 
-            // External configs
+                options.UseInlineDefinitionsForEnums();
+
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Bearer {token}"
+                });
+
+                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+                });
+
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, "ClassUP.API.xml");
+                if (File.Exists(xmlPath))
+                    options.IncludeXmlComments(xmlPath);
+
+                var appXml = Path.Combine(AppContext.BaseDirectory, "ClassUP.ApplicationCore.xml");
+                if (File.Exists(appXml))
+                    options.IncludeXmlComments(appXml);
+            });
+
+            // Configurations
             services.Configure<CloudinarySettings>(
                 configuration.GetSection("CloudinarySettings"));
 
             services.Configure<MailSettings>(
-                configuration.GetSection(nameof(MailSettings))
-            );
+                configuration.GetSection(nameof(MailSettings)));
 
-            services.AddScoped<IVideoService, VideoService>();
-            services.AddHttpContextAccessor();
-
-            // Paymob
             services.Configure<PaymobSettings>(
                 configuration.GetSection("Paymob"));
 
+            // Services
+            services.AddScoped<IVideoService, VideoService>();
+            services.AddHttpContextAccessor();
+
+            // Refit
             services.AddRefitClient<IPaymobClient>()
                 .ConfigureHttpClient(c =>
                     c.BaseAddress = new Uri("https://accept.paymob.com"));
 
             // Serilog
-            host.UseSerilog((context, configurationBuilder) =>
-                configurationBuilder.ReadFrom.Configuration(context.Configuration)
-            );
+            host.UseSerilog((context, loggerConfig) =>
+                loggerConfig.ReadFrom.Configuration(context.Configuration));
 
             // Rate Limiting
-            services.AddRateLimiter(rateLimiterOptions =>
+            services.AddRateLimiter(options =>
             {
-                rateLimiterOptions.RejectionStatusCode = 429;
+                options.RejectionStatusCode = 429;
 
-                rateLimiterOptions.AddPolicy("iplimit", HttpContext =>
+                options.AddPolicy("iplimit", httpContext =>
                     RateLimitPartition.GetFixedWindowLimiter(
-                        partitionKey: HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-                        factory: _ => new FixedWindowRateLimiterOptions
+                        httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                        _ => new FixedWindowRateLimiterOptions
                         {
                             PermitLimit = 10,
                             Window = TimeSpan.FromMinutes(1)
-                        })
-                );
+                        }));
 
-                rateLimiterOptions.AddPolicy("userlimit", HttpContext =>
+                options.AddPolicy("userlimit", httpContext =>
                     RateLimitPartition.GetFixedWindowLimiter(
-                        partitionKey: HttpContext.User.GetUserId(),
-                        factory: _ => new FixedWindowRateLimiterOptions
+                        httpContext.User?.Identity?.Name ?? "anonymous",
+                        _ => new FixedWindowRateLimiterOptions
                         {
                             PermitLimit = 10,
                             Window = TimeSpan.FromMinutes(1)
-                        })
-                );
+                        }));
             });
 
             return services;

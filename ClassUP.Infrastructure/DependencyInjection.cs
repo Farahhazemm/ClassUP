@@ -78,7 +78,7 @@ namespace ClassUP.Infrastructure
 
 
             #region Background
-            services.AddBackgroundConfig(configuration); 
+            services.AddBackgroundConfig(configuration);
             #endregion
 
             return services;
