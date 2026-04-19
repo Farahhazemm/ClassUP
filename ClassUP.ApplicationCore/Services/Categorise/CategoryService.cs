@@ -1,12 +1,11 @@
 ﻿using ClassUP.ApplicationCore.Common.Filters;
 using ClassUP.ApplicationCore.DTOs.Requests.Category;
 using ClassUP.ApplicationCore.DTOs.Responses.Categorises;
-using ClassUP.ApplicationCore.DTOs.Responses.Cources;
 using ClassUP.ApplicationCore.Exeptions;
 using ClassUP.ApplicationCore.Helpers.Filters;
 using ClassUP.ApplicationCore.IRepository;
 using ClassUP.Domain.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
+
 using System;
 using System.Collections.Generic;
 using System.Text;

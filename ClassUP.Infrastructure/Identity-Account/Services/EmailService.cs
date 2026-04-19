@@ -1,12 +1,13 @@
 ﻿using ClassUP.ApplicationCore.Services.IAccount;
 using ClassUP.Infrastructure.Identity_Account.Email.Settings;
-using MailKit.Net.Smtp;
-using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using System;
 using System.Collections.Generic;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
 using System.Text;
 
 namespace ClassUP.Infrastructure.Identity_Account.Services
