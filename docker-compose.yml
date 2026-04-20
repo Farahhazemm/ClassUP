@@ -1,0 +1,70 @@
+version: "3.9"
+
+services:
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      SA_PASSWORD: "YourStrong@Password123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+
+  classup-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: classup-api
+    depends_on:
+      - sqlserver
+    ports:
+      - "5000:10000"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+
+      # DATABASE
+      ConnectionStrings__MyConc: ${ConnectionStrings__MyConc}
+      ConnectionStrings__Hangfire: ${ConnectionStrings__Hangfire}
+
+      #  Master DB connection 
+      ConnectionStrings__MasterConnection: Server=sqlserver,1433;Database=master;User Id=sa;Password=YourStrong@Password123;TrustServerCertificate=True
+
+      # JWT
+      JWT__SigningKey: ${JWT__SigningKey}
+      JWT__Issuer: ${JWT__Issuer}
+      JWT__Audience: ${JWT__Audience}
+      JWT__Lifetime: ${JWT__Lifetime}
+
+      # CLOUDINARY
+      CloudinarySettings__CloudName: ${CloudinarySettings__CloudName}
+      CloudinarySettings__ApiKey: ${CloudinarySettings__ApiKey}
+      CloudinarySettings__ApiSecret: ${CloudinarySettings__ApiSecret}
+
+      # MAIL
+      MailSettings__Mail: ${MailSettings__Mail}
+      MailSettings__DisplayName: ${MailSettings__DisplayName}
+      MailSettings__Host: ${MailSettings__Host}
+      MailSettings__Port: ${MailSettings__Port}
+      MailSettings__Password: ${MailSettings__Password}
+
+      # ADMIN
+      Admin__Email: ${Admin__Email}
+      Admin__Password: ${Admin__Password}
+
+      # PAYMOB
+      Paymob__ApiKey: ${Paymob__ApiKey}
+      Paymob__IntegrationId: ${Paymob__IntegrationId}
+      Paymob__IframeId: ${Paymob__IframeId}
+      Paymob__HmacSecret: ${Paymob__HmacSecret}
+
+      # HANGFIRE DASHBOARD
+      HangfireSettings__username: ${HangfireSettings__username}
+      HangfireSettings__password: ${HangfireSettings__password}
+
+    restart: always
+
+volumes:
+  sql_data:

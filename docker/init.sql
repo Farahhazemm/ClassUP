@@ -1,0 +1,5 @@
+IF DB_ID('ClassUP') IS NULL
+    CREATE DATABASE ClassUP;
+
+IF DB_ID('ClassUPJob') IS NULL
+    CREATE DATABASE ClassUPJob;

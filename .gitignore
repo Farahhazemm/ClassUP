@@ -4,4 +4,5 @@ obj/
 *.pdb
 *.cache
 *.user
+*.env
 .vs/
