@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Copy solution
-COPY ClassUP.sln .
+COPY ClassUP.slnx .
 
 # Copy project files 
 COPY ClassUP.API/ClassUP.API.csproj ClassUP.API/

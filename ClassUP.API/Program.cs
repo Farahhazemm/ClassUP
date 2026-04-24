@@ -12,7 +12,8 @@ builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false)
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-    .AddEnvironmentVariables();
+    .AddEnvironmentVariables()
+    .AddUserSecrets<Program>(optional: true);
 
 // External layers
 builder.Services.AddApplicationConfig(builder.Configuration);
@@ -22,23 +23,20 @@ builder.Services.AddApiServices(builder.Configuration, builder.Host);
 var app = builder.Build();
 
 
-//  CREATE DATABASES FIRST
+// CREATE DATABASES FIRST 
 
-using (var scope = app.Services.CreateScope())
+var masterConn = app.Configuration["ConnectionStrings:MasterConnection"];
+
+if (!string.IsNullOrEmpty(masterConn))
 {
-    var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-    var connString = config["ConnectionStrings:MasterConnection"];
-
-    using var connection = new SqlConnection(connString);
+    using var connection = new SqlConnection(masterConn);
     connection.Open();
 
     using var cmd = connection.CreateCommand();
-
     cmd.CommandText = @"
         IF DB_ID('ClassUP') IS NULL CREATE DATABASE ClassUP;
         IF DB_ID('ClassUPJob') IS NULL CREATE DATABASE ClassUPJob;
     ";
-
     cmd.ExecuteNonQuery();
 }
 
@@ -67,14 +65,12 @@ using (var scope = app.Services.CreateScope())
 }
 
 
-
-//  SEED
+// SEED
 
 await app.SeedAsync();
 
 
-
-// PIPELINE 
+// PIPELINE
 
 app.UseApiPipeline();
 
